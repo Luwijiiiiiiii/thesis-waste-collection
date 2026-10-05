@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Sample Route – Central Business District",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-001",
+    "vehicle_name": "Garbage Truck",
+    "average_speed_kmh": 16.0,
+    "fuel_efficiency_kmpl": 1.0,
+    "fuel_price_per_liter": 56.3,
+    "co2_factor": 2.68
+  },
+  "driver": {
+    "name": "Sample Driver"
+  },
+  "created_date": "2026-10-03",
+  "garage": {
+    "id": "G-01",
+    "name": "Sample Garage (City Hall area)",
+    "latitude": 16.4163,
+    "longitude": 120.5937
+  },
+  "collection_points": [
+    { "id": "CP-01", "name": "Mines View Park", "latitude": 16.4192, "longitude": 120.6278, "waste_type": "Residual", "priority": "Medium" },
+    { "id": "CP-02", "name": "Baguio Public Market", "latitude": 16.4155, "longitude": 120.596, "waste_type": "Biodegradable", "priority": "High" },
+    { "id": "CP-03", "name": "Camp John Hay (Loakan Rd)", "latitude": 16.4005, "longitude": 120.6125, "waste_type": "Residual", "priority": "Low" },
+    { "id": "CP-04", "name": "Burnham Park (Lake Drive)", "latitude": 16.4107, "longitude": 120.5937, "waste_type": "Biodegradable", "priority": "High" },
+    { "id": "CP-05", "name": "Wright Park", "latitude": 16.4158, "longitude": 120.6155, "waste_type": "Recyclable", "priority": "Medium" },
+    { "id": "CP-06", "name": "Session Road (Upper)", "latitude": 16.4128, "longitude": 120.599, "waste_type": "Recyclable", "priority": "High" },
+    { "id": "CP-07", "name": "Dominican Hill", "latitude": 16.404, "longitude": 120.581, "waste_type": "Residual", "priority": "Low" },
+    { "id": "CP-08", "name": "SM City Baguio (Luneta Hill)", "latitude": 16.4089, "longitude": 120.6, "waste_type": "Recyclable", "priority": "High" },
+    { "id": "CP-09", "name": "Baguio Botanical Garden", "latitude": 16.4148, "longitude": 120.611, "waste_type": "Biodegradable", "priority": "Medium" },
+    { "id": "CP-10", "name": "Teachers Camp", "latitude": 16.4122, "longitude": 120.6075, "waste_type": "Residual", "priority": "Low" }
+  ]
+}

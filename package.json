@@ -1,0 +1,25 @@
+{
+  "name": "waste-route-optimizer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Waste Collection Route Optimization (TSP + A*) for Baguio City — Next.js monorepo",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "pnpm --filter @wcro/web start",
+    "typecheck": "turbo run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "turbo": "^2.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
+  }
+}

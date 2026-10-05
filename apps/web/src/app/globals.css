@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens
+   Brand blue = actions / focus. Green = optimized. Orange = traditional.
+   Every text/background pair below is >= 4.5:1 in both themes.
+------------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+  --canvas: #f4f7fb;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --ink: #0f172a;
+  --muted: #566579;
+  --line: #e1e8f0;
+  --line-strong: #cbd5e1;
+
+  --brand: #2563eb;
+  --brand-ink: #1d4ed8;
+  --brand-soft: #eaf1fe;
+
+  --optimized: #047857;
+  --optimized-soft: #e6f5ee;
+  --traditional: #c2410c;
+  --traditional-soft: #fdf0e6;
+  --danger: #b91c1c;
+  --danger-soft: #fdecec;
+  --warn: #8a5a05;
+  --warn-soft: #fef5db;
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.05);
+  --shadow-pop: 0 10px 30px -10px rgb(15 23 42 / 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --canvas: #0a101d;
+    --surface: #111a2b;
+    --surface-2: #17223a;
+    --ink: #e8eef8;
+    --muted: #9aaac0;
+    --line: #223049;
+    --line-strong: #2f3f5e;
+
+    --brand: #2563eb;
+    --brand-ink: #8db3ff;
+    --brand-soft: #14244a;
+
+    --optimized: #34d399;
+    --optimized-soft: #0e2b22;
+    --traditional: #fb923c;
+    --traditional-soft: #2d1c10;
+    --danger: #f87171;
+    --danger-soft: #2c1618;
+    --warn: #fbbf24;
+    --warn-soft: #2a2210;
+
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-pop: 0 10px 30px -10px rgb(0 0 0 / 0.7);
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-optimized: var(--optimized);
+  --color-optimized-soft: var(--optimized-soft);
+  --color-traditional: var(--traditional);
+  --color-traditional-soft: var(--traditional-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-pop: var(--shadow-pop);
+
+  --font-sans: var(--font-fira-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-fira-code), ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+
+  --animate-rise: rise 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade: fade 240ms ease-out both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+html,
+body {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Solid fills that carry white text keep a fixed dark-enough hue in both themes */
+.bg-optimized-solid {
+  background: #047857;
+}
+.bg-traditional-solid {
+  background: #c2410c;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+button,
+[role="button"],
+[role="tab"],
+summary,
+label[for],
+select {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Leaflet
+------------------------------------------------------------------- */
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--surface-2);
+  /* keep Leaflet's internal z-indexes below the app header / nav */
+  isolation: isolate;
+}
+.stop-marker {
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  font: 600 11px/1 var(--font-mono);
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.stop-marker--garage {
+  border-radius: 7px;
+  background: #0f172a;
+}
+.stop-marker--point {
+  background: #047857;
+}
+.stop-marker--file {
+  background: #2563eb;
+}
+.stop-marker--active {
+  transform: scale(1.35);
+  box-shadow: 0 0 0 4px rgb(37 99 235 / 0.35), 0 2px 8px rgb(0 0 0 / 0.5);
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: var(--shadow-pop);
+}
+
+@media (prefers-color-scheme: dark) {
+  .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.88) saturate(0.7);
+  }
+}
