@@ -11,7 +11,7 @@ function gridResponse(size = 12): OverpassElement[] {
   const id = (r: number, c: number) => 1000 + r * size + c;
   for (let r = 0; r < size; r++)
     for (let c = 0; c < size; c++)
-      els.push({ type: "node", id: id(r, c), lat: 16.40 + r * 0.001, lon: 120.59 + c * 0.001 } as OverpassElement);
+      els.push({ type: "node", id: id(r, c), lat: 16.4 + r * 0.001, lon: 120.59 + c * 0.001 } as OverpassElement);
   let wid = 1;
   for (let r = 0; r < size; r++)
     els.push({
@@ -29,7 +29,12 @@ function gridResponse(size = 12): OverpassElement[] {
     } as OverpassElement);
   // dead-end one-way spur that is not strongly connected – should be removed
   els.push({ type: "node", id: 9_000_000_001, lat: 16.39, lon: 120.58 } as OverpassElement);
-  els.push({ type: "way", id: wid++, nodes: [id(0, 0), 9_000_000_001], tags: { highway: "residential", oneway: "yes" } } as OverpassElement);
+  els.push({
+    type: "way",
+    id: wid++,
+    nodes: [id(0, 0), 9_000_000_001],
+    tags: { highway: "residential", oneway: "yes" },
+  } as OverpassElement);
   return els;
 }
 
@@ -70,7 +75,10 @@ function bruteForceTsp(dist: number[][]): number {
 
 function randomMetric(n: number, seed: number): number[][] {
   let s = seed;
-  const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  const rnd = () => {
+    s = (s * 16807) % 2147483647;
+    return s / 2147483647;
+  };
   const pts = Array.from({ length: n }, () => [rnd() * 1000, rnd() * 1000]);
   return pts.map((a) => pts.map((b) => Math.hypot(a[0] - b[0], a[1] - b[1])));
 }
@@ -92,7 +100,12 @@ describe("road graph", () => {
 
 describe("A*", () => {
   it("matches Dijkstra distances on the directed graph", () => {
-    for (const [s, t] of [[0, 143], [17, 90], [50, 3], [40, 39]]) {
+    for (const [s, t] of [
+      [0, 143],
+      [17, 90],
+      [50, 3],
+      [40, 39],
+    ]) {
       const a = astarPath(graph, s, t);
       const [d] = dijkstraToTargets(graph.nodeCount, graph.directed, s, [t]);
       expect(a.distanceM).toBeCloseTo(d, 6);

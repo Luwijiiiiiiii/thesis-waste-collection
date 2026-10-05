@@ -64,7 +64,12 @@ export function DatasetDetails({ data }: { data: RouteFile }) {
             ["Study area", data.study_area],
             ["Garage", data.garage.name],
             ["Driver", data.driver.name],
-            ["Schema version", <span key="s" className="num">{data.schema_version}</span>],
+            [
+              "Schema version",
+              <span key="s" className="num">
+                {data.schema_version}
+              </span>,
+            ],
             ["Created", data.created_date],
           ]}
         />

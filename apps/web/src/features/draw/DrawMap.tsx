@@ -98,11 +98,21 @@ export default function DrawMap({ draft, onAction }: { draft: RouteDraft; onActi
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Rectangle bounds={BOUNDS} pathOptions={{ color: "#2563eb", weight: 2, fill: false, dashArray: "6 6", interactive: false }} />
+      <Rectangle
+        bounds={BOUNDS}
+        pathOptions={{ color: "#2563eb", weight: 2, fill: false, dashArray: "6 6", interactive: false }}
+      />
       <TapToPlace onAction={onAction} />
       {draft.garage && <PointMarker point={draft.garage} label="G" title="Garage" garage onAction={onAction} />}
       {draft.stops.map((s, i) => (
-        <PointMarker key={s.id} point={s} label={String(i + 1)} title={`Stop ${i + 1}`} garage={false} onAction={onAction} />
+        <PointMarker
+          key={s.id}
+          point={s}
+          label={String(i + 1)}
+          title={`Stop ${i + 1}`}
+          garage={false}
+          onAction={onAction}
+        />
       ))}
     </MapContainer>
   );

@@ -19,7 +19,8 @@ const firaCode = Fira_Code({
 
 export const metadata: Metadata = {
   title: "Waste Route Optimizer · Baguio City",
-  description: "Decision-support prototype for municipal solid waste collection routing using TSP and A* on OpenStreetMap.",
+  description:
+    "Decision-support prototype for municipal solid waste collection routing using TSP and A* on OpenStreetMap.",
 };
 
 export const viewport: Viewport = {

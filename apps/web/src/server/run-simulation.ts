@@ -23,6 +23,7 @@ import {
   type GraphStop,
   type RouteComputation,
 } from "@wcro/routing";
+import { fmt } from "@/lib/format";
 import { getRoadNetwork } from "./network-store";
 import { saveSimulation } from "./simulation-log";
 
@@ -59,7 +60,12 @@ export async function* runSimulation(input: {
   yield { type: "stage", stage: "validation", status: "done", detail: `${report.score}/${report.total} checks passed` };
 
   // ---- Module 3: road network ----
-  yield { type: "stage", stage: "network", status: "running", detail: "Loading road network (first run downloads from OpenStreetMap)..." };
+  yield {
+    type: "stage",
+    stage: "network",
+    status: "running",
+    detail: "Loading road network (first run downloads from OpenStreetMap)...",
+  };
   const network = await getRoadNetwork();
   yield {
     type: "stage",
@@ -70,17 +76,22 @@ export async function* runSimulation(input: {
 
   yield { type: "stage", stage: "snapping", status: "running" };
   const snapped = snapStops(network.graph, routeFile);
-  yield { type: "stage", stage: "snapping", status: "done", detail: `${snapped.collectionPoints.length + 1} stops snapped` };
+  yield {
+    type: "stage",
+    stage: "snapping",
+    status: "done",
+    detail: `${snapped.collectionPoints.length + 1} stops snapped`,
+  };
 
   // ---- Module 4: simulated traditional route ----
   yield { type: "stage", stage: "traditional", status: "running" };
   const traditional = computeTraditionalRoute(network.graph, snapped.garage, snapped.collectionPoints);
-  yield { type: "stage", stage: "traditional", status: "done", detail: `${(traditional.distanceM / 1000).toFixed(2)} km` };
+  yield { type: "stage", stage: "traditional", status: "done", detail: `${fmt(traditional.distanceM / 1000)} km` };
 
   // ---- Module 5: optimized route ----
   yield { type: "stage", stage: "optimized", status: "running" };
   const optimized = computeOptimizedRoute(network.graph, snapped.garage, snapped.collectionPoints, solver);
-  yield { type: "stage", stage: "optimized", status: "done", detail: `${(optimized.distanceM / 1000).toFixed(2)} km` };
+  yield { type: "stage", stage: "optimized", status: "done", detail: `${fmt(optimized.distanceM / 1000)} km` };
 
   // ---- Module 6: performance evaluation ----
   yield { type: "stage", stage: "metrics", status: "running" };

@@ -32,7 +32,10 @@ export function ValidationReportCard({ report }: { report: ValidationReport }) {
             checks passed
           </span>
         </span>
-        <ChevronDown className="size-4 shrink-0 text-muted transition-transform duration-200 group-open:rotate-180" aria-hidden />
+        <ChevronDown
+          className="size-4 shrink-0 text-muted transition-transform duration-200 group-open:rotate-180"
+          aria-hidden
+        />
         <span className="sr-only">Toggle validation details</span>
       </summary>
 
@@ -49,8 +52,8 @@ export function ValidationReportCard({ report }: { report: ValidationReport }) {
             </div>
             {check.errors.length > 0 && (
               <ul className="ml-[26px] mt-1.5 space-y-1">
-                {check.errors.map((err, i) => (
-                  <li key={i} className="rounded-md bg-danger-soft px-2.5 py-1.5 text-xs leading-5 text-danger">
+                {check.errors.map((err) => (
+                  <li key={err} className="rounded-md bg-danger-soft px-2.5 py-1.5 text-xs leading-5 text-danger">
                     {err}
                   </li>
                 ))}

@@ -31,8 +31,14 @@ export function ComparisonTable({ rows }: { rows: ComparisonRow[] }) {
               </td>
               <td>
                 <div className="space-y-1" aria-hidden>
-                  <div className="h-2 rounded-full bg-traditional-solid" style={{ width: `${(r.traditional / max) * 100}%` }} />
-                  <div className="h-2 rounded-full bg-optimized-solid" style={{ width: `${(r.optimized / max) * 100}%` }} />
+                  <div
+                    className="h-2 rounded-full bg-traditional-solid"
+                    style={{ width: `${(r.traditional / max) * 100}%` }}
+                  />
+                  <div
+                    className="h-2 rounded-full bg-optimized-solid"
+                    style={{ width: `${(r.optimized / max) * 100}%` }}
+                  />
                 </div>
               </td>
             </tr>

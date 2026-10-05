@@ -27,7 +27,7 @@ export function MapWithStops({ result }: { result: SimulationResult }) {
             const seg = result.optimized.segments[i];
             const active = stop.id === activeId;
             return (
-              <li key={`${stop.id}-${i}`}>
+              <li key={isGarage && i > 0 ? `${stop.id}-return` : stop.id}>
                 <button
                   type="button"
                   onClick={() => setActiveId(stop.id)}
@@ -49,11 +49,7 @@ export function MapWithStops({ result }: { result: SimulationResult }) {
                       {stop.name}
                       {isGarage && i > 0 && <span className="font-normal text-muted"> (return)</span>}
                     </span>
-                    {seg && (
-                      <span className="num block text-xs text-muted">
-                        next: {fmt(seg.distanceM / 1000)} km
-                      </span>
-                    )}
+                    {seg && <span className="num block text-xs text-muted">next: {fmt(seg.distanceM / 1000)} km</span>}
                   </span>
                   <MapPin className="size-4 shrink-0 text-muted" aria-hidden />
                 </button>

@@ -19,21 +19,32 @@ export function StopList({ draft, onAction }: { draft: RouteDraft; onAction: (a:
     <ol className="divide-y divide-line rounded-xl border border-line">
       {draft.garage && (
         <li className="flex items-center gap-3 px-3 py-1.5">
-          <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#0f172a] text-white dark:bg-slate-600" aria-hidden>
+          <span
+            className="grid size-6 shrink-0 place-items-center rounded-full bg-[#0f172a] text-white dark:bg-slate-600"
+            aria-hidden
+          >
             <Home className="size-3" />
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-medium">Garage</span>
             <span className="num block break-words text-xs text-muted">{coords(draft.garage)}</span>
           </span>
-          <button type="button" className={iconButton} aria-label="Delete Garage" onClick={() => onAction({ type: "remove", id: "garage" })}>
+          <button
+            type="button"
+            className={iconButton}
+            aria-label="Delete Garage"
+            onClick={() => onAction({ type: "remove", id: "garage" })}
+          >
             <Trash2 className="size-4" aria-hidden />
           </button>
         </li>
       )}
       {draft.stops.map((s, i) => (
         <li key={s.id} className="flex items-center gap-3 px-3 py-1.5">
-          <span className="num grid size-6 shrink-0 place-items-center rounded-full bg-brand text-[11px] font-semibold text-white" aria-hidden>
+          <span
+            className="num grid size-6 shrink-0 place-items-center rounded-full bg-brand text-[11px] font-semibold text-white"
+            aria-hidden
+          >
             {i + 1}
           </span>
           <span className="min-w-0 flex-1">
@@ -58,7 +69,12 @@ export function StopList({ draft, onAction }: { draft: RouteDraft; onAction: (a:
           >
             <ArrowDown className="size-4" aria-hidden />
           </button>
-          <button type="button" className={iconButton} aria-label={`Delete Stop ${i + 1}`} onClick={() => onAction({ type: "remove", id: s.id })}>
+          <button
+            type="button"
+            className={iconButton}
+            aria-label={`Delete Stop ${i + 1}`}
+            onClick={() => onAction({ type: "remove", id: s.id })}
+          >
             <Trash2 className="size-4" aria-hidden />
           </button>
         </li>

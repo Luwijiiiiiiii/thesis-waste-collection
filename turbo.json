@@ -11,6 +11,10 @@
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
+    },
+    "//#lint": {},
+    "//#lint:fix": {
+      "cache": false
     }
   }
 }

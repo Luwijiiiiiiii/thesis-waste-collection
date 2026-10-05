@@ -54,7 +54,8 @@ function exactMatching(vertices: number[], dist: number[][]): [number, number][]
 function greedyMatching(vertices: number[], dist: number[][]): [number, number][] {
   const edges: [number, number, number][] = [];
   for (let a = 0; a < vertices.length; a++)
-    for (let b = a + 1; b < vertices.length; b++) edges.push([vertices[a], vertices[b], dist[vertices[a]][vertices[b]]]);
+    for (let b = a + 1; b < vertices.length; b++)
+      edges.push([vertices[a], vertices[b], dist[vertices[a]][vertices[b]]]);
   edges.sort((x, y) => x[2] - y[2]);
   const used = new Set<number>();
   const pairs: [number, number][] = [];
