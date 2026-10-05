@@ -202,11 +202,13 @@ export function validateRouteFile(input: unknown): ValidationReport {
     if (parsed.success) {
       data = parsed.data;
     } else {
-      const metadata = checks.find((c) => c.key === "metadata")!;
-      metadata.errors.push(
-        ...parsed.error.issues.map((issue) => `${issue.path.join(".") || "file"}: ${issue.message}`),
-      );
-      metadata.passed = false;
+      const metadata = checks.find((c) => c.key === "metadata");
+      if (metadata) {
+        metadata.errors.push(
+          ...parsed.error.issues.map((issue) => `${issue.path.join(".") || "file"}: ${issue.message}`),
+        );
+        metadata.passed = false;
+      }
     }
   }
 

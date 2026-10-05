@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const send = (event: SimulationEvent) => controller.enqueue(encoder.encode(JSON.stringify(event) + "\n"));
+      const send = (event: SimulationEvent) => controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
       try {
         for await (const event of runSimulation({ routeFile: body.routeFile, solver })) send(event);
       } catch (err) {

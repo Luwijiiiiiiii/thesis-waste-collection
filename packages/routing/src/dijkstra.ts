@@ -41,5 +41,5 @@ export function distanceMatrix(n: number, undirected: Csr, nodes: number[]): num
     const d = dijkstraToTargets(n, undirected, s, unique);
     rows.set(s, new Map(unique.map((t, i) => [t, d[i]])));
   }
-  return nodes.map((a) => nodes.map((b) => rows.get(a)!.get(b)!));
+  return nodes.map((a) => nodes.map((b) => rows.get(a)?.get(b) ?? Infinity));
 }

@@ -14,7 +14,7 @@ function escapeCsv(value: Cell): string {
 }
 
 export function toCsv(headers: string[], rows: Cell[][]): string {
-  return [headers, ...rows].map((r) => r.map(escapeCsv).join(",")).join("\r\n") + "\r\n";
+  return `${[headers, ...rows].map((r) => r.map(escapeCsv).join(",")).join("\r\n")}\r\n`;
 }
 
 /** node_registry.csv (notebook CELL 14) */
