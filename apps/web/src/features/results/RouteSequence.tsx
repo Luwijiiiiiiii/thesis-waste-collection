@@ -8,11 +8,13 @@ export function RouteSequence({ route }: { route: RouteResult }) {
   const solver = TSP_SOLVERS.find((s) => s.value === route.solver);
   return (
     <div className="overflow-hidden rounded-xl border border-line">
-      <div className={`flex flex-wrap items-center justify-between gap-2 px-4 py-3 ${isOpt ? "bg-optimized-soft" : "bg-traditional-soft"}`}>
+      <div
+        className={`flex flex-wrap items-center justify-between gap-2 px-4 py-3 ${isOpt ? "bg-optimized-soft" : "bg-traditional-soft"}`}
+      >
         <h3 className={`text-sm font-semibold ${isOpt ? "text-optimized" : "text-traditional"}`}>
           {isOpt ? "Optimized route" : "Simulated traditional route"}
         </h3>
-        <Badge tone={isOpt ? "ok" : "traditional"}>{isOpt ? solver?.label ?? "TSP" : "File order"} + A*</Badge>
+        <Badge tone={isOpt ? "ok" : "traditional"}>{isOpt ? (solver?.label ?? "A*") : "File order + A*"}</Badge>
       </div>
       <dl className="grid grid-cols-3 gap-2 border-b border-line px-4 py-3 text-center text-xs text-muted">
         <div>
@@ -33,9 +35,11 @@ export function RouteSequence({ route }: { route: RouteResult }) {
           const seg = route.segments[i];
           const isGarage = stop.role === "garage";
           return (
-            <li key={`${stop.id}-${i}`} className="relative flex gap-3 pb-4 last:pb-0">
+            <li key={isGarage && i > 0 ? `${stop.id}-return` : stop.id} className="relative flex gap-3 pb-4 last:pb-0">
               {i < route.visitSequence.length - 1 && (
-                <span className={`absolute left-[11px] top-6 h-full w-px ${isOpt ? "bg-optimized/40" : "bg-traditional/40"}`} />
+                <span
+                  className={`absolute left-[11px] top-6 h-full w-px ${isOpt ? "bg-optimized/40" : "bg-traditional/40"}`}
+                />
               )}
               <span
                 className={`num relative z-10 grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-semibold text-white ${

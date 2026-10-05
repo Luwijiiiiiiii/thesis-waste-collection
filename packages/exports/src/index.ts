@@ -77,7 +77,14 @@ export function simulationGeoJson(result: SimulationResult): string {
   });
   const stops = [result.nodeRegistry.garage, ...result.nodeRegistry.collectionPoints].map((s) => ({
     type: "Feature",
-    properties: { id: s.id, name: s.name, role: s.role, osm_node: s.node, waste_type: s.wasteType, priority: s.priority },
+    properties: {
+      id: s.id,
+      name: s.name,
+      role: s.role,
+      osm_node: s.node,
+      waste_type: s.wasteType,
+      priority: s.priority,
+    },
     geometry: { type: "Point", coordinates: [s.longitude, s.latitude] },
   }));
   return JSON.stringify(

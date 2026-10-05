@@ -138,7 +138,9 @@ function checkCoordinates(input: Obj): string[] {
   };
 
   if (isObject(input.garage)) validate("Garage", input.garage.latitude, input.garage.longitude);
-  getPoints(input)?.forEach((p, i) => validate(`Point ${pointLabel(p, i)}`, p.latitude, p.longitude));
+  getPoints(input)?.forEach((p, i) => {
+    validate(`Point ${pointLabel(p, i)}`, p.latitude, p.longitude);
+  });
   return errors;
 }
 

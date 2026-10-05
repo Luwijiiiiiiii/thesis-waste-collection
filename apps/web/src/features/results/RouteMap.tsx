@@ -5,6 +5,7 @@ import L from "leaflet";
 import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
 import type { LatLng, RegisteredStop, SimulationResult } from "@wcro/core";
+import { fmt } from "@/lib/format";
 
 function FitBounds({ points }: { points: LatLng[] }) {
   const map = useMap();
@@ -105,7 +106,11 @@ export default function RouteMap({
             key={s.id}
             position={[s.latitude, s.longitude]}
             zIndexOffset={s.id === activeId ? 1000 : 0}
-            icon={stopIcon(s.role === "garage" ? "G" : String(order.get(s.id) ?? "•"), s.role === "garage", s.id === activeId)}
+            icon={stopIcon(
+              s.role === "garage" ? "G" : String(order.get(s.id) ?? "•"),
+              s.role === "garage",
+              s.id === activeId,
+            )}
           >
             <Popup>
               <div className="space-y-0.5 text-xs">
@@ -114,7 +119,7 @@ export default function RouteMap({
                 {s.wasteType && <p>Waste type: {s.wasteType}</p>}
                 {s.priority !== undefined && <p>Priority: {String(s.priority)}</p>}
                 <p>OSM node: {s.node}</p>
-                <p>Snap distance: {s.snapDistanceM.toFixed(1)} m</p>
+                <p>Snap distance: {fmt(s.snapDistanceM)} m</p>
                 {s.role !== "garage" && <p>Optimized stop #{order.get(s.id)}</p>}
               </div>
             </Popup>
@@ -138,7 +143,12 @@ function LayerToggle({
 }) {
   return (
     <label className="flex min-h-9 cursor-pointer items-center gap-2.5 rounded-lg px-2.5 hover:bg-surface-2 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-4 accent-[var(--brand)]" />
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="size-4 accent-[var(--brand)]"
+      />
       {swatch}
       <span className="font-medium text-ink">{label}</span>
     </label>

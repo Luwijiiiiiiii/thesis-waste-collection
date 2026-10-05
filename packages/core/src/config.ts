@@ -70,7 +70,7 @@ export type TspSolver = "christofides" | "christofides-2opt" | "nearest-neighbor
 export const TSP_SOLVERS: { value: TspSolver; label: string; description: string }[] = [
   {
     value: "christofides",
-    label: "Christofides (thesis default)",
+    label: "A* pathfinding algorithm",
     description: "Same approximation algorithm used in the notebook (networkx christofides).",
   },
   {

@@ -62,7 +62,8 @@ export function DropZone({ onLoad }: { onLoad: OnLoad }) {
   const [dragging, setDragging] = useState(false);
 
   return (
-    <div
+    <section
+      aria-label="Route file drop zone"
       onDragOver={(e) => {
         e.preventDefault();
         setDragging(true);
@@ -74,31 +75,38 @@ export function DropZone({ onLoad }: { onLoad: OnLoad }) {
         const file = e.dataTransfer.files[0];
         if (file) void readFile(file);
       }}
-      className={`rounded-2xl border-2 border-dashed p-6 text-center transition-colors duration-200 sm:p-8 ${
+      className={`flex flex-col items-center justify-center rounded-3xl border-2 border-dashed px-6 py-10 text-center transition-colors duration-200 sm:px-10 sm:py-12 ${
         dragging ? "border-brand bg-brand-soft" : "border-line-strong bg-surface"
       }`}
     >
       <span
-        className={`mx-auto grid size-14 place-items-center rounded-2xl transition-transform duration-200 ${
+        className={`grid size-16 place-items-center rounded-2xl transition-transform duration-200 ${
           dragging ? "scale-110 bg-brand text-white" : "bg-brand-soft text-brand-ink"
         }`}
         aria-hidden
       >
-        <UploadCloud className="size-7" />
+        <UploadCloud className="size-8" />
       </span>
-      <h2 className="mt-4 text-lg font-semibold tracking-tight">{dragging ? "Drop to load" : "Drop your route file here"}</h2>
-      <p className="mx-auto mt-1 max-w-xs text-sm leading-6 text-muted">
-        A <span className="num">.json</span> file (schema 1.0) with the garage and collection points.
+      <h3 className="mt-5 text-xl font-semibold tracking-tight sm:text-2xl">
+        {dragging ? "Let go to load your file" : "Drag your route file here"}
+      </h3>
+      <p className="mx-auto mt-2 max-w-md text-base leading-7 text-muted">
+        A <span className="num">.json</span> file that lists the garage and every pickup point. Don&apos;t have one? Try
+        our sample route first.
       </p>
 
-      <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
+      <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center">
         <Button variant="primary" size="lg" onClick={loadSample} disabled={loadingSample}>
-          {loadingSample ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <FlaskConical className="size-4" aria-hidden />}
+          {loadingSample ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : (
+            <FlaskConical className="size-4" aria-hidden />
+          )}
           {loadingSample ? "Loading sample…" : "Try the Baguio sample"}
         </Button>
         <Button size="lg" onClick={() => inputRef.current?.click()}>
           <FolderOpen className="size-4" aria-hidden />
-          Browse files
+          Choose a file
         </Button>
       </div>
       {input}
@@ -113,7 +121,7 @@ export function DropZone({ onLoad }: { onLoad: OnLoad }) {
         <Download className="size-4" aria-hidden />
         Download the JSON template
       </a>
-    </div>
+    </section>
   );
 }
 

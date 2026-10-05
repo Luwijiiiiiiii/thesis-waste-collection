@@ -12,15 +12,39 @@ export function NetworkAndRegistry({ network, registry }: { network: RoadNetwork
         items={[
           ["Study area", network.studyArea],
           ["Network type", network.networkType],
-          ["Graph nodes", <span key="n" className="num">{fmtInt(network.nodeCount)}</span>],
-          ["Graph edges (directed)", <span key="e" className="num">{fmtInt(network.edgeCount)}</span>],
+          [
+            "Graph nodes",
+            <span key="n" className="num">
+              {fmtInt(network.nodeCount)}
+            </span>,
+          ],
+          [
+            "Graph edges (directed)",
+            <span key="e" className="num">
+              {fmtInt(network.edgeCount)}
+            </span>,
+          ],
           [
             "Boundary",
             network.boundarySource === "relation" ? `OSM relation ${network.osmRelationId}` : "Fallback bounding box",
           ],
           ["Downloaded", fmtDateTime(network.fetchedAt)],
-          ["Garage node", <span key="g" className="num">{registry.garage.node}</span>],
-          ["Source", network.fromCache ? <Badge>Cache</Badge> : <Badge tone="brand">Fresh download</Badge>],
+          [
+            "Garage node",
+            <span key="g" className="num">
+              {registry.garage.node}
+            </span>,
+          ],
+          [
+            "Source",
+            network.fromCache ? (
+              <Badge key="src">Cache</Badge>
+            ) : (
+              <Badge key="src" tone="brand">
+                Fresh download
+              </Badge>
+            ),
+          ],
         ]}
       />
       <div>
@@ -44,8 +68,10 @@ export function NetworkAndRegistry({ network, registry }: { network: RoadNetwork
                 </td>
                 <td className="num">{s.node}</td>
                 <td className={`num text-right ${s.snapDistanceM > 300 ? "font-semibold text-warn" : ""}`}>
-                  {s.snapDistanceM > 300 && <TriangleAlert className="mr-1 inline size-3.5 align-[-2px]" aria-label="Far from road" />}
-                  {fmt(s.snapDistanceM, 1)} m
+                  {s.snapDistanceM > 300 && (
+                    <TriangleAlert className="mr-1 inline size-3.5 align-[-2px]" aria-label="Far from road" />
+                  )}
+                  {fmt(s.snapDistanceM)} m
                 </td>
               </tr>
             ))}

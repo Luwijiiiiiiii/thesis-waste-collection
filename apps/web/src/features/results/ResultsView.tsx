@@ -18,7 +18,7 @@ export function ResultsView({ result, actions }: { result: SimulationResult; act
 
   let headline = "Simulation results";
   if (distance) {
-    const pct = fmt(Math.abs(distance.savingsPercent), 1);
+    const pct = fmt(Math.abs(distance.savingsPercent));
     const km = fmt(Math.abs(distance.savings));
     headline =
       distance.savings > 0
@@ -37,9 +37,13 @@ export function ResultsView({ result, actions }: { result: SimulationResult; act
         description={
           <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="num">{result.id}</span>
-            <span aria-hidden className="hidden sm:inline">·</span>
+            <span aria-hidden className="hidden sm:inline">
+              ·
+            </span>
             <span>{fmtDateTime(result.createdAt)}</span>
-            <span aria-hidden className="hidden sm:inline">·</span>
+            <span aria-hidden className="hidden sm:inline">
+              ·
+            </span>
             <span>
               {result.vehicle.vehicleName}, driver {result.driverName}
             </span>
@@ -60,8 +64,8 @@ export function ResultsView({ result, actions }: { result: SimulationResult; act
           <div>
             <p className="font-semibold">Check these before presenting the results</p>
             <ul className="mt-1 list-disc space-y-0.5 pl-5">
-              {result.warnings.map((w, i) => (
-                <li key={i}>{w.message}</li>
+              {result.warnings.map((w) => (
+                <li key={w.message}>{w.message}</li>
               ))}
             </ul>
           </div>
@@ -87,7 +91,9 @@ export function ResultsView({ result, actions }: { result: SimulationResult; act
                 icon: <BarChart3 className="size-4" />,
                 content: (
                   <div>
-                    <p className="mb-4 text-sm text-muted">Distance, travel time, fuel, cost and CO₂ for both strategies.</p>
+                    <p className="mb-4 text-sm text-muted">
+                      Distance, travel time, fuel, cost and CO₂ for both strategies.
+                    </p>
                     <ComparisonTable rows={result.comparison} />
                   </div>
                 ),

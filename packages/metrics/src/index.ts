@@ -6,7 +6,8 @@
 // ==========================================================
 import type { ComparisonRow, ResolvedVehicle, RouteMetrics } from "@wcro/core";
 
-const round = (v: number, d = 2) => Math.round(v * 10 ** d) / 10 ** d;
+// Values are kept at full precision here. Rounding happens only when
+// they are displayed, so every figure on screen comes from exact inputs.
 
 /**
  *  distance_km  = route length / 1000
@@ -19,11 +20,11 @@ export function computeRouteMetrics(distanceM: number, vehicle: ResolvedVehicle)
   const distanceKm = distanceM / 1000;
   const fuelLiters = distanceKm / vehicle.fuelEfficiencyKmpl;
   return {
-    distanceKm: round(distanceKm, 3),
-    travelTimeMin: round((distanceKm / vehicle.averageSpeedKmh) * 60),
-    fuelLiters: round(fuelLiters, 3),
-    fuelCostPhp: round(fuelLiters * vehicle.fuelPricePerLiter),
-    co2Kg: round(fuelLiters * vehicle.co2FactorKgPerLiter, 3),
+    distanceKm,
+    travelTimeMin: (distanceKm / vehicle.averageSpeedKmh) * 60,
+    fuelLiters,
+    fuelCostPhp: fuelLiters * vehicle.fuelPricePerLiter,
+    co2Kg: fuelLiters * vehicle.co2FactorKgPerLiter,
   };
 }
 
@@ -47,8 +48,8 @@ export function compareRoutes(traditional: RouteMetrics, optimized: RouteMetrics
       unit,
       traditional: t,
       optimized: o,
-      savings: round(savings, 3),
-      savingsPercent: t === 0 ? 0 : round((savings / t) * 100),
+      savings,
+      savingsPercent: t === 0 ? 0 : (savings / t) * 100,
     };
   });
 }

@@ -35,6 +35,7 @@ export function Tabs({ items, initial, label }: { items: TabItem[]; initial?: st
             const selected = t.id === active;
             return (
               <button
+                type="button"
                 key={t.id}
                 ref={(el) => {
                   refs.current[t.id] = el;
@@ -47,9 +48,7 @@ export function Tabs({ items, initial, label }: { items: TabItem[]; initial?: st
                 onClick={() => setActive(t.id)}
                 onKeyDown={(e) => move(e, i)}
                 className={`-mb-px inline-flex min-h-11 items-center gap-2 whitespace-nowrap border-b-2 px-3.5 text-sm font-medium transition-colors duration-200 ${
-                  selected
-                    ? "border-brand text-brand-ink"
-                    : "border-transparent text-muted hover:text-ink"
+                  selected ? "border-brand text-brand-ink" : "border-transparent text-muted hover:text-ink"
                 }`}
               >
                 <span aria-hidden className="grid place-items-center">
@@ -69,6 +68,7 @@ export function Tabs({ items, initial, label }: { items: TabItem[]; initial?: st
           id={`${uid}-panel-${t.id}`}
           aria-labelledby={`${uid}-tab-${t.id}`}
           hidden={t.id !== active}
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: WAI-ARIA tabs pattern makes the panel focusable
           tabIndex={0}
           className="pt-5 focus-visible:outline-offset-4"
         >

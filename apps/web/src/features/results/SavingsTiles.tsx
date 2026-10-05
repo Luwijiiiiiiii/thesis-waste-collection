@@ -1,5 +1,5 @@
 import type { ComparisonRow } from "@wcro/core";
-import { Banknote, Clock, Leaf, Route, TrendingDown, TrendingUp, type LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, Banknote, Clock, Leaf, Route, type LucideIcon } from "lucide-react";
 import { fmt, fmtMinutes, fmtPhp } from "@/lib/format";
 
 const icons: Partial<Record<ComparisonRow["metric"], LucideIcon>> = {
@@ -42,16 +42,27 @@ export function SavingsTiles({ comparison }: { comparison: ComparisonRow[] }) {
               </p>
               <span
                 className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                  better ? "bg-optimized-soft text-optimized" : worse ? "bg-danger-soft text-danger" : "bg-surface-2 text-muted"
+                  better
+                    ? "bg-optimized-soft text-optimized"
+                    : worse
+                      ? "bg-danger-soft text-danger"
+                      : "bg-surface-2 text-muted"
                 }`}
               >
-                {better ? <TrendingDown className="size-3" aria-hidden /> : worse ? <TrendingUp className="size-3" aria-hidden /> : null}
-                <span className="num">{fmt(Math.abs(row.savingsPercent), 1)}%</span>
+                {better ? (
+                  <ArrowUp className="size-3" aria-hidden />
+                ) : worse ? (
+                  <ArrowDown className="size-3" aria-hidden />
+                ) : null}
+                {(better || worse) && <span aria-hidden>{better ? "A*" : "Traditional"}</span>}
+                <span className="num">{fmt(Math.abs(row.savingsPercent))}%</span>
                 <span className="sr-only">{worse ? "more than traditional" : "less than traditional"}</span>
               </span>
             </div>
 
-            <p className={`num mt-3 text-2xl font-semibold leading-8 sm:text-[28px] ${better ? "text-optimized" : worse ? "text-danger" : ""}`}>
+            <p
+              className={`num mt-3 text-2xl font-semibold leading-8 sm:text-[28px] ${better ? "text-optimized" : worse ? "text-danger" : ""}`}
+            >
               {formatValue(row, Math.abs(row.savings))}
             </p>
 
@@ -73,7 +84,7 @@ function Bar({ label, value, max, className }: { label: string; value: number; m
       <div className="h-1.5 flex-1 rounded-full bg-surface-2">
         <div className={`h-full rounded-full ${className}`} style={{ width: `${Math.max((value / max) * 100, 2)}%` }} />
       </div>
-      <span className="num w-14 shrink-0 text-right">{fmt(value, 1)}</span>
+      <span className="num w-14 shrink-0 text-right">{fmt(value)}</span>
     </div>
   );
 }
