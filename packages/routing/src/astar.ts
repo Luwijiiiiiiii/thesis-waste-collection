@@ -17,7 +17,10 @@ export interface PathResult {
 }
 
 export class NoPathError extends Error {
-  constructor(public readonly source: number, public readonly target: number) {
+  constructor(
+    public readonly source: number,
+    public readonly target: number,
+  ) {
     super(`No drivable path between graph nodes ${source} and ${target}.`);
     this.name = "NoPathError";
   }

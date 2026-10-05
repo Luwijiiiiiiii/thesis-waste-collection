@@ -48,8 +48,13 @@ export default async function SimulationsPage() {
         <>
           <dl className="grid gap-3 sm:grid-cols-3">
             <Stat label="Simulations run" value={String(sims.length)} />
-            <Stat label="Average distance saved" value={`${fmt(avg, 1)}%`} tone="ok" />
-            <Stat label="Best result" value={`${fmt(best?.distanceSavingsPercent ?? 0, 1)}%`} hint={best?.routeName} tone="ok" />
+            <Stat label="Average distance saved" value={`${fmt(avg)}%`} tone="ok" />
+            <Stat
+              label="Best result"
+              value={`${fmt(best?.distanceSavingsPercent ?? 0)}%`}
+              hint={best?.routeName}
+              tone="ok"
+            />
           </dl>
 
           <Card>
@@ -83,8 +88,12 @@ export default async function SimulationsPage() {
                       <td className="num text-right">{fmt(s.traditionalKm)} km</td>
                       <td className="num text-right">{fmt(s.optimizedKm)} km</td>
                       <td className="text-right">
-                        <Badge tone={s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "danger" : "neutral"}>
-                          <span className="num">{fmt(s.distanceSavingsPercent, 1)}%</span>
+                        <Badge
+                          tone={
+                            s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "danger" : "neutral"
+                          }
+                        >
+                          <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
                         </Badge>
                       </td>
                     </tr>

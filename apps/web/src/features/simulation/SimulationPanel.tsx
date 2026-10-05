@@ -7,18 +7,26 @@ import type { StageState, StageStatus } from "./useSimulation";
 function StageIcon({ status }: { status: StageStatus }) {
   if (status === "done")
     return (
-      <span className="grid size-5 place-items-center rounded-full bg-optimized-solid text-white" aria-label="Done">
+      <span
+        className="grid size-5 place-items-center rounded-full bg-optimized-solid text-white"
+        role="img"
+        aria-label="Done"
+      >
         <Check className="size-3" strokeWidth={3} />
       </span>
     );
   if (status === "running") return <Loader2 className="size-5 animate-spin text-brand-ink" aria-label="In progress" />;
   if (status === "error")
     return (
-      <span className="grid size-5 place-items-center rounded-full bg-danger text-canvas" aria-label="Failed">
+      <span
+        className="grid size-5 place-items-center rounded-full bg-danger text-canvas"
+        role="img"
+        aria-label="Failed"
+      >
         <AlertTriangle className="size-3" strokeWidth={3} />
       </span>
     );
-  return <span className="block size-5 rounded-full border-2 border-line-strong" aria-label="Waiting" />;
+  return <span className="block size-5 rounded-full border-2 border-line-strong" role="img" aria-label="Waiting" />;
 }
 
 export function SimulationPanel({
@@ -53,7 +61,7 @@ export function SimulationPanel({
         <p className="text-xs font-semibold uppercase tracking-wide text-brand-ink">Algorithm</p>
         <p className="mt-0.5 text-lg font-semibold leading-6">A* shortest path</p>
         <p className="mt-1 text-xs leading-5 text-muted">
-          Finds the shortest drivable road between stops on the OpenStreetMap network. Stops are ordered with Christofides TSP.
+          Finds the shortest drivable road between stops on the OpenStreetMap network.
         </p>
       </div>
 
@@ -68,9 +76,7 @@ export function SimulationPanel({
           {error ? "Run again" : hasResult ? "Run again" : "Run simulation"}
         </Button>
       )}
-      {!canRun && !running && (
-        <p className="text-center text-xs text-muted">{disabledHint}</p>
-      )}
+      {!canRun && !running && <p className="text-center text-xs text-muted">{disabledHint}</p>}
       {hasResult && !running && (
         <Button variant="secondary" size="md" className="w-full" onClick={onViewResults}>
           View latest results
@@ -109,9 +115,13 @@ export function SimulationPanel({
                     <StageIcon status={st.status} />
                   </span>
                   <div className="min-w-0">
-                    <p className={`text-sm leading-5 ${st.status === "pending" ? "text-muted" : "font-medium"}`}>{s.label}</p>
+                    <p className={`text-sm leading-5 ${st.status === "pending" ? "text-muted" : "font-medium"}`}>
+                      {s.label}
+                    </p>
                     {st.detail && (
-                      <p className={`text-xs leading-5 ${st.status === "error" ? "text-danger" : "text-muted"}`}>{st.detail}</p>
+                      <p className={`text-xs leading-5 ${st.status === "error" ? "text-danger" : "text-muted"}`}>
+                        {st.detail}
+                      </p>
                     )}
                   </div>
                 </li>
@@ -121,7 +131,8 @@ export function SimulationPanel({
 
           {running && stages.network.status === "running" && (
             <p className="mt-4 rounded-lg bg-brand-soft px-3 py-2 text-xs leading-5 text-brand-ink">
-              First run: downloading Baguio&apos;s road network from OpenStreetMap (up to a minute). It is cached for next time.
+              First run: downloading Baguio&apos;s road network from OpenStreetMap (up to a minute). It is cached for
+              next time.
             </p>
           )}
         </div>
@@ -135,8 +146,8 @@ export function SimulationPanel({
           </p>
           {error.details && error.details.length > 0 && (
             <ul className="mt-2 list-disc space-y-0.5 pl-9 text-xs leading-5">
-              {error.details.map((d, i) => (
-                <li key={i}>{d}</li>
+              {error.details.map((d) => (
+                <li key={d}>{d}</li>
               ))}
             </ul>
           )}

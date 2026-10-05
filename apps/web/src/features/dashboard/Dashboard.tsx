@@ -52,6 +52,7 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
 
   // Editing the drawn points makes any earlier result stale – discard it.
   // `draft` keeps its identity when an action was refused, so those don't reset.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the effect must re-run when `draft` changes
   useEffect(() => {
     resetSim();
   }, [draftState.draft, resetSim]);
@@ -128,7 +129,11 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
             ? `${data.collection_points.length} collection points around ${data.garage.name}. Review the data, pick an algorithm, then run.`
             : "The file didn't pass validation. Fix the issues listed on the right, or load a different file."
         }
-        actions={data && <Badge tone={report.passed ? "ok" : "danger"}>{report.passed ? "Ready to run" : "Validation failed"}</Badge>}
+        actions={
+          data && (
+            <Badge tone={report.passed ? "ok" : "danger"}>{report.passed ? "Ready to run" : "Validation failed"}</Badge>
+          )
+        }
       />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
@@ -146,7 +151,8 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
                       <div>
                         <StopsPreviewMapLoader data={data} />
                         <p className="mt-2 text-xs text-muted">
-                          Numbers follow the order in your file. <span className="font-medium">G</span> marks the garage.
+                          Numbers follow the order in your file. <span className="font-medium">G</span> marks the
+                          garage.
                         </p>
                       </div>
                     ),
@@ -189,7 +195,11 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
 
         <Card className="order-1 min-w-0 lg:sticky lg:top-6 lg:order-2">
           <CardBody className="space-y-4">
-            <LoadedFile fileName={fileName ?? "route.json"} pointCount={data?.collection_points.length} onLoad={handleLoad} />
+            <LoadedFile
+              fileName={fileName ?? "route.json"}
+              pointCount={data?.collection_points.length}
+              onLoad={handleLoad}
+            />
             <ValidationReportCard report={report} />
             <SimulationPanel
               canRun={report.passed}

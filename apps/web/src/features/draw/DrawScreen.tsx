@@ -84,11 +84,21 @@ export function DrawScreen(props: DrawScreenProps) {
                     Stops <span className="num text-muted">({stopCount})</span>
                   </h2>
                   <div className="flex gap-1">
-                    <Button size="sm" variant="ghost" disabled={state.history.length === 0} onClick={() => onAction({ type: "undo" })}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={state.history.length === 0}
+                      onClick={() => onAction({ type: "undo" })}
+                    >
                       <RotateCcw className="size-4" aria-hidden />
                       Undo
                     </Button>
-                    <Button size="sm" variant="ghost" disabled={!draft.garage && stopCount === 0} onClick={() => onAction({ type: "clear" })}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={!draft.garage && stopCount === 0}
+                      onClick={() => onAction({ type: "clear" })}
+                    >
                       <Eraser className="size-4" aria-hidden />
                       Clear all
                     </Button>

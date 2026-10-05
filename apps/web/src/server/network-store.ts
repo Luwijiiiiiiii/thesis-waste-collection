@@ -30,7 +30,11 @@ interface CacheMeta {
   fetchedAt: string;
 }
 
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+const slug = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 const cacheFile = () => path.join(dataDir(), "cache", `road-network-${slug(STUDY_AREA.name)}-${NETWORK_TYPE}.json`);
 
 // Survive Next.js dev hot reloads
