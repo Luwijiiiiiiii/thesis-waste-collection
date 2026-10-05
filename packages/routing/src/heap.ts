@@ -29,8 +29,8 @@ export class MinHeap {
     const pri = this.pri;
     const val = this.val;
     const top = val[0];
-    const lastP = pri.pop()!;
-    const lastV = val.pop()!;
+    const lastP = pri.pop() as number;
+    const lastV = val.pop() as number;
     const n = pri.length;
     if (n > 0) {
       let i = 0;

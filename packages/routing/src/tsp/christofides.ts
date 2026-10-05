@@ -46,7 +46,8 @@ function eulerianCircuit(n: number, edges: [number, number][], start: number): n
     const v = stack[stack.length - 1];
     while (ptr[v] < adj[v].length && used[adj[v][ptr[v]].id]) ptr[v]++;
     if (ptr[v] === adj[v].length) {
-      circuit.push(stack.pop()!);
+      stack.pop();
+      circuit.push(v);
     } else {
       const { to, id } = adj[v][ptr[v]];
       used[id] = true;

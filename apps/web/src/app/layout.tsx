@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fira_Code, Fira_Sans } from "next/font/google";
 import Link from "next/link";
 import { BottomNav, BrandMark, SidebarNav } from "@/components/AppNav";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
 const firaSans = Fira_Sans({
@@ -34,7 +35,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${firaSans.variable} ${firaCode.variable}`}>
+    <html lang="en" className={`${firaSans.variable} ${firaCode.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: static theme script, no user input; must run before paint
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-dvh">
         <a
           href="#main"
@@ -56,9 +65,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Navigate</p>
             <SidebarNav />
           </div>
-          <p className="mt-auto px-3 text-xs leading-5 text-muted">
-            Road data © OpenStreetMap contributors. Thesis prototype – results are estimates.
-          </p>
+          <div className="mt-auto">
+            <ThemeToggle />
+            <p className="mt-2 px-3 text-xs leading-5 text-muted">
+              Road data © OpenStreetMap contributors. Thesis prototype – results are estimates.
+            </p>
+          </div>
         </aside>
 
         {/* Mobile / tablet top bar */}
@@ -67,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <BrandMark />
             <span className="text-[15px] font-semibold tracking-tight">Route Optimizer</span>
           </Link>
+          <ThemeToggle className="ml-auto" />
         </header>
 
         <div className="lg:pl-64">
