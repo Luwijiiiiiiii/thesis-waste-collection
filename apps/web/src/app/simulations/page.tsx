@@ -1,15 +1,31 @@
 // Simulation log – every archived run (notebook "Simulation logging")
 import Link from "next/link";
 import { TSP_SOLVERS } from "@wcro/core";
-import { ArrowRight, History, Plus } from "lucide-react";
+import { ArrowRight, History, Plus, TriangleAlert } from "lucide-react";
 import { Badge, buttonClasses, Card, CardBody, EmptyState, PageHeader, Table } from "@/components/ui";
 import { fmt, fmtDateTime } from "@/lib/format";
-import { listSimulations } from "@/server/simulation-log";
+import { listSimulations } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
 export default async function SimulationsPage() {
-  const sims = await listSimulations();
+  let sims: Awaited<ReturnType<typeof listSimulations>>;
+  try {
+    sims = await listSimulations();
+  } catch (err) {
+    return (
+      <div className="animate-rise space-y-6">
+        <PageHeader eyebrow="History" title="Simulation log" />
+        <Card>
+          <EmptyState
+            icon={<TriangleAlert className="size-7" />}
+            title="Could not load the simulation log"
+            description={(err as Error).message}
+          />
+        </Card>
+      </div>
+    );
+  }
   const avg = sims.length ? sims.reduce((n, s) => n + s.distanceSavingsPercent, 0) / sims.length : 0;
   const best = sims.reduce<(typeof sims)[number] | null>(
     (b, s) => (b === null || s.distanceSavingsPercent > b.distanceSavingsPercent ? s : b),
@@ -21,7 +37,7 @@ export default async function SimulationsPage() {
       <PageHeader
         eyebrow="History"
         title="Simulation log"
-        description="Every run is archived on the server, newest first. Open one to revisit its map and exports."
+        description="Every run is archived in the database, newest first. Open one to revisit its map and exports."
         actions={
           <Link href="/" className={buttonClasses("primary", "md")}>
             <Plus className="size-4" aria-hidden />

@@ -9,3 +9,7 @@ next-env.d.ts
 .env.local
 # runtime data: cached road network + simulation logs
 .data
+# generated Prisma Client (run `pnpm --filter @wcro/api db:generate`)
+apps/api/src/generated
+# winston file transports
+*.log

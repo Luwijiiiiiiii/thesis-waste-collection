@@ -1,0 +1,77 @@
+// Replaces the MongoDB collections of the api-template.
+// After editing this file run `pnpm --filter @wcro/api db:migrate`.
+
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Was the `organizations` collection (TTodo / MOrganization) in the template.
+model Todo {
+  id          String    @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  status      String    @default("active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("todos")
+}
+
+/// One archived simulation run (was apps/web/.data/simulations/<id>.json).
+/// The summary columns feed the history list without loading `result`.
+model Simulation {
+  /// Notebook format YYYYMMDD_HHMMSS plus a random suffix, e.g. 20261006_155856_5kla
+  id                     String   @id
+  createdAt              DateTime @map("created_at")
+  routeName              String   @map("route_name")
+  studyArea              String   @map("study_area")
+  collectionPoints       Int      @map("collection_points")
+  solver                 String?
+  traditionalKm          Float    @map("traditional_km")
+  optimizedKm            Float    @map("optimized_km")
+  distanceSavingsPercent Float    @map("distance_savings_percent")
+  /// Full SimulationResult from @wcro/core
+  result                 Json
+
+  @@index([createdAt(sort: Desc)])
+  @@map("simulations")
+}
+
+/// Cached OpenStreetMap road graph (was apps/web/.data/cache/road-network-*.json).
+model RoadNetwork {
+  /// e.g. road-network-city-of-baguio-drive
+  key            String   @id
+  studyArea      String   @map("study_area")
+  networkType    String   @map("network_type")
+  boundarySource String   @map("boundary_source")
+  osmRelationId  Int?     @map("osm_relation_id")
+  nodeCount      Int      @map("node_count")
+  edgeCount      Int      @map("edge_count")
+  fetchedAt      DateTime @map("fetched_at")
+  /// gzip of the SerializedRoadGraph JSON from @wcro/road-network
+  graph          Bytes
+  sizeBytes      Int      @map("size_bytes")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("road_networks")
+}
+
+/// Was the capped `logs` collection written by winston-mongodb.
+model Log {
+  id        BigInt   @id @default(autoincrement())
+  level     String
+  message   String
+  meta      Json?
+  timestamp DateTime @default(now())
+
+  @@index([timestamp])
+  @@map("logs")
+}

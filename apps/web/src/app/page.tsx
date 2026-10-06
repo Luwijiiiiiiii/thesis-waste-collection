@@ -1,9 +1,10 @@
 import { Dashboard } from "@/features/dashboard/Dashboard";
-import { listSimulations } from "@/server/simulation-log";
+import { listSimulations } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const recent = (await listSimulations().catch(() => [])).slice(0, 3);
+  // The dashboard still works without the API; it just shows no recent runs.
+  const recent = await listSimulations(3).catch(() => []);
   return <Dashboard recent={recent} />;
 }

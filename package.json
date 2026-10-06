@@ -9,9 +9,13 @@
     "node": ">=20.9.0"
   },
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=@wcro/web",
+    "dev:all": "turbo run dev",
     "build": "turbo run build",
     "start": "pnpm --filter @wcro/web start",
+    "start:api": "pnpm --filter @wcro/api start",
+    "dev:api": "pnpm --filter @wcro/api dev",
+    "db:migrate": "pnpm --filter @wcro/api db:migrate",
     "typecheck": "turbo run typecheck",
     "lint": "biome lint .",
     "lint:fix": "biome lint . --write",

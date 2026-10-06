@@ -1,0 +1,34 @@
+import { createServer } from "node:http";
+import app from "./app.js";
+import { PORT } from "./config.js";
+import setup from "./setup.js";
+import { io } from "./socket.js";
+import { connectToDatabase, disconnectFromDatabase } from "./utils/prisma.js";
+import RedisUtil from "./utils/redis.util.js";
+
+const server = createServer(app);
+io.attach(server);
+
+async function start() {
+  await connectToDatabase();
+  await setup();
+
+  server.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+}
+
+async function shutdown() {
+  io.close();
+  await RedisUtil.close();
+  await disconnectFromDatabase();
+  process.exit(0);
+}
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+
+start().catch((error) => {
+  console.error("Failed to start server. Is Postgres running and DATABASE_URL set (apps/api/.env)?", error);
+  process.exit(1);
+});

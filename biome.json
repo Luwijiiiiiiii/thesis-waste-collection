@@ -46,6 +46,14 @@
       }
     },
     {
+      "includes": ["apps/api/src/**"],
+      "linter": {
+        "rules": {
+          "complexity": { "noStaticOnlyClass": "off" }
+        }
+      }
+    },
+    {
       "includes": ["apps/web/src/app/globals.css"],
       "linter": {
         "rules": {

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { buttonClasses } from "@/components/ui";
 import { ResultsView } from "@/features/results/ResultsView";
-import { getSimulation } from "@/server/simulation-log";
+import { getSimulation } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 

@@ -1,3 +1,10 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+# Packages allowed to run install scripts (pnpm 10 blocks them by default).
+# @prisma/engines downloads the schema engine used by `prisma migrate`.
+onlyBuiltDependencies:
+  - "@prisma/engines"
+  - esbuild
+  - prisma
