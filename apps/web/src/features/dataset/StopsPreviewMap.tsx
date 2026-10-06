@@ -3,8 +3,9 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useMemo } from "react";
-import { MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
 import type { LatLng, RouteFile } from "@wcro/core";
+import { BaseTileLayer } from "@/components/BaseTileLayer";
 
 function FitBounds({ points }: { points: LatLng[] }) {
   const map = useMap();
@@ -38,10 +39,7 @@ export default function StopsPreviewMap({ data }: { data: RouteFile }) {
       scrollWheelZoom={false}
       className="h-[360px] w-full rounded-xl border border-line sm:h-[440px]"
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <BaseTileLayer />
       <FitBounds points={points} />
       <Marker position={points[0]} icon={icon("G", true)}>
         <Tooltip direction="top" offset={[0, -12]}>

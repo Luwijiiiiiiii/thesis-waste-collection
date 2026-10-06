@@ -8,16 +8,28 @@ No Python is required. OSMnx and NetworkX are replaced by TypeScript modules.
 
 ## Quick start
 
+The web app (Next.js) is the UI. The API (Express + Prisma) runs the simulations and stores the road network and the
+simulation log in PostgreSQL.
+
 ```bash
 # Node 20.9+ and pnpm 10 (corepack enable && corepack prepare pnpm@10 --activate)
 pnpm install
-pnpm dev            # http://localhost:3000
+
+# 1. PostgreSQL: `docker compose up -d` in apps/api, or `pnpm --filter @wcro/api exec prisma dev`
+cp apps/api/.env.example apps/api/.env      # set DATABASE_URL
+pnpm db:migrate                             # create the tables
+
+# 2. Run both apps
+pnpm dev:all        # web http://localhost:3000 · API http://localhost:3001
 ```
+
+`pnpm dev` starts only the web app and `pnpm dev:api` only the API. The web app finds the API through
+`NEXT_PUBLIC_API_URL` (default `http://localhost:3001`, see `apps/web/.env.example`).
 
 1. Click **Use sample Baguio route** (or upload your own JSON).
 2. Check the validation report (6/6).
 3. Press **Run simulation**. The first run downloads Baguio's drivable roads from OpenStreetMap
-   (around 30–60 s). The graph is then cached in `apps/web/.data/cache/` and reused.
+   (around 30–60 s). The API then caches the graph in the database (`road_networks` table) and reuses it.
 
 ### Draw on map (no JSON needed)
 
@@ -33,23 +45,27 @@ Other commands:
 pnpm test        # unit tests (A*, Dijkstra, Christofides, matching, validation)
 pnpm typecheck   # all packages
 pnpm build       # production build
-pnpm start       # serve the production build
+pnpm start       # serve the web production build
+pnpm start:api   # serve the API production build (apps/api/dist)
 ```
 
 ## Structure
 
 ```
 apps/
-  web/                         Next.js 16 (App Router) – frontend + backend (route handlers)
-    src/app/api/
-      validate/                POST  run the validation engine
-      network/                 GET status · POST preload/refresh the road network
-      simulate/                POST  run the pipeline, streams NDJSON progress events
-      simulations/[id]/        GET   simulation log
-    src/server/                server-only code
-      network-store.ts         download + memory/disk cache of the road graph
-      run-simulation.ts        pipeline: validate → network → snap → traditional → optimized → metrics → archive
-      simulation-log.ts        archive each run as JSON
+  api/                         Express 5 + Prisma (PostgreSQL) backend – details in apps/api/README.md
+    prisma/schema.prisma       simulations, road_networks (+ template todos, logs)
+    src/routes/                /api/v1 endpoints
+      POST /validate             run the validation engine
+      GET|POST /network          road network status · preload/refresh
+      POST /simulate             run the pipeline, streams NDJSON progress events
+      GET /simulations[/:id]     simulation log
+    src/services/
+      road-network.service.ts  download + memory/database cache of the road graph
+      simulation.service.ts    pipeline: validate → network → snap → traditional → optimized → metrics → archive
+    src/repositories/          Prisma queries (simulation log, road-network cache)
+  web/                         Next.js 16 (App Router) – frontend only
+    src/lib/api.ts             client for the API
     src/features/              UI modules (upload, validation, dataset, simulation, results)
     public/samples/            sample route file / template
 packages/
@@ -65,19 +81,19 @@ packages/
 | Notebook | Module | Where |
 |---|---|---|
 | Cell 2–3 Install / import libraries | – | `package.json` files |
-| Cell 4 Configuration, output folders, save helpers | Config | `packages/core/src/config.ts`, `packages/exports`, `apps/web/src/server/paths.ts` |
+| Cell 4 Configuration, output folders, save helpers | Config | `packages/core/src/config.ts`, `packages/exports` |
 | Cell 5 Prototype dashboard | Config | `features/config/ConfigPanel.tsx`, `features/simulation/SimulationPanel.tsx` (stage status) |
 | Cell 7–8 Upload + read JSON | Route file | `features/upload/RouteFileInput.tsx` |
 | Cell 9 + 11 Validation engine | Validation | `packages/core/src/validation.ts` (shared by client and server) |
 | Cell 10 Dataset summary, points preview | Dataset | `features/dataset/DatasetSummary.tsx` |
-| Cell 12 Download OSM road network (cached) | Road network | `packages/road-network/src/overpass.ts`, `build-graph.ts`, `server/network-store.ts` |
+| Cell 12 Download OSM road network (cached) | Road network | `packages/road-network/src/overpass.ts`, `build-graph.ts`, `apps/api/src/services/road-network.service.ts` |
 | Cell 13 Coordinates → nearest nodes | Snapping | `packages/routing/src/snap.ts`, `road-network/src/nearest.ts` |
 | Cell 14 Road network summary + exports | Road network | `features/results/NetworkAndRegistry.tsx`, `exports.nodeRegistryCsv` |
 | Cell 16–18 Simulated traditional route (A*) | Routing | `packages/routing/src/routes.ts → computeTraditionalRoute` |
 | Cell 20–22 TSP order + A* optimized route | Routing | `packages/routing/src/routes.ts → computeOptimizedRoute`, `tsp/` |
 | Objective: metrics, comparison table | Metrics | `packages/metrics` (new; not coded in the notebook yet) |
 | Objective: interactive map, HTML export | Map | `features/results/RouteMap.tsx` (Leaflet), GeoJSON export |
-| Objective: CSV export, simulation logging | Exports / log | `packages/exports`, `server/simulation-log.ts`, `/simulations` page |
+| Objective: CSV export, simulation logging | Exports / log | `packages/exports`, `apps/api` (`simulations` table), `/simulations` page |
 
 ## How the Python pieces were replaced
 
@@ -120,16 +136,26 @@ See `apps/web/public/samples/baguio-sample-route.json`. Required: `schema_versio
 
 ## Configuration
 
-`apps/web/.env.example`:
+`apps/api/.env.example`:
 
-- `DATA_DIR` – where the road-network cache and simulation logs are written (default `apps/web/.data`)
+- `DATABASE_URL` – PostgreSQL connection (required)
+- `CORS_ORIGIN` – the web app's origin (default `*`)
 - `OVERPASS_URL`, `NOMINATIM_URL` – alternative OSM endpoints
 - `OSM_RELATION_ID` – skip Nominatim by giving the boundary relation id directly
 
-To re-download the road network: delete `apps/web/.data/cache/` or `POST /api/network {"refresh": true}`.
+`apps/web/.env.example`:
+
+- `NEXT_PUBLIC_API_URL` – where the browser reaches the API (inlined at build time)
+- `API_URL` – optional different origin for server-side calls
+
+To re-download the road network: `POST /api/v1/network {"refresh": true}` on the API.
+
+Data from before the API existed (`apps/web/.data`) can be moved into the database once with
+`pnpm --filter @wcro/api db:import-legacy`.
 
 ## Deployment note
 
-The app writes to the local filesystem (cache + logs), so run it with `pnpm build && pnpm start` on a server or your own
-machine. On serverless hosts (e.g. Vercel) set `DATA_DIR=/tmp/wcro` (non-persistent) or swap
-`simulation-log.ts`/`network-store.ts` for a database or object storage (S3).
+Both apps are stateless; all data lives in PostgreSQL. Deploy the API as a long-running Node process
+(`pnpm build && pnpm --filter @wcro/api db:deploy && pnpm start:api`), because a simulation can run for several minutes
+while it streams progress. Serverless function time limits are usually too short. Then build the web app with
+`NEXT_PUBLIC_API_URL` set to the API's public URL, and set the API's `CORS_ORIGIN` to the web app's URL.
