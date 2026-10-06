@@ -1,17 +1,12 @@
 import { createServer } from "node:http";
 import app from "./app.js";
 import { PORT } from "./config.js";
-import setup from "./setup.js";
-import { io } from "./socket.js";
 import { connectToDatabase, disconnectFromDatabase } from "./utils/prisma.js";
-import RedisUtil from "./utils/redis.util.js";
 
 const server = createServer(app);
-io.attach(server);
 
 async function start() {
   await connectToDatabase();
-  await setup();
 
   server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
@@ -19,8 +14,6 @@ async function start() {
 }
 
 async function shutdown() {
-  io.close();
-  await RedisUtil.close();
   await disconnectFromDatabase();
   process.exit(0);
 }

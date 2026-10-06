@@ -31,7 +31,6 @@ Browser ──► Web app (Next.js, :3000) ──► API (Express + Prisma, :300
 - **API** (`apps/api`): validates route files, downloads and caches the road network, runs the simulations and saves
   the simulation log.
 - **PostgreSQL**: stores the simulation log and the cached road network. The API will not start without it.
-- **Redis**: optional. The API runs without it.
 
 Nothing is built into a Docker image. Docker is only one convenient way to get a PostgreSQL server; the apps themselves
 run directly on your machine with Node.
@@ -68,7 +67,7 @@ docker compose up -d
 cd ../..
 ```
 
-This downloads the official `postgres:17` and `redis:7` images (first time only) and starts them in the background.
+This downloads the official `postgres:17` image (first time only) and starts them in the background.
 The database is `wcro` with user `postgres` and password `postgres` on port 5432. This matches the default
 `DATABASE_URL`, so you don't need to change anything. Data is kept in a Docker volume between restarts. Check that it
 is running with `docker compose ps` (from `apps/api`).
@@ -96,8 +95,7 @@ copy apps\api\.env.example apps\api\.env          # Windows Command Prompt / Pow
 ```
 
 Open `apps/api/.env` and check `DATABASE_URL`. With option A, leave the default. The other values in the file are
-optional for local development. For example, leave `REDIS_HOST` empty to run without Redis, or set it to `localhost` to
-use the Redis container from option A.
+optional for local development.
 
 Web app (optional): the defaults already point to `http://localhost:3001`. Create `apps/web/.env.local` only if you
 want to change something:
@@ -115,12 +113,9 @@ Both `NEXT_PUBLIC_*` values are read when the web app starts, so restart `pnpm d
 pnpm db:migrate
 ```
 
-This applies the migrations in `apps/api/prisma/migrations` (`simulations`, `road_networks`, `logs`, `todos`). It is
+This applies the migrations in `apps/api/prisma/migrations` (`simulations`, `road_networks`, `logs`). It is
 needed once per new database, and again whenever someone adds a migration (after a `git pull` that changes
 `apps/api/prisma/`).
-
-Optional: if you have data from the old Next.js-only version in `apps/web/.data`, import it once with
-`pnpm --filter @wcro/api db:import-legacy`. It is safe to re-run.
 
 ### 6. Run the system
 
@@ -188,7 +183,7 @@ pnpm start:api   # serve the API production build (apps/api/dist)
 ```
 apps/
   api/                         Express 5 + Prisma (PostgreSQL) backend – details in apps/api/README.md
-    prisma/schema.prisma       simulations, road_networks (+ template todos, logs)
+    prisma/schema.prisma       simulations, road_networks, logs
     src/routes/                /api/v1 endpoints
       POST /validate             run the validation engine
       GET|POST /network          road network status · preload/refresh
@@ -286,9 +281,6 @@ See `apps/web/public/samples/baguio-sample-route.json`. Required: `schema_versio
 - `API_URL` – optional different origin for server-side calls
 
 To re-download the road network: `POST /api/v1/network {"refresh": true}` on the API.
-
-Data from before the API existed (`apps/web/.data`) can be moved into the database once with
-`pnpm --filter @wcro/api db:import-legacy`.
 
 ## Deployment note
 
