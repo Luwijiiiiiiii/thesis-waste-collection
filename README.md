@@ -8,28 +8,162 @@ No Python is required. OSMnx and NetworkX are replaced by TypeScript modules.
 
 ## Quick start
 
-The web app (Next.js) is the UI. The API (Express + Prisma) runs the simulations and stores the road network and the
-simulation log in PostgreSQL.
+Already set up? This is all you need each time:
 
 ```bash
-# Node 20.9+ and pnpm 10 (corepack enable && corepack prepare pnpm@10 --activate)
-pnpm install
-
-# 1. PostgreSQL: `docker compose up -d` in apps/api, or `pnpm --filter @wcro/api exec prisma dev`
-cp apps/api/.env.example apps/api/.env      # set DATABASE_URL
-pnpm db:migrate                             # create the tables
-
-# 2. Run both apps
-pnpm dev:all        # web http://localhost:3000 · API http://localhost:3001
+docker compose -f apps/api/docker-compose.yml up -d   # start PostgreSQL (skip if it is already running)
+pnpm dev:all                                          # web http://localhost:3000 · API http://localhost:3001
 ```
 
-`pnpm dev` starts only the web app and `pnpm dev:api` only the API. The web app finds the API through
-`NEXT_PUBLIC_API_URL` (default `http://localhost:3001`, see `apps/web/.env.example`).
+First time on this machine? Follow [Setup](#setup) below.
 
-1. Click **Use sample Baguio route** (or upload your own JSON).
+## Setup
+
+### How the system fits together
+
+```
+Browser ──► Web app (Next.js, :3000) ──► API (Express + Prisma, :3001) ──► PostgreSQL (:5432)
+                                                     │
+                                                     └──► OpenStreetMap (Overpass / Nominatim), first run only
+```
+
+- **Web app** (`apps/web`): the UI only. It holds no data and calls the API.
+- **API** (`apps/api`): validates route files, downloads and caches the road network, runs the simulations and saves
+  the simulation log.
+- **PostgreSQL**: stores the simulation log and the cached road network. The API will not start without it.
+- **Redis**: optional. The API runs without it.
+
+Nothing is built into a Docker image. Docker is only one convenient way to get a PostgreSQL server; the apps themselves
+run directly on your machine with Node.
+
+### 1. Install the prerequisites
+
+| Tool | Version | Check with | Notes |
+|---|---|---|---|
+| Node.js | 20.9 or newer | `node -v` | [nodejs.org](https://nodejs.org) (LTS) |
+| pnpm | 10 | `pnpm -v` | Run `corepack enable`. Corepack then uses the version pinned in `package.json`. |
+| Git | any | `git --version` | |
+| Docker Desktop | any | `docker compose version` | Optional. Only needed for database option A below. |
+
+### 2. Get the code and install dependencies
+
+```bash
+git clone https://github.com/Luwijiiiiiiii/thesis-waste-collection.git
+cd thesis-waste-collection
+pnpm install
+```
+
+`pnpm install` installs every app and package in the monorepo and generates the Prisma Client for the API. Run all
+commands in this guide from the repository root unless a step says otherwise.
+
+### 3. Start a PostgreSQL database
+
+Pick **one** option.
+
+**Option A: Docker (recommended).** Start Docker Desktop, then:
+
+```bash
+cd apps/api
+docker compose up -d
+cd ../..
+```
+
+This downloads the official `postgres:17` and `redis:7` images (first time only) and starts them in the background.
+The database is `wcro` with user `postgres` and password `postgres` on port 5432. This matches the default
+`DATABASE_URL`, so you don't need to change anything. Data is kept in a Docker volume between restarts. Check that it
+is running with `docker compose ps` (from `apps/api`).
+
+**Option B: Prisma's local Postgres (no Docker).**
+
+```bash
+pnpm --filter @wcro/api exec prisma dev
+```
+
+It starts a local Postgres and prints a connection URL. Copy that URL into `DATABASE_URL` in step 4. It keeps
+running in the background but not across reboots. Start it again with
+`pnpm --filter @wcro/api exec prisma dev start <name>`.
+
+**Option C: a PostgreSQL you already have** (local install or hosted). Create an empty database and use its
+connection string in step 4, in the form `postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public`.
+
+### 4. Create the environment files
+
+API (required):
+
+```bash
+cp apps/api/.env.example apps/api/.env            # macOS / Linux / Git Bash
+copy apps\api\.env.example apps\api\.env          # Windows Command Prompt / PowerShell
+```
+
+Open `apps/api/.env` and check `DATABASE_URL`. With option A, leave the default. The other values in the file are
+optional for local development. For example, leave `REDIS_HOST` empty to run without Redis, or set it to `localhost` to
+use the Redis container from option A.
+
+Web app (optional): the defaults already point to `http://localhost:3001`. Create `apps/web/.env.local` only if you
+want to change something:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3001   # where the browser reaches the API
+NEXT_PUBLIC_MAPBOX_TOKEN=pk....             # Mapbox basemap; OpenStreetMap tiles are used when empty
+```
+
+Both `NEXT_PUBLIC_*` values are read when the web app starts, so restart `pnpm dev:all` after changing them.
+
+### 5. Create the database tables
+
+```bash
+pnpm db:migrate
+```
+
+This applies the migrations in `apps/api/prisma/migrations` (`simulations`, `road_networks`, `logs`, `todos`). It is
+needed once per new database, and again whenever someone adds a migration (after a `git pull` that changes
+`apps/api/prisma/`).
+
+Optional: if you have data from the old Next.js-only version in `apps/web/.data`, import it once with
+`pnpm --filter @wcro/api db:import-legacy`. It is safe to re-run.
+
+### 6. Run the system
+
+```bash
+pnpm dev:all
+```
+
+This starts both apps in watch mode (they reload when you edit code):
+
+- Web app: http://localhost:3000
+- API: http://localhost:3001/api/v1 (opening it in the browser shows a welcome message)
+
+Other ways to run:
+
+| Command | Starts |
+|---|---|
+| `pnpm dev:all` | web app and API |
+| `pnpm dev` | web app only (the pages that run or list simulations still need the API) |
+| `pnpm dev:api` | API only |
+
+Stop everything with `Ctrl+C`. To stop the database too, run `docker compose down` from `apps/api`. Your data stays
+in the volume. `docker compose down -v` also deletes the data, so run `pnpm db:migrate` again afterwards.
+
+### 7. Run your first simulation
+
+1. Open http://localhost:3000 and click **Use sample Baguio route** (or upload your own JSON).
 2. Check the validation report (6/6).
-3. Press **Run simulation**. The first run downloads Baguio's drivable roads from OpenStreetMap
-   (around 30–60 s). The API then caches the graph in the database (`road_networks` table) and reuses it.
+3. Press **Run simulation**. The first run downloads Baguio's drivable roads from OpenStreetMap, which takes about
+   30–60 s and needs internet access. The API then caches the graph in the database (`road_networks` table) and
+   reuses it, so later runs are much faster.
+4. Past runs are listed on the **Simulations** page (http://localhost:3000/simulations).
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| API exits with `Failed to start server. Is Postgres running and DATABASE_URL set?` | The database is not reachable. Check `docker compose ps` in `apps/api` (option A) and `DATABASE_URL` in `apps/api/.env`. |
+| `docker compose up` fails with `port 5432 is already allocated` | Another Postgres is running on your machine. Stop it, or change the port mapping in `apps/api/docker-compose.yml` (e.g. `"5433:5432"`) and use that port in `DATABASE_URL`. |
+| `The table ... does not exist` errors | Run `pnpm db:migrate`. |
+| `Cannot find module '.../generated/prisma'` | Run `pnpm --filter @wcro/api db:generate` (normally done by `pnpm install`). |
+| Web app shows network or CORS errors | Make sure the API is running on port 3001. `CORS_ORIGIN` in `apps/api/.env` must match the web app's address (`http://localhost:3000`), and `NEXT_PUBLIC_API_URL` must point to the API. |
+| First simulation hangs or fails while loading the road network | OpenStreetMap's public servers are busy or unreachable. Try again, or set `OVERPASS_URL` to another Overpass mirror in `apps/api/.env`. |
+| Port 3000 or 3001 is already in use | Stop the other process, or change `PORT` in `apps/api/.env` and update `NEXT_PUBLIC_API_URL` to match. |
 
 ### Draw on map (no JSON needed)
 

@@ -6,12 +6,13 @@ import { TileLayer } from "react-leaflet";
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 const MAPBOX_STYLES = { light: "streets-v12", dark: "dark-v11" } as const;
 
+const readTheme = (): "light" | "dark" => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+
 /** Tracks the `data-theme` attribute that ThemeToggle sets on <html> */
 function useTheme(): "light" | "dark" {
-  const read = (): "light" | "dark" => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
-  const [theme, setTheme] = useState(read);
+  const [theme, setTheme] = useState(readTheme);
   useEffect(() => {
-    const observer = new MutationObserver(() => setTheme(read()));
+    const observer = new MutationObserver(() => setTheme(readTheme()));
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     return () => observer.disconnect();
   }, []);
