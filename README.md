@@ -8,16 +8,162 @@ No Python is required. OSMnx and NetworkX are replaced by TypeScript modules.
 
 ## Quick start
 
+Already set up? This is all you need each time:
+
 ```bash
-# Node 20.9+ and pnpm 10 (corepack enable && corepack prepare pnpm@10 --activate)
-pnpm install
-pnpm dev            # http://localhost:3000
+docker compose -f apps/api/docker-compose.yml up -d   # start PostgreSQL (skip if it is already running)
+pnpm dev:all                                          # web http://localhost:3000 · API http://localhost:3001
 ```
 
-1. Click **Use sample Baguio route** (or upload your own JSON).
+First time on this machine? Follow [Setup](#setup) below.
+
+## Setup
+
+### How the system fits together
+
+```
+Browser ──► Web app (Next.js, :3000) ──► API (Express + Prisma, :3001) ──► PostgreSQL (:5432)
+                                                     │
+                                                     └──► OpenStreetMap (Overpass / Nominatim), first run only
+```
+
+- **Web app** (`apps/web`): the UI only. It holds no data and calls the API.
+- **API** (`apps/api`): validates route files, downloads and caches the road network, runs the simulations and saves
+  the simulation log.
+- **PostgreSQL**: stores the simulation log and the cached road network. The API will not start without it.
+- **Redis**: optional. The API runs without it.
+
+Nothing is built into a Docker image. Docker is only one convenient way to get a PostgreSQL server; the apps themselves
+run directly on your machine with Node.
+
+### 1. Install the prerequisites
+
+| Tool | Version | Check with | Notes |
+|---|---|---|---|
+| Node.js | 20.9 or newer | `node -v` | [nodejs.org](https://nodejs.org) (LTS) |
+| pnpm | 10 | `pnpm -v` | Run `corepack enable`. Corepack then uses the version pinned in `package.json`. |
+| Git | any | `git --version` | |
+| Docker Desktop | any | `docker compose version` | Optional. Only needed for database option A below. |
+
+### 2. Get the code and install dependencies
+
+```bash
+git clone https://github.com/Luwijiiiiiiii/thesis-waste-collection.git
+cd thesis-waste-collection
+pnpm install
+```
+
+`pnpm install` installs every app and package in the monorepo and generates the Prisma Client for the API. Run all
+commands in this guide from the repository root unless a step says otherwise.
+
+### 3. Start a PostgreSQL database
+
+Pick **one** option.
+
+**Option A: Docker (recommended).** Start Docker Desktop, then:
+
+```bash
+cd apps/api
+docker compose up -d
+cd ../..
+```
+
+This downloads the official `postgres:17` and `redis:7` images (first time only) and starts them in the background.
+The database is `wcro` with user `postgres` and password `postgres` on port 5432. This matches the default
+`DATABASE_URL`, so you don't need to change anything. Data is kept in a Docker volume between restarts. Check that it
+is running with `docker compose ps` (from `apps/api`).
+
+**Option B: Prisma's local Postgres (no Docker).**
+
+```bash
+pnpm --filter @wcro/api exec prisma dev
+```
+
+It starts a local Postgres and prints a connection URL. Copy that URL into `DATABASE_URL` in step 4. It keeps
+running in the background but not across reboots. Start it again with
+`pnpm --filter @wcro/api exec prisma dev start <name>`.
+
+**Option C: a PostgreSQL you already have** (local install or hosted). Create an empty database and use its
+connection string in step 4, in the form `postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public`.
+
+### 4. Create the environment files
+
+API (required):
+
+```bash
+cp apps/api/.env.example apps/api/.env            # macOS / Linux / Git Bash
+copy apps\api\.env.example apps\api\.env          # Windows Command Prompt / PowerShell
+```
+
+Open `apps/api/.env` and check `DATABASE_URL`. With option A, leave the default. The other values in the file are
+optional for local development. For example, leave `REDIS_HOST` empty to run without Redis, or set it to `localhost` to
+use the Redis container from option A.
+
+Web app (optional): the defaults already point to `http://localhost:3001`. Create `apps/web/.env.local` only if you
+want to change something:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3001   # where the browser reaches the API
+NEXT_PUBLIC_MAPBOX_TOKEN=pk....             # Mapbox basemap; OpenStreetMap tiles are used when empty
+```
+
+Both `NEXT_PUBLIC_*` values are read when the web app starts, so restart `pnpm dev:all` after changing them.
+
+### 5. Create the database tables
+
+```bash
+pnpm db:migrate
+```
+
+This applies the migrations in `apps/api/prisma/migrations` (`simulations`, `road_networks`, `logs`, `todos`). It is
+needed once per new database, and again whenever someone adds a migration (after a `git pull` that changes
+`apps/api/prisma/`).
+
+Optional: if you have data from the old Next.js-only version in `apps/web/.data`, import it once with
+`pnpm --filter @wcro/api db:import-legacy`. It is safe to re-run.
+
+### 6. Run the system
+
+```bash
+pnpm dev:all
+```
+
+This starts both apps in watch mode (they reload when you edit code):
+
+- Web app: http://localhost:3000
+- API: http://localhost:3001/api/v1 (opening it in the browser shows a welcome message)
+
+Other ways to run:
+
+| Command | Starts |
+|---|---|
+| `pnpm dev:all` | web app and API |
+| `pnpm dev` | web app only (the pages that run or list simulations still need the API) |
+| `pnpm dev:api` | API only |
+
+Stop everything with `Ctrl+C`. To stop the database too, run `docker compose down` from `apps/api`. Your data stays
+in the volume. `docker compose down -v` also deletes the data, so run `pnpm db:migrate` again afterwards.
+
+### 7. Run your first simulation
+
+1. Open http://localhost:3000 and click **Use sample Baguio route** (or upload your own JSON).
 2. Check the validation report (6/6).
-3. Press **Run simulation**. The first run downloads Baguio's drivable roads from OpenStreetMap
-   (around 30–60 s). The graph is then cached in `apps/web/.data/cache/` and reused.
+3. Press **Run simulation**. The first run downloads Baguio's drivable roads from OpenStreetMap, which takes about
+   30–60 s and needs internet access. The API then caches the graph in the database (`road_networks` table) and
+   reuses it, so later runs are much faster.
+4. Past runs are listed on the **Simulations** page (http://localhost:3000/simulations).
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| API exits with `Failed to start server. Is Postgres running and DATABASE_URL set?` | The database is not reachable. Check `docker compose ps` in `apps/api` (option A) and `DATABASE_URL` in `apps/api/.env`. |
+| `docker compose up` fails with `port 5432 is already allocated` | Another Postgres is running on your machine. Stop it, or change the port mapping in `apps/api/docker-compose.yml` (e.g. `"5433:5432"`) and use that port in `DATABASE_URL`. |
+| `The table ... does not exist` errors | Run `pnpm db:migrate`. |
+| `Cannot find module '.../generated/prisma'` | Run `pnpm --filter @wcro/api db:generate` (normally done by `pnpm install`). |
+| Web app shows network or CORS errors | Make sure the API is running on port 3001. `CORS_ORIGIN` in `apps/api/.env` must match the web app's address (`http://localhost:3000`), and `NEXT_PUBLIC_API_URL` must point to the API. |
+| First simulation hangs or fails while loading the road network | OpenStreetMap's public servers are busy or unreachable. Try again, or set `OVERPASS_URL` to another Overpass mirror in `apps/api/.env`. |
+| Port 3000 or 3001 is already in use | Stop the other process, or change `PORT` in `apps/api/.env` and update `NEXT_PUBLIC_API_URL` to match. |
 
 ### Draw on map (no JSON needed)
 
@@ -33,23 +179,27 @@ Other commands:
 pnpm test        # unit tests (A*, Dijkstra, Christofides, matching, validation)
 pnpm typecheck   # all packages
 pnpm build       # production build
-pnpm start       # serve the production build
+pnpm start       # serve the web production build
+pnpm start:api   # serve the API production build (apps/api/dist)
 ```
 
 ## Structure
 
 ```
 apps/
-  web/                         Next.js 16 (App Router) – frontend + backend (route handlers)
-    src/app/api/
-      validate/                POST  run the validation engine
-      network/                 GET status · POST preload/refresh the road network
-      simulate/                POST  run the pipeline, streams NDJSON progress events
-      simulations/[id]/        GET   simulation log
-    src/server/                server-only code
-      network-store.ts         download + memory/disk cache of the road graph
-      run-simulation.ts        pipeline: validate → network → snap → traditional → optimized → metrics → archive
-      simulation-log.ts        archive each run as JSON
+  api/                         Express 5 + Prisma (PostgreSQL) backend – details in apps/api/README.md
+    prisma/schema.prisma       simulations, road_networks (+ template todos, logs)
+    src/routes/                /api/v1 endpoints
+      POST /validate             run the validation engine
+      GET|POST /network          road network status · preload/refresh
+      POST /simulate             run the pipeline, streams NDJSON progress events
+      GET /simulations[/:id]     simulation log
+    src/services/
+      road-network.service.ts  download + memory/database cache of the road graph
+      simulation.service.ts    pipeline: validate → network → snap → traditional → optimized → metrics → archive
+    src/repositories/          Prisma queries (simulation log, road-network cache)
+  web/                         Next.js 16 (App Router) – frontend only
+    src/lib/api.ts             client for the API
     src/features/              UI modules (upload, validation, dataset, simulation, results)
     public/samples/            sample route file / template
 packages/
@@ -65,19 +215,19 @@ packages/
 | Notebook | Module | Where |
 |---|---|---|
 | Cell 2–3 Install / import libraries | – | `package.json` files |
-| Cell 4 Configuration, output folders, save helpers | Config | `packages/core/src/config.ts`, `packages/exports`, `apps/web/src/server/paths.ts` |
+| Cell 4 Configuration, output folders, save helpers | Config | `packages/core/src/config.ts`, `packages/exports` |
 | Cell 5 Prototype dashboard | Config | `features/config/ConfigPanel.tsx`, `features/simulation/SimulationPanel.tsx` (stage status) |
 | Cell 7–8 Upload + read JSON | Route file | `features/upload/RouteFileInput.tsx` |
 | Cell 9 + 11 Validation engine | Validation | `packages/core/src/validation.ts` (shared by client and server) |
 | Cell 10 Dataset summary, points preview | Dataset | `features/dataset/DatasetSummary.tsx` |
-| Cell 12 Download OSM road network (cached) | Road network | `packages/road-network/src/overpass.ts`, `build-graph.ts`, `server/network-store.ts` |
+| Cell 12 Download OSM road network (cached) | Road network | `packages/road-network/src/overpass.ts`, `build-graph.ts`, `apps/api/src/services/road-network.service.ts` |
 | Cell 13 Coordinates → nearest nodes | Snapping | `packages/routing/src/snap.ts`, `road-network/src/nearest.ts` |
 | Cell 14 Road network summary + exports | Road network | `features/results/NetworkAndRegistry.tsx`, `exports.nodeRegistryCsv` |
 | Cell 16–18 Simulated traditional route (A*) | Routing | `packages/routing/src/routes.ts → computeTraditionalRoute` |
 | Cell 20–22 TSP order + A* optimized route | Routing | `packages/routing/src/routes.ts → computeOptimizedRoute`, `tsp/` |
 | Objective: metrics, comparison table | Metrics | `packages/metrics` (new; not coded in the notebook yet) |
 | Objective: interactive map, HTML export | Map | `features/results/RouteMap.tsx` (Leaflet), GeoJSON export |
-| Objective: CSV export, simulation logging | Exports / log | `packages/exports`, `server/simulation-log.ts`, `/simulations` page |
+| Objective: CSV export, simulation logging | Exports / log | `packages/exports`, `apps/api` (`simulations` table), `/simulations` page |
 
 ## How the Python pieces were replaced
 
@@ -104,7 +254,10 @@ These are deliberate fixes, not ports:
    connected one is kept, so A* always finds a drivable path on one-way streets.
 5. **Graph is not simplified.** OSMnx merges intermediate way nodes, so node/edge counts will be higher than in the notebook.
    Distances are unaffected.
-6. **Snap warnings.** Stops more than 300 m from a drivable road, or sharing a road node, are flagged.
+6. **Truck access check.** Trash is collected at the roadside, so every collection point must be within 15 m
+   (`TRUCK_ACCESS_MAX_DISTANCE_M`) of a road garbage trucks can drive on, measured to the road segment, not just its
+   nodes. Farther points fail the run with "Trash site not accessible by garbage trucks". The garage is exempt (depots sit
+   inside compounds) and only gets a warning beyond 300 m. Stops sharing a road node are flagged as warnings.
 
 The exact optimized order can differ slightly from networkx because of tie-breaking in the MST and Euler tour. Use
 `christofides` for thesis results. `christofides-2opt` and `nearest-neighbor-2opt` are there for algorithm comparison.
@@ -120,16 +273,26 @@ See `apps/web/public/samples/baguio-sample-route.json`. Required: `schema_versio
 
 ## Configuration
 
-`apps/web/.env.example`:
+`apps/api/.env.example`:
 
-- `DATA_DIR` – where the road-network cache and simulation logs are written (default `apps/web/.data`)
+- `DATABASE_URL` – PostgreSQL connection (required)
+- `CORS_ORIGIN` – the web app's origin (default `*`)
 - `OVERPASS_URL`, `NOMINATIM_URL` – alternative OSM endpoints
 - `OSM_RELATION_ID` – skip Nominatim by giving the boundary relation id directly
 
-To re-download the road network: delete `apps/web/.data/cache/` or `POST /api/network {"refresh": true}`.
+`apps/web/.env.example`:
+
+- `NEXT_PUBLIC_API_URL` – where the browser reaches the API (inlined at build time)
+- `API_URL` – optional different origin for server-side calls
+
+To re-download the road network: `POST /api/v1/network {"refresh": true}` on the API.
+
+Data from before the API existed (`apps/web/.data`) can be moved into the database once with
+`pnpm --filter @wcro/api db:import-legacy`.
 
 ## Deployment note
 
-The app writes to the local filesystem (cache + logs), so run it with `pnpm build && pnpm start` on a server or your own
-machine. On serverless hosts (e.g. Vercel) set `DATA_DIR=/tmp/wcro` (non-persistent) or swap
-`simulation-log.ts`/`network-store.ts` for a database or object storage (S3).
+Both apps are stateless; all data lives in PostgreSQL. Deploy the API as a long-running Node process
+(`pnpm build && pnpm --filter @wcro/api db:deploy && pnpm start:api`), because a simulation can run for several minutes
+while it streams progress. Serverless function time limits are usually too short. Then build the web app with
+`NEXT_PUBLIC_API_URL` set to the API's public URL, and set the API's `CORS_ORIGIN` to the web app's URL.

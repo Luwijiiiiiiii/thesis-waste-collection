@@ -3,8 +3,10 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useMemo, useState } from "react";
-import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Polyline, Popup, useMap } from "react-leaflet";
 import type { LatLng, RegisteredStop, SimulationResult } from "@wcro/core";
+import { BaseTileLayer } from "@/components/BaseTileLayer";
+import { WHEEL_ZOOM } from "@/lib/mapZoom";
 import { fmt } from "@/lib/format";
 
 function FitBounds({ points }: { points: LatLng[] }) {
@@ -83,13 +85,10 @@ export default function RouteMap({
       <MapContainer
         center={bounds[0] ?? [16.4123, 120.596]}
         zoom={14}
-        scrollWheelZoom={false}
+        {...WHEEL_ZOOM}
         className={`${heightClass} w-full rounded-xl border border-line`}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <BaseTileLayer />
         <FitBounds points={bounds} />
         <FlyTo target={target} />
         {show.traditional && (

@@ -7,6 +7,7 @@ import {
   type SimulationStage,
   type TspSolver,
 } from "@wcro/core";
+import { apiUrl } from "@/lib/api";
 
 export type StageStatus = "pending" | "running" | "done" | "error";
 export type StageState = Record<SimulationStage, { status: StageStatus; detail?: string }>;
@@ -14,7 +15,7 @@ export type StageState = Record<SimulationStage, { status: StageStatus; detail?:
 const initialStages = (): StageState =>
   Object.fromEntries(SIMULATION_STAGES.map((s) => [s.key, { status: "pending" }])) as StageState;
 
-/** Calls POST /api/simulate and consumes the NDJSON progress stream. */
+/** Calls POST /api/v1/simulate on the API (apps/api) and consumes the NDJSON progress stream. */
 export function useSimulation() {
   const [stages, setStages] = useState<StageState>(initialStages);
   const [result, setResult] = useState<SimulationResult | null>(null);
@@ -54,7 +55,7 @@ export function useSimulation() {
     };
 
     try {
-      const res = await fetch("/api/simulate", {
+      const res = await fetch(apiUrl("/simulate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ routeFile, solver }),
@@ -79,7 +80,14 @@ export function useSimulation() {
       }
       if (buffer.trim()) handle(JSON.parse(buffer) as SimulationEvent);
     } catch (err) {
-      if ((err as Error).name !== "AbortError") setError({ message: (err as Error).message });
+      if ((err as Error).name === "AbortError") return;
+      // fetch() rejects with a TypeError when the API is down or blocks the origin (CORS)
+      const message =
+        err instanceof TypeError
+          ? `Could not reach the API at ${apiUrl("")}. Check that "pnpm dev:api" is running and its terminal shows no ` +
+            "startup error (it stops when the database is unreachable). If it is running, its CORS_ORIGIN must allow this page."
+          : (err as Error).message;
+      setError({ message });
     } finally {
       setRunning(false);
     }
