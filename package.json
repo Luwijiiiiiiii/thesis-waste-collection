@@ -16,6 +16,7 @@
     "start:api": "pnpm --filter @wcro/api start",
     "dev:api": "pnpm --filter @wcro/api dev",
     "db:migrate": "pnpm --filter @wcro/api db:migrate",
+    "db:studio": "pnpm --filter @wcro/api db:studio",
     "typecheck": "turbo run typecheck",
     "lint": "biome lint .",
     "lint:fix": "biome lint . --write",

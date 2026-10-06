@@ -13,19 +13,7 @@ datasource db {
   provider = "postgresql"
 }
 
-/// Was the `organizations` collection (TTodo / MOrganization) in the template.
-model Todo {
-  id          String    @id @default(uuid()) @db.Uuid
-  title       String
-  description String
-  status      String    @default("active")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-
-  @@map("todos")
-}
-
-/// One archived simulation run (was apps/web/.data/simulations/<id>.json).
+/// One archived simulation run.
 /// The summary columns feed the history list without loading `result`.
 model Simulation {
   /// Notebook format YYYYMMDD_HHMMSS plus a random suffix, e.g. 20261006_155856_5kla
@@ -45,7 +33,7 @@ model Simulation {
   @@map("simulations")
 }
 
-/// Cached OpenStreetMap road graph (was apps/web/.data/cache/road-network-*.json).
+/// Cached OpenStreetMap road graph.
 model RoadNetwork {
   /// e.g. road-network-city-of-baguio-drive
   key            String   @id
