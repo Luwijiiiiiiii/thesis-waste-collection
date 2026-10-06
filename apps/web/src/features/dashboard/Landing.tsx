@@ -2,18 +2,7 @@
 // First screen: explain the tool in one glance, then get a route loaded
 import Link from "next/link";
 import type { SimulationLogEntry } from "@wcro/core";
-import {
-  ArrowDown,
-  ArrowRight,
-  BarChart3,
-  Clock,
-  FileUp,
-  Fuel,
-  Leaf,
-  MapPin,
-  MousePointerClick,
-  Route,
-} from "lucide-react";
+import { ArrowDown, ArrowRight, BarChart3, Clock, FileUp, Fuel, Leaf, MousePointerClick, Route } from "lucide-react";
 import { buttonClasses, Card } from "@/components/ui";
 import { fmt, fmtDateTime } from "@/lib/format";
 import { DropZone } from "@/features/upload/RouteFileInput";
@@ -129,10 +118,6 @@ export function Landing({
         }}
       >
         <div className="animate-rise">
-          <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-medium text-brand-ink shadow-card">
-            <MapPin className="size-4" aria-hidden />
-            Baguio City · Decision support
-          </p>
           <h1
             id="hero-heading"
             className="mt-5 max-w-5xl text-[2.75rem] font-bold leading-[1.04] tracking-tight text-balance sm:text-6xl xl:text-7xl"
@@ -176,6 +161,35 @@ export function Landing({
             <RouteComparison />
           </div>
         </div>
+      </section>
+
+      {/* ---------- How it works ---------- */}
+      <section aria-labelledby="how-heading">
+        <h2 id="how-heading" className="text-2xl font-bold tracking-tight sm:text-3xl">
+          How it works
+        </h2>
+        <ol className="mt-6 grid gap-4 sm:grid-cols-3">
+          {steps.map(({ icon: Icon, title, text }, i) => (
+            <li key={title}>
+              <Card className="h-full p-6">
+                <div className="flex items-center gap-3">
+                  <span
+                    className="num grid size-9 place-items-center rounded-full bg-brand text-sm font-semibold text-white"
+                    aria-hidden
+                  >
+                    {i + 1}
+                  </span>
+                  <Icon className="size-6 text-brand-ink" aria-hidden />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold tracking-tight">
+                  <span className="sr-only">Step {i + 1}: </span>
+                  {title}
+                </h3>
+                <p className="mt-2 text-base leading-7 text-muted">{text}</p>
+              </Card>
+            </li>
+          ))}
+        </ol>
       </section>
 
       {/* ---------- Start: add a route ---------- */}
@@ -236,39 +250,6 @@ export function Landing({
 
           <DropZone onLoad={onLoad} />
         </div>
-      </section>
-
-      {/* ---------- How it works ---------- */}
-      <section aria-labelledby="how-heading">
-        <h2 id="how-heading" className="text-2xl font-bold tracking-tight sm:text-3xl">
-          How it works
-        </h2>
-        <ol className="mt-6 grid gap-4 sm:grid-cols-3">
-          {steps.map(({ icon: Icon, title, text }, i) => (
-            <li key={title}>
-              <Card className="h-full p-6">
-                <div className="flex items-center gap-3">
-                  <span
-                    className="num grid size-9 place-items-center rounded-full bg-brand text-sm font-semibold text-white"
-                    aria-hidden
-                  >
-                    {i + 1}
-                  </span>
-                  <Icon className="size-6 text-brand-ink" aria-hidden />
-                </div>
-                <h3 className="mt-4 text-lg font-semibold tracking-tight">
-                  <span className="sr-only">Step {i + 1}: </span>
-                  {title}
-                </h3>
-                <p className="mt-2 text-base leading-7 text-muted">{text}</p>
-              </Card>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-4 text-sm leading-6 text-muted">
-          Behind the scenes: OpenStreetMap road data, a TSP solver for the stop order and A* for the road path between
-          stops.
-        </p>
       </section>
 
       {recent.length > 0 && (

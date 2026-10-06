@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Fira_Code, Fira_Sans } from "next/font/google";
 import Link from "next/link";
-import { BottomNav, BrandMark, SidebarNav } from "@/components/AppNav";
+import { BottomNav, SidebarNav } from "@/components/AppNav";
+import { BrandLockup } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
@@ -19,7 +20,8 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "Waste Route Optimizer · Baguio City",
+  title: "Route Optimizer · Baguio City",
+  applicationName: "Route Optimizer",
   description:
     "Decision-support prototype for municipal solid waste collection routing using TSP and A* on OpenStreetMap.",
 };
@@ -54,12 +56,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Desktop sidebar */}
         <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-surface px-4 py-5 lg:flex">
-          <Link href="/" className="flex items-center gap-3 rounded-xl px-1 py-1">
-            <BrandMark />
-            <span className="min-w-0">
-              <span className="block text-[15px] font-semibold leading-5 tracking-tight">Route Optimizer</span>
-              <span className="block text-xs text-muted">Baguio City · TSP + A*</span>
-            </span>
+          <Link href="/" className="rounded-xl px-1 py-1">
+            <BrandLockup subtitle="Baguio City · TSP + A*" />
           </Link>
           <div className="mt-8">
             <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Navigate</p>
@@ -75,9 +73,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Mobile / tablet top bar */}
         <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur lg:hidden">
-          <Link href="/" className="flex items-center gap-3">
-            <BrandMark />
-            <span className="text-[15px] font-semibold tracking-tight">Route Optimizer</span>
+          <Link href="/">
+            <BrandLockup />
           </Link>
           <ThemeToggle className="ml-auto" />
         </header>

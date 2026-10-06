@@ -1,20 +1,12 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { History, Route, Sparkles } from "lucide-react";
+import { History, Sparkles } from "lucide-react";
 
 const links = [
   { href: "/", label: "Workspace", icon: Sparkles, match: (p: string) => p === "/" },
   { href: "/simulations", label: "History", icon: History, match: (p: string) => p.startsWith("/simulations") },
 ];
-
-export function BrandMark() {
-  return (
-    <span className="grid size-9 place-items-center rounded-xl bg-brand text-white shadow-sm" aria-hidden>
-      <Route className="size-5" strokeWidth={2.25} />
-    </span>
-  );
-}
 
 export function SidebarNav() {
   const pathname = usePathname();
