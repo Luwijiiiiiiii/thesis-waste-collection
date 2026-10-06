@@ -47,7 +47,7 @@ const todayPath = toPath([1, 4, 3, 0, 5, 2]);
 const optimizedPath = toPath([4, 0, 2, 1, 3, 5]);
 
 function RouteSketch({ path, tone }: { path: string; tone: "traditional" | "optimized" }) {
-  const stroke = tone === "optimized" ? "stroke-optimized" : "stroke-traditional";
+  const stroke = tone === "optimized" ? "stroke-optimized" : "stroke-brand-ink";
   return (
     <svg viewBox="0 0 200 150" className="h-auto w-full" aria-hidden>
       {/* faint street grid so it reads as a map */}
@@ -81,12 +81,12 @@ function RouteComparison() {
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <div className="rounded-2xl bg-surface-2 p-3">
           <RouteSketch path={todayPath} tone="traditional" />
-          <p className="mt-2 text-sm font-semibold sm:text-base">Today&apos;s order</p>
-          <p className="text-xs leading-5 text-traditional sm:text-sm">Zig-zags across town</p>
+          <p className="mt-2 text-sm font-semibold sm:text-base">Traditional</p>
+          <p className="text-xs leading-5 text-brand-ink sm:text-sm">Zig-zags across town</p>
         </div>
         <div className="rounded-2xl bg-optimized-soft p-3">
           <RouteSketch path={optimizedPath} tone="optimized" />
-          <p className="mt-2 text-sm font-semibold sm:text-base">Optimized</p>
+          <p className="mt-2 text-sm font-semibold sm:text-base">A*</p>
           <p className="text-xs leading-5 text-optimized sm:text-sm">One smooth loop</p>
         </div>
       </div>

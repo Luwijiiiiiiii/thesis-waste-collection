@@ -61,13 +61,13 @@ export function SavingsTiles({ comparison }: { comparison: ComparisonRow[] }) {
             </div>
 
             <p
-              className={`num mt-3 text-2xl font-semibold leading-8 sm:text-[28px] ${better ? "text-optimized" : worse ? "text-danger" : ""}`}
+              className={`num mt-3 text-2xl font-semibold leading-8 sm:text-[28px] ${worse ? "text-danger" : "text-ink"}`}
             >
               {formatValue(row, Math.abs(row.savings))}
             </p>
 
             <div className="mt-4 hidden space-y-1.5 sm:block" aria-hidden>
-              <Bar label="Traditional" value={row.traditional} max={max} className="bg-traditional-solid" />
+              <Bar label="Traditional" value={row.traditional} max={max} className="bg-brand" />
               <Bar label="Optimized" value={row.optimized} max={max} className="bg-optimized-solid" />
             </div>
           </li>
