@@ -143,7 +143,7 @@ export type SimulationStage =
 export const SIMULATION_STAGES: { key: SimulationStage; label: string }[] = [
   { key: "validation", label: "Validate route file" },
   { key: "network", label: "Load OpenStreetMap road network" },
-  { key: "snapping", label: "Snap stops to road nodes" },
+  { key: "snapping", label: "Snap stops & check truck access" },
   { key: "traditional", label: "Simulated traditional route (A*)" },
   { key: "optimized", label: "Optimized route (TSP + A*)" },
   { key: "metrics", label: "Performance evaluation" },

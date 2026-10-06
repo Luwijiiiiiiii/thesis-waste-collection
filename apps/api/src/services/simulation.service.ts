@@ -13,6 +13,7 @@ import {
   resolveVehicle,
   type SimulationEvent,
   type SimulationResult,
+  TRUCK_ACCESS_MAX_DISTANCE_M,
   type TspSolver,
   validateRouteFile,
 } from "@wcro/core";
@@ -88,6 +89,16 @@ export default class SimulationSvc {
 
     yield { type: "stage", stage: "snapping", status: "running" };
     const snapped = snapStops(network.graph, routeFile);
+    if (snapped.inaccessible.length > 0) {
+      const n = snapped.inaccessible.length;
+      yield {
+        type: "error",
+        stage: "snapping",
+        message: `Validation failed: ${n} ${n === 1 ? "stop is" : "stops are"} not accessible by garbage trucks. Move ${n === 1 ? "it" : "them"} within ${TRUCK_ACCESS_MAX_DISTANCE_M} m of a drivable road and try again.`,
+        details: snapped.inaccessible,
+      };
+      return;
+    }
     yield {
       type: "stage",
       stage: "snapping",

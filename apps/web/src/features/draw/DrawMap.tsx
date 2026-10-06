@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { MapContainer, Marker, Popup, Rectangle, useMapEvents } from "react-leaflet";
 import { inStudyArea, STUDY_AREA, type DraftAction, type DraftPoint, type RouteDraft } from "@wcro/core";
 import { BaseTileLayer } from "@/components/BaseTileLayer";
+import { WHEEL_ZOOM } from "@/lib/mapZoom";
 
 const [south, west, north, east] = STUDY_AREA.fallbackBBox;
 const BOUNDS = L.latLngBounds([south, west], [north, east]);
@@ -91,7 +92,7 @@ export default function DrawMap({ draft, onAction }: { draft: RouteDraft; onActi
       minZoom={12}
       maxBounds={BOUNDS}
       maxBoundsViscosity={1}
-      scrollWheelZoom={false}
+      {...WHEEL_ZOOM}
       closePopupOnClick={false}
       className="h-[420px] w-full rounded-xl border border-line lg:h-[600px]"
     >

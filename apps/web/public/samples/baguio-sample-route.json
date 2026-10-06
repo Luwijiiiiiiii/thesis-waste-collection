@@ -24,8 +24,8 @@
     {
       "id": "CP-01",
       "name": "Mines View Park",
-      "latitude": 16.4192,
-      "longitude": 120.6278,
+      "latitude": 16.419523,
+      "longitude": 120.626778,
       "waste_type": "Residual",
       "priority": "Medium"
     },
@@ -40,16 +40,16 @@
     {
       "id": "CP-03",
       "name": "Camp John Hay (Loakan Rd)",
-      "latitude": 16.4005,
-      "longitude": 120.6125,
+      "latitude": 16.399167,
+      "longitude": 120.612792,
       "waste_type": "Residual",
       "priority": "Low"
     },
     {
       "id": "CP-04",
       "name": "Burnham Park (Lake Drive)",
-      "latitude": 16.4107,
-      "longitude": 120.5937,
+      "latitude": 16.411397,
+      "longitude": 120.592698,
       "waste_type": "Biodegradable",
       "priority": "High"
     },
@@ -64,40 +64,40 @@
     {
       "id": "CP-06",
       "name": "Session Road (Upper)",
-      "latitude": 16.4128,
-      "longitude": 120.599,
+      "latitude": 16.413055,
+      "longitude": 120.599286,
       "waste_type": "Recyclable",
       "priority": "High"
     },
     {
       "id": "CP-07",
       "name": "Dominican Hill",
-      "latitude": 16.404,
-      "longitude": 120.581,
+      "latitude": 16.402594,
+      "longitude": 120.581723,
       "waste_type": "Residual",
       "priority": "Low"
     },
     {
       "id": "CP-08",
       "name": "SM City Baguio (Luneta Hill)",
-      "latitude": 16.4089,
-      "longitude": 120.6,
+      "latitude": 16.408789,
+      "longitude": 120.600407,
       "waste_type": "Recyclable",
       "priority": "High"
     },
     {
       "id": "CP-09",
       "name": "Baguio Botanical Garden",
-      "latitude": 16.4148,
-      "longitude": 120.611,
+      "latitude": 16.414476,
+      "longitude": 120.611005,
       "waste_type": "Biodegradable",
       "priority": "Medium"
     },
     {
       "id": "CP-10",
       "name": "Teachers Camp",
-      "latitude": 16.4122,
-      "longitude": 120.6075,
+      "latitude": 16.412126,
+      "longitude": 120.607737,
       "waste_type": "Residual",
       "priority": "Low"
     }
