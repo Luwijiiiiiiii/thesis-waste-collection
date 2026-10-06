@@ -6,6 +6,7 @@ import { useEffect, useMemo } from "react";
 import { MapContainer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
 import type { LatLng, RouteFile } from "@wcro/core";
 import { BaseTileLayer } from "@/components/BaseTileLayer";
+import { WHEEL_ZOOM } from "@/lib/mapZoom";
 
 function FitBounds({ points }: { points: LatLng[] }) {
   const map = useMap();
@@ -36,7 +37,7 @@ export default function StopsPreviewMap({ data }: { data: RouteFile }) {
     <MapContainer
       center={points[0]}
       zoom={14}
-      scrollWheelZoom={false}
+      {...WHEEL_ZOOM}
       className="h-[360px] w-full rounded-xl border border-line sm:h-[440px]"
     >
       <BaseTileLayer />

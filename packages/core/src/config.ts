@@ -60,10 +60,18 @@ export const VEHICLE_DEFAULTS: VehicleDefaults = {
 export const SUPPORTED_SCHEMA_VERSION = "1.0";
 
 /**
- * A collection point whose nearest drivable road node is farther than this
- * is flagged as a warning (it is probably outside the study area or mistyped).
+ * A garage whose nearest drivable road node is farther than this is flagged as a
+ * warning (it is probably outside the study area or mistyped). Garages are exempt
+ * from the truck access rule because depots sit inside compounds off the public road.
  */
 export const SNAP_WARNING_DISTANCE_M = 300;
+
+/**
+ * Truck access rule: trash is collected at the roadside, so every collection point must lie
+ * within this distance of a road garbage trucks can drive on. Farther stops fail
+ * the run as "not accessible by garbage trucks".
+ */
+export const TRUCK_ACCESS_MAX_DISTANCE_M = 15;
 
 export type TspSolver = "christofides" | "christofides-2opt" | "nearest-neighbor-2opt";
 

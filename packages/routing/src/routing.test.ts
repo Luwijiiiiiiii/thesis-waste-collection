@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { buildRoadGraph, type OverpassElement } from "@wcro/road-network";
+import type { RouteFile } from "@wcro/core";
+import { buildRoadGraph, nearestRoadDistanceM, type OverpassElement } from "@wcro/road-network";
 import { astarPath } from "./astar";
 import { dijkstraToTargets } from "./dijkstra";
 import { christofidesTour, minWeightPerfectMatching, nearestNeighborTour, solveTsp, tourLength, twoOpt } from "./tsp";
 import { computeOptimizedRoute, computeTraditionalRoute, type GraphStop } from "./routes";
+import { snapStops } from "./snap";
 
 /** Build a fake Overpass response: an N×N street grid around Baguio with one one-way street */
 function gridResponse(size = 12): OverpassElement[] {
@@ -180,5 +182,30 @@ describe("routes", () => {
     expect(opt.visitSequence[opt.visitSequence.length - 1].id).toBe("P0");
     expect(opt.visitSequence).toHaveLength(points.length + 2);
     expect(opt.distanceM).toBeLessThan(trad.distanceM);
+  });
+});
+
+describe("truck access", () => {
+  // Grid streets run every 0.001° (~107–111 m); row 5 is at lat 16.405
+  it("measures to the road segment, not just its nodes", () => {
+    // Halfway between two intersections: ~53 m from either node, but on the road
+    expect(nearestRoadDistanceM(graph, 16.405, 120.5955)).toBeLessThan(0.5);
+    // ~10 m north of that road
+    expect(nearestRoadDistanceM(graph, 16.40509, 120.5955)).toBeCloseTo(10, 0);
+    // Middle of a block: ~53 m from every street
+    expect(nearestRoadDistanceM(graph, 16.4055, 120.5955)).toBeGreaterThan(50);
+  });
+
+  it("flags stops too far from a truck road", () => {
+    const routeFile = {
+      garage: { id: "G", name: "Garage", latitude: 16.4, longitude: 120.59 },
+      collection_points: [
+        { id: "A", name: "Roadside bin", latitude: 16.40509, longitude: 120.5955 },
+        { id: "B", name: "Mid-block bin", latitude: 16.4055, longitude: 120.5955 },
+      ],
+    } as RouteFile;
+    const { inaccessible } = snapStops(graph, routeFile);
+    expect(inaccessible).toHaveLength(1);
+    expect(inaccessible[0]).toMatch(/^Mid-block bin: Trash site not accessible by garbage trucks/);
   });
 });

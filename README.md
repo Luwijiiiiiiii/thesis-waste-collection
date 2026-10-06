@@ -254,7 +254,10 @@ These are deliberate fixes, not ports:
    connected one is kept, so A* always finds a drivable path on one-way streets.
 5. **Graph is not simplified.** OSMnx merges intermediate way nodes, so node/edge counts will be higher than in the notebook.
    Distances are unaffected.
-6. **Snap warnings.** Stops more than 300 m from a drivable road, or sharing a road node, are flagged.
+6. **Truck access check.** Trash is collected at the roadside, so every collection point must be within 15 m
+   (`TRUCK_ACCESS_MAX_DISTANCE_M`) of a road garbage trucks can drive on, measured to the road segment, not just its
+   nodes. Farther points fail the run with "Trash site not accessible by garbage trucks". The garage is exempt (depots sit
+   inside compounds) and only gets a warning beyond 300 m. Stops sharing a road node are flagged as warnings.
 
 The exact optimized order can differ slightly from networkx because of tie-breaking in the MST and Euler tour. Use
 `christofides` for thesis results. `christofides-2opt` and `nearest-neighbor-2opt` are there for algorithm comparison.
