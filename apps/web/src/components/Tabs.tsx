@@ -41,6 +41,7 @@ export function Tabs({ items, initial, label }: { items: TabItem[]; initial?: st
                   refs.current[t.id] = el;
                 }}
                 role="tab"
+                data-tour={`tab-${t.id}`}
                 id={`${uid}-tab-${t.id}`}
                 aria-selected={selected}
                 aria-controls={`${uid}-panel-${t.id}`}

@@ -1,10 +1,13 @@
 "use client";
 // First screen: explain the tool in one glance, then get a route loaded
 import Link from "next/link";
+import { useRef } from "react";
 import type { SimulationLogEntry } from "@wcro/core";
 import { ArrowDown, ArrowRight, BarChart3, Clock, FileUp, Fuel, Leaf, MousePointerClick, Route } from "lucide-react";
+import { HelpButton, useTour } from "@/components/Tour";
 import { buttonClasses, Card } from "@/components/ui";
 import { fmt, fmtDateTime } from "@/lib/format";
+import { landingTour } from "@/features/onboarding/tours";
 import { DropZone } from "@/features/upload/RouteFileInput";
 
 const savings = [
@@ -106,6 +109,10 @@ export function Landing({
   onLoad: (fileName: string, text: string) => void;
   onDraw: () => void;
 }) {
+  // First visit: the tour starts when the user reaches "Start here"
+  const startRef = useRef<HTMLElement>(null);
+  useTour(landingTour, startRef);
+
   return (
     <div className="space-y-12 sm:space-y-16">
       {/* ---------- Hero ---------- */}
@@ -193,7 +200,7 @@ export function Landing({
       </section>
 
       {/* ---------- Start: add a route ---------- */}
-      <section id="start" aria-labelledby="start-heading" className="scroll-mt-24">
+      <section ref={startRef} id="start" aria-labelledby="start-heading" className="scroll-mt-24">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-brand-ink">Start here</p>
           <h2 id="start-heading" className="mt-2 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
@@ -202,6 +209,7 @@ export function Landing({
           <p className="mt-3 text-pretty text-base leading-7 text-muted sm:text-lg">
             Pick whichever is easier for you. You can always change it later.
           </p>
+          <HelpButton label className="mt-2" />
         </div>
 
         <div className="mt-8 grid items-stretch gap-4 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:gap-6">
@@ -212,6 +220,7 @@ export function Landing({
             <button
               type="button"
               aria-pressed="true"
+              data-tour="upload-card"
               className="flex min-h-11 items-start gap-4 rounded-2xl border-2 border-brand bg-brand-soft p-5 text-left"
             >
               <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand text-white" aria-hidden>
@@ -228,6 +237,7 @@ export function Landing({
               type="button"
               aria-pressed="false"
               onClick={onDraw}
+              data-tour="draw-card"
               className="group flex min-h-11 items-start gap-4 rounded-2xl border-2 border-line bg-surface p-5 text-left transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-line-strong"
             >
               <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-surface-2 text-ink" aria-hidden>
@@ -248,12 +258,14 @@ export function Landing({
             </button>
           </fieldset>
 
-          <DropZone onLoad={onLoad} />
+          <div data-tour="dropzone" className="grid">
+            <DropZone onLoad={onLoad} />
+          </div>
         </div>
       </section>
 
       {recent.length > 0 && (
-        <section aria-labelledby="recent-heading">
+        <section aria-labelledby="recent-heading" data-tour="recent">
           <div className="mb-4 flex items-center justify-between">
             <h2 id="recent-heading" className="text-2xl font-bold tracking-tight sm:text-3xl">
               Your recent results

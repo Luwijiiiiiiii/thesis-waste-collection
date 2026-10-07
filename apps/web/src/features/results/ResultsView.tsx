@@ -3,8 +3,10 @@ import type { ReactNode } from "react";
 import { TSP_SOLVERS, type SimulationResult } from "@wcro/core";
 import { BarChart3, Download, ListOrdered, Map as MapIcon, Network, TriangleAlert } from "lucide-react";
 import { Tabs } from "@/components/Tabs";
+import { ScreenTour } from "@/components/Tour";
 import { Badge, Card, CardBody, PageHeader } from "@/components/ui";
 import { fmt, fmtDateTime } from "@/lib/format";
+import { resultsTour } from "@/features/onboarding/tours";
 import { ComparisonTable } from "./ComparisonTable";
 import { ExportPanel } from "./ExportPanel";
 import { MapWithStops } from "./MapWithStops";
@@ -31,6 +33,7 @@ export function ResultsView({ result, actions }: { result: SimulationResult; act
 
   return (
     <div className="animate-rise space-y-6">
+      <ScreenTour tour={resultsTour} />
       <PageHeader
         eyebrow={`Simulation results · ${result.routeName}`}
         title={headline}
@@ -72,7 +75,9 @@ export function ResultsView({ result, actions }: { result: SimulationResult; act
         </div>
       )}
 
-      <SavingsTiles comparison={result.comparison} />
+      <div data-tour="savings">
+        <SavingsTiles comparison={result.comparison} />
+      </div>
 
       <Card>
         <CardBody>

@@ -3,6 +3,7 @@ import { Fira_Code, Fira_Sans } from "next/font/google";
 import Link from "next/link";
 import { BottomNav, SidebarNav } from "@/components/AppNav";
 import { BrandLockup } from "@/components/BrandLogo";
+import { HelpButton, TourOverlay } from "@/components/Tour";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
@@ -64,7 +65,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SidebarNav />
           </div>
           <div className="mt-auto">
-            <ThemeToggle />
+            <div className="flex items-center gap-1">
+              <ThemeToggle />
+              <HelpButton />
+            </div>
             <p className="mt-2 px-3 text-xs leading-5 text-muted">
               Road data © OpenStreetMap contributors. Thesis prototype – results are estimates.
             </p>
@@ -76,7 +80,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Link href="/">
             <BrandLockup />
           </Link>
-          <ThemeToggle className="ml-auto" />
+          <HelpButton className="ml-auto" />
+          <ThemeToggle />
         </header>
 
         <div className="lg:pl-64">
@@ -86,6 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <BottomNav />
+        <TourOverlay />
       </body>
     </html>
   );
