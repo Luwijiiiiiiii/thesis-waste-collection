@@ -138,7 +138,7 @@ export function KeyValue({ items, columns = 2 }: { items: [string, ReactNode][];
 /** Scrollable data table with a sticky header and consistent cell styling */
 export function Table({ children, maxHeight }: { children: ReactNode; maxHeight?: string }) {
   return (
-    <div className="overflow-auto rounded-xl border border-line" style={maxHeight ? { maxHeight } : undefined}>
+    <div className="relative overflow-auto rounded-xl border border-line" style={maxHeight ? { maxHeight } : undefined}>
       <table
         className={[
           "w-full min-w-[560px] border-collapse text-sm",

@@ -96,7 +96,7 @@ export function DropZone({ onLoad }: { onLoad: OnLoad }) {
       </p>
 
       <div className="mt-6 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center">
-        <Button variant="primary" size="lg" onClick={loadSample} disabled={loadingSample}>
+        <Button variant="primary" size="lg" onClick={loadSample} disabled={loadingSample} data-tour="sample">
           {loadingSample ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
           ) : (

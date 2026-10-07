@@ -2,9 +2,11 @@
 import { MIN_DRAFT_STOPS, type DraftAction, type DraftState, type RouteFile, type ValidationReport } from "@wcro/core";
 import { Eraser, ListChecks, Map as MapIcon, MapPin, RotateCcw, SlidersHorizontal, X } from "lucide-react";
 import { Tabs } from "@/components/Tabs";
+import { ScreenTour } from "@/components/Tour";
 import { Badge, Button, Card, CardBody, EmptyState, PageHeader } from "@/components/ui";
 import { ConfigPanel } from "@/features/config/ConfigPanel";
 import { RouteDetailsForm, StopsEditorTable } from "@/features/edit/RouteEditors";
+import { drawTour } from "@/features/onboarding/tours";
 import { SimulationPanel } from "@/features/simulation/SimulationPanel";
 import type { StageState } from "@/features/simulation/useSimulation";
 import { ValidationReportCard } from "@/features/validation/ValidationReportCard";
@@ -41,6 +43,7 @@ export function DrawScreen(props: DrawScreenProps) {
 
   return (
     <div className="animate-rise space-y-6">
+      <ScreenTour tour={drawTour} />
       <PageHeader
         eyebrow="Draw on map"
         title="Draw your route"
@@ -66,7 +69,7 @@ export function DrawScreen(props: DrawScreenProps) {
                     label: "Map",
                     icon: <MapIcon className="size-4" />,
                     content: (
-                      <div>
+                      <div data-tour="draw-map">
                         <DrawMapLoader draft={draft} onAction={onAction} />
                         <p
                           role="status"
@@ -132,7 +135,7 @@ export function DrawScreen(props: DrawScreenProps) {
         <Card className="min-w-0 lg:sticky lg:top-6">
           <CardBody className="space-y-4">
             <div inert={running} className="space-y-4">
-              <div>
+              <div data-tour="stop-list">
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <h2 className="text-sm font-medium">
                     Stops <span className="num text-muted">({stopCount})</span>
@@ -167,17 +170,19 @@ export function DrawScreen(props: DrawScreenProps) {
 
             {enoughStops && report && <ValidationReportCard report={report} />}
 
-            <SimulationPanel
-              canRun={canRun}
-              running={running}
-              hasResult={props.hasResult}
-              onRun={props.onRun}
-              onCancel={props.onCancel}
-              onViewResults={props.onViewResults}
-              stages={props.stages}
-              error={props.error}
-              disabledHint={hint}
-            />
+            <div data-tour="run">
+              <SimulationPanel
+                canRun={canRun}
+                running={running}
+                hasResult={props.hasResult}
+                onRun={props.onRun}
+                onCancel={props.onCancel}
+                onViewResults={props.onViewResults}
+                stages={props.stages}
+                error={props.error}
+                disabledHint={hint}
+              />
+            </div>
           </CardBody>
         </Card>
       </div>

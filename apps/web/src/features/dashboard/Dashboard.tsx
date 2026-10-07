@@ -23,6 +23,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { Tabs } from "@/components/Tabs";
+import { ScreenTour } from "@/components/Tour";
 import { Badge, buttonClasses, Button, Card, CardBody, EmptyState, PageHeader } from "@/components/ui";
 import { ConfigPanel } from "@/features/config/ConfigPanel";
 import { StopsPreviewMapLoader } from "@/features/dataset/StopsPreviewMapLoader";
@@ -31,6 +32,7 @@ import { RouteDetailsForm, StopsEditorTable } from "@/features/edit/RouteEditors
 import { ResultsView } from "@/features/results/ResultsView";
 import { SimulationPanel } from "@/features/simulation/SimulationPanel";
 import { useSimulation } from "@/features/simulation/useSimulation";
+import { reviewInvalidTour, reviewTour } from "@/features/onboarding/tours";
 import { LoadedFile, SAMPLE_URL } from "@/features/upload/RouteFileInput";
 import { ValidationReportCard } from "@/features/validation/ValidationReportCard";
 import { Landing } from "./Landing";
@@ -147,6 +149,7 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
   const data = routeFile;
   return (
     <div className="animate-rise space-y-6">
+      <ScreenTour tour={data ? reviewTour : reviewInvalidTour} />
       <PageHeader
         eyebrow="New simulation"
         title={data?.route_name ?? "Route file needs attention"}
@@ -235,7 +238,7 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
                 title="We couldn't read this route"
                 description="Check the messages in the validation panel. Starting from the template is the quickest way to get a valid file."
                 action={
-                  <a href={SAMPLE_URL} download className={buttonClasses("secondary", "md")}>
+                  <a href={SAMPLE_URL} download data-tour="template" className={buttonClasses("secondary", "md")}>
                     <Download className="size-4" aria-hidden />
                     Download the template
                   </a>
@@ -247,22 +250,28 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
 
         <Card className="order-1 min-w-0 lg:sticky lg:top-6 lg:order-2">
           <CardBody className="space-y-4">
-            <LoadedFile
-              fileName={fileName ?? "route.json"}
-              pointCount={data?.collection_points.length}
-              onLoad={handleLoad}
-            />
-            <ValidationReportCard report={report} />
-            <SimulationPanel
-              canRun={report.passed}
-              running={sim.running}
-              hasResult={Boolean(sim.result)}
-              onRun={() => report.data && sim.run(report.data, solver)}
-              onCancel={sim.reset}
-              onViewResults={() => setShowResults(true)}
-              stages={sim.stages}
-              error={sim.error}
-            />
+            <div data-tour="loaded-file">
+              <LoadedFile
+                fileName={fileName ?? "route.json"}
+                pointCount={data?.collection_points.length}
+                onLoad={handleLoad}
+              />
+            </div>
+            <div data-tour="validation">
+              <ValidationReportCard report={report} />
+            </div>
+            <div data-tour="run">
+              <SimulationPanel
+                canRun={report.passed}
+                running={sim.running}
+                hasResult={Boolean(sim.result)}
+                onRun={() => report.data && sim.run(report.data, solver)}
+                onCancel={sim.reset}
+                onViewResults={() => setShowResults(true)}
+                stages={sim.stages}
+                error={sim.error}
+              />
+            </div>
           </CardBody>
         </Card>
       </div>

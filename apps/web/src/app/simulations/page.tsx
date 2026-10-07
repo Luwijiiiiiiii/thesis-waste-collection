@@ -2,8 +2,10 @@
 import Link from "next/link";
 import { TSP_SOLVERS } from "@wcro/core";
 import { ArrowRight, History, Plus, TriangleAlert } from "lucide-react";
+import { ScreenTour } from "@/components/Tour";
 import { Badge, buttonClasses, Card, CardBody, EmptyState, PageHeader, Table } from "@/components/ui";
 import { fmt, fmtDateTime } from "@/lib/format";
+import { historyTour } from "@/features/onboarding/tours";
 import { listSimulations } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -34,12 +36,13 @@ export default async function SimulationsPage() {
 
   return (
     <div className="animate-rise space-y-6">
+      <ScreenTour tour={historyTour} />
       <PageHeader
         eyebrow="History"
         title="Simulation log"
         description="Every run is archived in the database, newest first. Open one to revisit its map and exports."
         actions={
-          <Link href="/#start" className={buttonClasses("primary", "md")}>
+          <Link href="/#start" data-tour="new-simulation" className={buttonClasses("primary", "md")}>
             <Plus className="size-4" aria-hidden />
             New simulation
           </Link>
@@ -62,7 +65,7 @@ export default async function SimulationsPage() {
         </Card>
       ) : (
         <>
-          <dl className="grid gap-3 sm:grid-cols-3">
+          <dl data-tour="history-stats" className="grid gap-3 sm:grid-cols-3">
             <Stat label="Simulations run" value={String(sims.length)} />
             <Stat label="Average distance saved" value={`${fmt(avg)}%`} />
             <Stat label="Best result" value={`${fmt(best?.distanceSavingsPercent ?? 0)}%`} hint={best?.routeName} />
@@ -70,47 +73,53 @@ export default async function SimulationsPage() {
 
           <Card>
             <CardBody>
-              <Table>
-                <thead>
-                  <tr>
-                    <th>Simulation</th>
-                    <th>Route</th>
-                    <th className="text-right">Points</th>
-                    <th>Algorithm</th>
-                    <th className="text-right">Traditional</th>
-                    <th className="text-right">Optimized</th>
-                    <th className="text-right">Saved</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sims.map((s) => (
-                    <tr key={s.id}>
-                      <td>
-                        <Link href={`/simulations/${s.id}`} className="num font-medium text-brand-ink hover:underline">
-                          {s.id}
-                        </Link>
-                        <p className="text-xs text-muted">{fmtDateTime(s.createdAt)}</p>
-                      </td>
-                      <td className="font-medium">{s.routeName}</td>
-                      <td className="num text-right">{s.collectionPoints}</td>
-                      <td>
-                        <Badge>{TSP_SOLVERS.find((x) => x.value === s.solver)?.label ?? "—"}</Badge>
-                      </td>
-                      <td className="num text-right">{fmt(s.traditionalKm)} km</td>
-                      <td className="num text-right">{fmt(s.optimizedKm)} km</td>
-                      <td className="text-right">
-                        <Badge
-                          tone={
-                            s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "danger" : "neutral"
-                          }
-                        >
-                          <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
-                        </Badge>
-                      </td>
+              <div data-tour="history-table">
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>Simulation</th>
+                      <th>Route</th>
+                      <th className="text-right">Points</th>
+                      <th>Algorithm</th>
+                      <th className="text-right">Traditional</th>
+                      <th className="text-right">Optimized</th>
+                      <th className="text-right">Saved</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {sims.map((s, i) => (
+                      <tr key={s.id}>
+                        <td>
+                          <Link
+                            href={`/simulations/${s.id}`}
+                            data-tour={i === 0 ? "history-open" : undefined}
+                            className="num font-medium text-brand-ink hover:underline"
+                          >
+                            {s.id}
+                          </Link>
+                          <p className="text-xs text-muted">{fmtDateTime(s.createdAt)}</p>
+                        </td>
+                        <td className="font-medium">{s.routeName}</td>
+                        <td className="num text-right">{s.collectionPoints}</td>
+                        <td>
+                          <Badge>{TSP_SOLVERS.find((x) => x.value === s.solver)?.label ?? "—"}</Badge>
+                        </td>
+                        <td className="num text-right">{fmt(s.traditionalKm)} km</td>
+                        <td className="num text-right">{fmt(s.optimizedKm)} km</td>
+                        <td className="text-right">
+                          <Badge
+                            tone={
+                              s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "danger" : "neutral"
+                            }
+                          >
+                            <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
             </CardBody>
           </Card>
         </>
