@@ -15,16 +15,15 @@
     "@wcro/metrics": "workspace:*",
     "@wcro/road-network": "workspace:*",
     "@wcro/routing": "workspace:*",
-    "leaflet": "^1.9.4",
     "lucide-react": "^1.50.0",
+    "mapbox-gl": "^3.32.0",
     "next": "^16.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-leaflet": "^5.0.0"
+    "react-map-gl": "^8.1.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
-    "@types/leaflet": "^1.9.20",
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

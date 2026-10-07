@@ -166,3 +166,52 @@ describe("buildRouteFileFromDraft", () => {
     expect(report.checks.find((c) => c.key === "duplicates")!.errors[0]).toMatch(/Duplicate coordinate/);
   });
 });
+
+describe("editing drawn details", () => {
+  const today = new Date(2026, 9, 3);
+
+  it("puts edited vehicle, driver and stop details into the route file without adding undo steps", () => {
+    let s = run([A, B, C]);
+    const steps = s.history.length;
+    s = draftReducer(s, {
+      type: "editDetails",
+      patch: { driver_name: "Juan", vehicle: { fuel_price_per_liter: 62.5 } },
+    });
+    s = draftReducer(s, { type: "editStop", id: "s1", patch: { name: "Public Market", waste_type: "Residual" } });
+    s = draftReducer(s, { type: "editStop", id: "garage", patch: { id: "G-07" } });
+    expect(s.history.length).toBe(steps);
+
+    const file = buildRouteFileFromDraft(s.draft, today)!;
+    expect(file.driver.name).toBe("Juan");
+    expect(file.vehicle).toEqual({ vehicle_id: "GT-001", vehicle_name: "Garbage Truck", fuel_price_per_liter: 62.5 });
+    expect(file.garage.id).toBe("G-07");
+    expect(file.collection_points[0]).toMatchObject({ id: "CP-01", name: "Public Market", waste_type: "Residual" });
+    expect(file.collection_points[1]).toEqual({ id: "CP-02", name: "Stop 2", latitude: 16.4, longitude: 120.61 });
+    expect(validateRouteFile(file).passed).toBe(true);
+  });
+
+  it("keeps a stop's typed details when it is reordered", () => {
+    let s = run([A, B, C]);
+    s = draftReducer(s, { type: "editStop", id: "s2", patch: { name: "Session Road" } });
+    s = draftReducer(s, { type: "reorder", id: "s2", direction: "up" });
+    const file = buildRouteFileFromDraft(s.draft, today)!;
+    expect(file.collection_points.map((p) => p.name)).toEqual(["Session Road", "Stop 2"]);
+  });
+
+  it("undoes a move but keeps details typed after it", () => {
+    let s = run([A, B, C, { type: "move", id: "s1", lat: 16.43, lon: 120.58 }]);
+    s = draftReducer(s, { type: "editStop", id: "s1", patch: { name: "Burnham Park" } });
+    s = draftReducer(s, { type: "editDetails", patch: { driver_name: "Ana" } });
+    s = draftReducer(s, { type: "undo" });
+    expect(s.draft.stops[0]).toEqual({ id: "s1", lat: 16.42, lon: 120.6, info: { name: "Burnham Park" } });
+    expect(s.draft.driverName).toBe("Ana");
+  });
+
+  it("clear keeps the driver and vehicle, and editing an unknown stop is ignored", () => {
+    let s = run([A, B, { type: "editDetails", patch: { vehicle: { vehicle_name: "Truck 2" } } }]);
+    expect(draftReducer(s, { type: "editStop", id: "s99", patch: { name: "x" } })).toBe(s);
+    s = draftReducer(s, { type: "clear" });
+    expect(s.draft.vehicle.vehicle_name).toBe("Truck 2");
+    expect(s.draft.stops).toEqual([]);
+  });
+});

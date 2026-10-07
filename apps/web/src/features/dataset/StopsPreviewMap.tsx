@@ -1,30 +1,15 @@
 "use client";
 // Pre-run preview: shows the garage and collection points as soon as a file is loaded
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import { useEffect, useMemo } from "react";
-import { MapContainer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Marker, Popup, type MapRef } from "react-map-gl/mapbox";
 import type { LatLng, RouteFile } from "@wcro/core";
-import { BaseTileLayer } from "@/components/BaseTileLayer";
-import { WHEEL_ZOOM } from "@/lib/mapZoom";
+import { BaseMap, boundsOf } from "@/components/BaseMap";
 
-function FitBounds({ points }: { points: LatLng[] }) {
-  const map = useMap();
-  useEffect(() => {
-    if (points.length) map.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 16 });
-  }, [map, points]);
-  return null;
-}
-
-const icon = (label: string, garage: boolean) =>
-  L.divIcon({
-    className: "",
-    html: `<div class="stop-marker ${garage ? "stop-marker--garage" : "stop-marker--file"}" style="width:${garage ? 28 : 24}px;height:${garage ? 28 : 24}px">${label}</div>`,
-    iconSize: garage ? [28, 28] : [24, 24],
-    iconAnchor: garage ? [14, 14] : [12, 12],
-  });
+const FIT = { padding: 40, maxZoom: 16 };
 
 export default function StopsPreviewMap({ data }: { data: RouteFile }) {
+  const mapRef = useRef<MapRef>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const points = useMemo<LatLng[]>(
     () => [
       [data.garage.latitude, data.garage.longitude],
@@ -33,39 +18,69 @@ export default function StopsPreviewMap({ data }: { data: RouteFile }) {
     [data],
   );
 
+  // Refit when a different file is loaded into the same map
+  useEffect(() => {
+    setOpenId(null);
+    mapRef.current?.fitBounds(boundsOf(points), FIT);
+  }, [points]);
+
+  const open = openId === "garage" ? null : data.collection_points.find((p) => String(p.id) === openId);
+
   return (
-    <MapContainer
-      center={points[0]}
-      zoom={14}
-      {...WHEEL_ZOOM}
+    <BaseMap
+      ref={mapRef}
+      initialViewState={{ bounds: boundsOf(points), fitBoundsOptions: FIT }}
       className="h-[360px] w-full rounded-xl border border-line sm:h-[440px]"
     >
-      <BaseTileLayer />
-      <FitBounds points={points} />
-      <Marker position={points[0]} icon={icon("G", true)}>
-        <Tooltip direction="top" offset={[0, -12]}>
-          {data.garage.name}
-        </Tooltip>
-        <Popup>
+      <Marker
+        longitude={data.garage.longitude}
+        latitude={data.garage.latitude}
+        onClick={(e) => {
+          e.originalEvent.stopPropagation();
+          setOpenId("garage");
+        }}
+      >
+        <div className="stop-marker stop-marker--garage" style={{ width: 28, height: 28 }} title={data.garage.name}>
+          G
+        </div>
+      </Marker>
+      {data.collection_points.map((p, i) => (
+        <Marker
+          key={String(p.id)}
+          longitude={p.longitude}
+          latitude={p.latitude}
+          onClick={(e) => {
+            e.originalEvent.stopPropagation();
+            setOpenId(String(p.id));
+          }}
+        >
+          <div className="stop-marker stop-marker--file" style={{ width: 24, height: 24 }} title={p.name}>
+            {i + 1}
+          </div>
+        </Marker>
+      ))}
+
+      {openId === "garage" && (
+        <Popup
+          longitude={data.garage.longitude}
+          latitude={data.garage.latitude}
+          offset={16}
+          onClose={() => setOpenId(null)}
+        >
           <p className="text-sm font-semibold">{data.garage.name}</p>
           <p className="text-xs">Garage · {data.garage.id}</p>
         </Popup>
-      </Marker>
-      {data.collection_points.map((p, i) => (
-        <Marker key={String(p.id)} position={[p.latitude, p.longitude]} icon={icon(String(i + 1), false)}>
-          <Tooltip direction="top" offset={[0, -10]}>
-            {p.name}
-          </Tooltip>
-          <Popup>
-            <div className="space-y-0.5 text-xs">
-              <p className="text-sm font-semibold">{p.name}</p>
-              <p>ID: {p.id}</p>
-              {p.waste_type && <p>Waste type: {p.waste_type}</p>}
-              {p.priority !== undefined && <p>Priority: {String(p.priority)}</p>}
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+      )}
+      {open && (
+        <Popup longitude={open.longitude} latitude={open.latitude} offset={14} onClose={() => setOpenId(null)}>
+          <div className="space-y-0.5 text-xs">
+            <p className="text-sm font-semibold">{open.name}</p>
+            <p>ID: {open.id}</p>
+            {open.waste_type && <p>Waste type: {open.waste_type}</p>}
+            {open.priority !== undefined && <p>Priority: {String(open.priority)}</p>}
+          </div>
+        </Popup>
+      )}
+    </BaseMap>
   );
 }

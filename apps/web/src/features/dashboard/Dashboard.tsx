@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import {
+  applyRouteDetails,
+  applyStopInfo,
   buildRouteFileFromDraft,
   DEFAULT_TSP_SOLVER,
   draftReducer,
@@ -8,15 +10,24 @@ import {
   validateRouteFile,
   validateRouteFileText,
   type DraftAction,
+  type RouteFile,
   type SimulationLogEntry,
 } from "@wcro/core";
-import { ArrowLeft, Download, FileWarning, ListChecks, Map as MapIcon, SlidersHorizontal } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  FileWarning,
+  ListChecks,
+  Map as MapIcon,
+  RotateCcw,
+  SlidersHorizontal,
+} from "lucide-react";
 import { Tabs } from "@/components/Tabs";
 import { Badge, buttonClasses, Button, Card, CardBody, EmptyState, PageHeader } from "@/components/ui";
 import { ConfigPanel } from "@/features/config/ConfigPanel";
-import { CollectionPointsTable, DatasetDetails } from "@/features/dataset/DatasetSummary";
 import { StopsPreviewMapLoader } from "@/features/dataset/StopsPreviewMapLoader";
 import { DrawScreen } from "@/features/draw/DrawScreen";
+import { RouteDetailsForm, StopsEditorTable } from "@/features/edit/RouteEditors";
 import { ResultsView } from "@/features/results/ResultsView";
 import { SimulationPanel } from "@/features/simulation/SimulationPanel";
 import { useSimulation } from "@/features/simulation/useSimulation";
@@ -27,6 +38,8 @@ import { Landing } from "./Landing";
 export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
   const [fileName, setFileName] = useState<string | null>(null);
   const [fileText, setFileText] = useState<string | null>(null);
+  // Details edited after upload; null until the first edit
+  const [edits, setEdits] = useState<RouteFile | null>(null);
   // The UI no longer offers a choice: the thesis default (Christofides) orders stops, A* routes between them
   const solver = DEFAULT_TSP_SOLVER;
   const [showResults, setShowResults] = useState(false);
@@ -36,7 +49,11 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
   const resetSim = sim.reset;
 
   // Same validation engine the server enforces – instant feedback on upload
-  const report = useMemo(() => (fileText === null ? null : validateRouteFileText(fileText)), [fileText]);
+  const fileReport = useMemo(() => (fileText === null ? null : validateRouteFileText(fileText)), [fileText]);
+  // Edits are re-validated, and the edited copy is what gets simulated
+  const report = useMemo(() => (edits ? validateRouteFile(edits) : fileReport), [edits, fileReport]);
+  // Editing starts from a file that passed; it stays on screen even if an edit fails validation
+  const routeFile = edits ?? fileReport?.data ?? null;
 
   // The drawn route goes through the very same validation
   const drawnFile = useMemo(() => buildRouteFileFromDraft(draftState.draft), [draftState.draft]);
@@ -60,8 +77,16 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
   const handleLoad = (name: string, text: string) => {
     setFileName(name);
     setFileText(text);
+    setEdits(null);
     setShowResults(false);
     setDrawing(false);
+    sim.reset();
+  };
+
+  // Any edit makes an earlier result stale
+  const editFile = (change: (f: RouteFile) => RouteFile) => {
+    if (!routeFile) return;
+    setEdits(change(routeFile));
     sim.reset();
   };
 
@@ -98,6 +123,7 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
     return (
       <DrawScreen
         state={draftState}
+        file={drawnFile}
         onAction={(a: DraftAction) => dispatchDraft(a)}
         report={drawnReport}
         running={sim.running}
@@ -117,8 +143,8 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
     return <Landing recent={recent} onLoad={handleLoad} onDraw={startDrawing} />;
   }
 
-  // Review the uploaded data and run
-  const data = report.data;
+  // Review (and edit) the uploaded data, then run
+  const data = routeFile;
   return (
     <div className="animate-rise space-y-6">
       <PageHeader
@@ -126,12 +152,29 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
         title={data?.route_name ?? "Route file needs attention"}
         description={
           data
-            ? `${data.collection_points.length} collection points around ${data.garage.name}. Review the data, pick an algorithm, then run.`
+            ? `${data.collection_points.length} collection points around ${data.garage.name}. Review or edit the data, then run.`
             : "The file didn't pass validation. Fix the issues listed on the right, or load a different file."
         }
         actions={
           data && (
-            <Badge tone={report.passed ? "ok" : "danger"}>{report.passed ? "Ready to run" : "Validation failed"}</Badge>
+            <>
+              {edits && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setEdits(null);
+                    sim.reset();
+                  }}
+                >
+                  <RotateCcw className="size-4" aria-hidden />
+                  Revert edits
+                </Button>
+              )}
+              <Badge tone={report.passed ? "ok" : "danger"}>
+                {report.passed ? "Ready to run" : "Validation failed"}
+              </Badge>
+            </>
           )
         }
       />
@@ -162,7 +205,13 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
                     label: "Collection points",
                     icon: <ListChecks className="size-4" />,
                     badge: <Badge>{data.collection_points.length}</Badge>,
-                    content: <CollectionPointsTable data={data} />,
+                    content: (
+                      <StopsEditorTable
+                        data={data}
+                        onChange={(target, patch) => editFile((f) => applyStopInfo(f, target, patch))}
+                        note="Coordinates come from the uploaded file."
+                      />
+                    ),
                   },
                   {
                     id: "details",
@@ -170,7 +219,10 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
                     icon: <SlidersHorizontal className="size-4" />,
                     content: (
                       <div className="space-y-8">
-                        <DatasetDetails data={data} />
+                        <RouteDetailsForm
+                          data={data}
+                          onChange={(patch) => editFile((f) => applyRouteDetails(f, patch))}
+                        />
                         <ConfigPanel />
                       </div>
                     ),
@@ -205,7 +257,7 @@ export function Dashboard({ recent }: { recent: SimulationLogEntry[] }) {
               canRun={report.passed}
               running={sim.running}
               hasResult={Boolean(sim.result)}
-              onRun={() => data && sim.run(data, solver)}
+              onRun={() => report.data && sim.run(report.data, solver)}
               onCancel={sim.reset}
               onViewResults={() => setShowResults(true)}
               stages={sim.stages}
