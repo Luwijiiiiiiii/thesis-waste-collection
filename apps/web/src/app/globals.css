@@ -2,7 +2,7 @@
 
 /* ------------------------------------------------------------------
    Design tokens
-   Brand blue = actions / focus. Green = optimized. Orange = traditional.
+   Brand blue = actions / focus. Green = optimized. Blue (brand shades) = traditional.
    Every text/background pair below is >= 4.5:1 in both themes.
 ------------------------------------------------------------------- */
 :root {
@@ -21,8 +21,8 @@
 
   --optimized: #047857;
   --optimized-soft: #e6f5ee;
-  --traditional: #c2410c;
-  --traditional-soft: #fdf0e6;
+  --traditional: #1d4ed8;
+  --traditional-soft: #eaf1fe;
   --danger: #b91c1c;
   --danger-soft: #fdecec;
   --warn: #8a5a05;
@@ -50,8 +50,8 @@
 
   --optimized: #34d399;
   --optimized-soft: #0e2b22;
-  --traditional: #fb923c;
-  --traditional-soft: #2d1c10;
+  --traditional: #8db3ff;
+  --traditional-soft: #14244a;
   --danger: #f87171;
   --danger-soft: #2c1618;
   --warn: #fbbf24;
@@ -140,7 +140,7 @@ body {
   background: #047857;
 }
 .bg-traditional-solid {
-  background: #c2410c;
+  background: #2563eb;
 }
 
 .num {
@@ -208,6 +208,9 @@ button:disabled {
 }
 .stop-marker--point {
   background: #047857;
+}
+.stop-marker--traditional {
+  background: #2563eb;
 }
 .stop-marker--file {
   background: #2563eb;

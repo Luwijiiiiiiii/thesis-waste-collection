@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Baguio Route Optimizer</title>
 <style>
-/* Layout: full-height slides that snap, asphalt "road" motif for sequences, app colours (green = optimized, orange = traditional). */
+/* Layout: full-height slides that snap, asphalt "road" motif for sequences, app colours (green = optimized, blue = traditional). */
 :root {
   --bg: #f4f6f5;
   --surface: #ffffff;
@@ -14,8 +14,8 @@
   --line: #dbe2de;
   --accent: #047857;
   --accent-soft: #e3f2ea;
-  --trad: #c2410c;
-  --trad-soft: #fbeee4;
+  --trad: #1d4ed8;
+  --trad-soft: #eaf1fe;
   --brand: #1d4ed8;
   --asphalt: #2a3036;
   --lane: #f3c64b;
@@ -30,14 +30,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0e1412; --surface: #151d1a; --ink: #e6eeea; --muted: #9db0a7; --line: #26332e;
-    --accent: #34d399; --accent-soft: #12291f; --trad: #fb923c; --trad-soft: #2b1c12; --brand: #8db3ff;
+    --accent: #34d399; --accent-soft: #12291f; --trad: #8db3ff; --trad-soft: #14244a; --brand: #8db3ff;
     --asphalt: #232a30; --lane: #e9bd42; --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 24px -12px rgb(0 0 0 / 0.7);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0e1412; --surface: #151d1a; --ink: #e6eeea; --muted: #9db0a7; --line: #26332e;
-  --accent: #34d399; --accent-soft: #12291f; --trad: #fb923c; --trad-soft: #2b1c12; --brand: #8db3ff;
+  --accent: #34d399; --accent-soft: #12291f; --trad: #8db3ff; --trad-soft: #14244a; --brand: #8db3ff;
   --asphalt: #232a30; --lane: #e9bd42; --shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 24px -12px rgb(0 0 0 / 0.7);
   color-scheme: dark;
 }
@@ -404,7 +404,7 @@ code { font-family: var(--font-mono); font-size: 0.95em; }
       </figure>
       <ul class="ticks">
         <li><span><b>Savings tiles</b> for distance, time, fuel cost and CO₂, each with both values.</span></li>
-        <li><span><b>Route map</b> with the optimized route in green and the traditional route dashed in orange. Either layer can be hidden.</span></li>
+        <li><span><b>Route map</b> with the optimized route in green and the traditional route dashed in blue. Either layer can be hidden.</span></li>
         <li><span><b>Visiting order</b> list. Selecting a stop zooms the map to it.</span></li>
         <li><span><b>Comparison, Route details and Road network</b> tabs with the full tables and the snapped node of each stop.</span></li>
         <li><span><b>Export</b> to CSV, JSON and GeoJSON for spreadsheets and GIS software.</span></li>
