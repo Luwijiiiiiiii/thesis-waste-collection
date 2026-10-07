@@ -78,7 +78,7 @@ export default function RouteMap({
         <LayerToggle
           checked={show.traditional}
           onChange={(v) => setShow((s) => ({ ...s, traditional: v }))}
-          swatch={<span className="h-1 w-6 rounded border-t-2 border-dashed border-traditional" />}
+          swatch={<span className="h-1 w-6 rounded border-t-2 border-dashed border-brand-ink" />}
           label="Traditional"
         />
       </fieldset>
@@ -94,7 +94,7 @@ export default function RouteMap({
         {show.traditional && (
           <Polyline
             positions={result.traditional.path}
-            pathOptions={{ color: "#ea580c", weight: 5, opacity: 0.6, dashArray: "8 7" }}
+            pathOptions={{ color: "#2563eb", weight: 5, opacity: 0.6, dashArray: "8 7" }}
           />
         )}
         {show.optimized && (
