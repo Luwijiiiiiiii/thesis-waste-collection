@@ -97,12 +97,12 @@ copy apps\api\.env.example apps\api\.env          # Windows Command Prompt / Pow
 Open `apps/api/.env` and check `DATABASE_URL`. With option A, leave the default. The other values in the file are
 optional for local development.
 
-Web app (optional): the defaults already point to `http://localhost:3001`. Create `apps/web/.env.local` only if you
-want to change something:
+Web app: the API URL already defaults to `http://localhost:3001`, but the maps need a Mapbox public token
+([get one free](https://account.mapbox.com/access-tokens/)). Create `apps/web/.env.local`:
 
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:3001   # where the browser reaches the API
-NEXT_PUBLIC_MAPBOX_TOKEN=pk....             # Mapbox basemap; OpenStreetMap tiles are used when empty
+NEXT_PUBLIC_MAPBOX_TOKEN=pk....             # Mapbox basemap (required to show the maps)
 ```
 
 Both `NEXT_PUBLIC_*` values are read when the web app starts, so restart `pnpm dev:all` after changing them.
@@ -221,7 +221,7 @@ packages/
 | Cell 16–18 Simulated traditional route (A*) | Routing | `packages/routing/src/routes.ts → computeTraditionalRoute` |
 | Cell 20–22 TSP order + A* optimized route | Routing | `packages/routing/src/routes.ts → computeOptimizedRoute`, `tsp/` |
 | Objective: metrics, comparison table | Metrics | `packages/metrics` (new; not coded in the notebook yet) |
-| Objective: interactive map, HTML export | Map | `features/results/RouteMap.tsx` (Leaflet), GeoJSON export |
+| Objective: interactive map, HTML export | Map | `features/results/RouteMap.tsx` (Mapbox GL), GeoJSON export |
 | Objective: CSV export, simulation logging | Exports / log | `packages/exports`, `apps/api` (`simulations` table), `/simulations` page |
 
 ## How the Python pieces were replaced

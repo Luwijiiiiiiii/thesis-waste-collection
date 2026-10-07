@@ -1,38 +1,18 @@
 "use client";
 // Interactive route map (replaces the planned Folium visualization)
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import { useEffect, useMemo, useState } from "react";
-import { MapContainer, Marker, Polyline, Popup, useMap } from "react-leaflet";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Layer, Marker, Popup, Source, type MapRef } from "react-map-gl/mapbox";
 import type { LatLng, RegisteredStop, SimulationResult } from "@wcro/core";
-import { BaseTileLayer } from "@/components/BaseTileLayer";
-import { WHEEL_ZOOM } from "@/lib/mapZoom";
+import { BaseMap, boundsOf, toLngLat } from "@/components/BaseMap";
 import { fmt } from "@/lib/format";
 
-function FitBounds({ points }: { points: LatLng[] }) {
-  const map = useMap();
-  useEffect(() => {
-    if (points.length) map.fitBounds(L.latLngBounds(points), { padding: [36, 36] });
-  }, [map, points]);
-  return null;
-}
+const FIT = { padding: 36 };
 
-/** Fly to the stop picked in the sidebar list */
-function FlyTo({ target }: { target: LatLng | null }) {
-  const map = useMap();
-  useEffect(() => {
-    if (target) map.flyTo(target, Math.max(map.getZoom(), 16), { duration: 0.6 });
-  }, [map, target]);
-  return null;
-}
-
-const stopIcon = (label: string, garage: boolean, active: boolean) =>
-  L.divIcon({
-    className: "",
-    html: `<div class="stop-marker ${garage ? "stop-marker--garage" : "stop-marker--point"} ${active ? "stop-marker--active" : ""}" style="width:${garage ? 28 : 24}px;height:${garage ? 28 : 24}px">${label}</div>`,
-    iconSize: garage ? [28, 28] : [24, 24],
-    iconAnchor: garage ? [14, 14] : [12, 12],
-  });
+const line = (path: LatLng[]) => ({
+  type: "Feature" as const,
+  properties: {},
+  geometry: { type: "LineString" as const, coordinates: path.map(toLngLat) },
+});
 
 export default function RouteMap({
   result,
@@ -43,7 +23,9 @@ export default function RouteMap({
   activeId?: string | null;
   heightClass?: string;
 }) {
+  const mapRef = useRef<MapRef>(null);
   const [show, setShow] = useState({ traditional: true, optimized: true });
+  const [openId, setOpenId] = useState<string | null>(null);
   const stops: RegisteredStop[] = useMemo(
     () => [result.nodeRegistry.garage, ...result.nodeRegistry.collectionPoints],
     [result],
@@ -56,14 +38,28 @@ export default function RouteMap({
     });
     return m;
   }, [result]);
-  const bounds = useMemo<LatLng[]>(
-    () => [...stops.map((s) => [s.latitude, s.longitude] as LatLng), ...result.optimized.path],
+  const bounds = useMemo(
+    () => boundsOf([...stops.map((s) => [s.latitude, s.longitude] as LatLng), ...result.optimized.path]),
     [stops, result],
   );
-  const target = useMemo<LatLng | null>(() => {
+  const paths = useMemo(
+    () => ({ traditional: line(result.traditional.path), optimized: line(result.optimized.path) }),
+    [result],
+  );
+
+  // Refit when a different result is shown in the same map
+  useEffect(() => {
+    mapRef.current?.fitBounds(bounds, FIT);
+  }, [bounds]);
+
+  // Fly to the stop picked in the sidebar list
+  useEffect(() => {
     const s = stops.find((x) => x.id === activeId);
-    return s ? [s.latitude, s.longitude] : null;
+    const map = mapRef.current;
+    if (s && map) map.flyTo({ center: [s.longitude, s.latitude], zoom: Math.max(map.getZoom(), 16), duration: 600 });
   }, [stops, activeId]);
+
+  const open = stops.find((s) => s.id === openId);
 
   return (
     <div className="relative">
@@ -82,49 +78,65 @@ export default function RouteMap({
           label="Traditional"
         />
       </fieldset>
-      <MapContainer
-        center={bounds[0] ?? [16.4123, 120.596]}
-        zoom={14}
-        {...WHEEL_ZOOM}
+      <BaseMap
+        ref={mapRef}
+        initialViewState={{ bounds, fitBoundsOptions: FIT }}
         className={`${heightClass} w-full rounded-xl border border-line`}
       >
-        <BaseTileLayer />
-        <FitBounds points={bounds} />
-        <FlyTo target={target} />
-        {show.traditional && (
-          <Polyline
-            positions={result.traditional.path}
-            pathOptions={{ color: "#2563eb", weight: 5, opacity: 0.6, dashArray: "8 7" }}
+        <Source id="route-traditional" type="geojson" data={paths.traditional}>
+          <Layer
+            id="route-traditional"
+            type="line"
+            layout={{ visibility: show.traditional ? "visible" : "none", "line-join": "round" }}
+            paint={{ "line-color": "#2563eb", "line-width": 5, "line-opacity": 0.6, "line-dasharray": [1.6, 1.4] }}
           />
-        )}
-        {show.optimized && (
-          <Polyline positions={result.optimized.path} pathOptions={{ color: "#059669", weight: 5, opacity: 0.95 }} />
-        )}
-        {stops.map((s) => (
-          <Marker
-            key={s.id}
-            position={[s.latitude, s.longitude]}
-            zIndexOffset={s.id === activeId ? 1000 : 0}
-            icon={stopIcon(
-              s.role === "garage" ? "G" : String(order.get(s.id) ?? "•"),
-              s.role === "garage",
-              s.id === activeId,
-            )}
-          >
-            <Popup>
-              <div className="space-y-0.5 text-xs">
-                <p className="text-sm font-semibold">{s.name}</p>
-                <p>ID: {s.id}</p>
-                {s.wasteType && <p>Waste type: {s.wasteType}</p>}
-                {s.priority !== undefined && <p>Priority: {String(s.priority)}</p>}
-                <p>OSM node: {s.node}</p>
-                <p>Snap distance: {fmt(s.snapDistanceM)} m</p>
-                {s.role !== "garage" && <p>Optimized stop #{order.get(s.id)}</p>}
+        </Source>
+        <Source id="route-optimized" type="geojson" data={paths.optimized}>
+          <Layer
+            id="route-optimized"
+            type="line"
+            layout={{ visibility: show.optimized ? "visible" : "none", "line-join": "round", "line-cap": "round" }}
+            paint={{ "line-color": "#059669", "line-width": 5, "line-opacity": 0.95 }}
+          />
+        </Source>
+        {stops.map((s) => {
+          const garage = s.role === "garage";
+          const active = s.id === activeId;
+          const size = garage ? 28 : 24;
+          return (
+            <Marker
+              key={s.id}
+              longitude={s.longitude}
+              latitude={s.latitude}
+              style={{ zIndex: active ? 1 : 0 }}
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                setOpenId(s.id);
+              }}
+            >
+              <div
+                className={`stop-marker ${garage ? "stop-marker--garage" : "stop-marker--point"} ${active ? "stop-marker--active" : ""}`}
+                style={{ width: size, height: size }}
+              >
+                {garage ? "G" : String(order.get(s.id) ?? "•")}
               </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+            </Marker>
+          );
+        })}
+        {open && (
+          <Popup longitude={open.longitude} latitude={open.latitude} offset={16} onClose={() => setOpenId(null)}>
+            <div className="space-y-0.5 text-xs">
+              <p className="text-sm font-semibold">{open.name}</p>
+              <p>ID: {open.id}</p>
+              {open.wasteType && <p>Waste type: {open.wasteType}</p>}
+              {open.priority !== undefined && <p>Priority: {String(open.priority)}</p>}
+              <p>OSM node: {open.node}</p>
+              <p>Snap distance: {fmt(open.snapDistanceM)} m</p>
+              {open.role !== "garage" && <p>Optimized stop #{order.get(open.id)}</p>}
+            </div>
+          </Popup>
+        )}
+      </BaseMap>
     </div>
   );
 }

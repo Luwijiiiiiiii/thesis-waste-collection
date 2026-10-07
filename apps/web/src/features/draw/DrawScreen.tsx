@@ -1,7 +1,10 @@
 "use client";
-import { MIN_DRAFT_STOPS, type DraftAction, type DraftState, type ValidationReport } from "@wcro/core";
-import { Eraser, RotateCcw, X } from "lucide-react";
-import { Button, Card, CardBody, PageHeader } from "@/components/ui";
+import { MIN_DRAFT_STOPS, type DraftAction, type DraftState, type RouteFile, type ValidationReport } from "@wcro/core";
+import { Eraser, ListChecks, Map as MapIcon, MapPin, RotateCcw, SlidersHorizontal, X } from "lucide-react";
+import { Tabs } from "@/components/Tabs";
+import { Badge, Button, Card, CardBody, EmptyState, PageHeader } from "@/components/ui";
+import { ConfigPanel } from "@/features/config/ConfigPanel";
+import { RouteDetailsForm, StopsEditorTable } from "@/features/edit/RouteEditors";
 import { SimulationPanel } from "@/features/simulation/SimulationPanel";
 import type { StageState } from "@/features/simulation/useSimulation";
 import { ValidationReportCard } from "@/features/validation/ValidationReportCard";
@@ -10,6 +13,8 @@ import { StopList } from "./StopList";
 
 export interface DrawScreenProps {
   state: DraftState;
+  /** The draft as a route file (null until the garage is placed) */
+  file: RouteFile | null;
   onAction: (a: DraftAction) => void;
   report: ValidationReport | null;
   running: boolean;
@@ -23,7 +28,7 @@ export interface DrawScreenProps {
 }
 
 export function DrawScreen(props: DrawScreenProps) {
-  const { state, onAction, report, running } = props;
+  const { state, file, onAction, report, running } = props;
   const { draft, notice } = state;
   const stopCount = draft.stops.length;
   const enoughStops = stopCount >= MIN_DRAFT_STOPS;
@@ -53,31 +58,80 @@ export function DrawScreen(props: DrawScreenProps) {
         <Card className="min-w-0">
           <CardBody>
             <div inert={running}>
-              <DrawMapLoader draft={draft} onAction={onAction} />
+              <Tabs
+                label="Drawn route"
+                items={[
+                  {
+                    id: "map",
+                    label: "Map",
+                    icon: <MapIcon className="size-4" />,
+                    content: (
+                      <div>
+                        <DrawMapLoader draft={draft} onAction={onAction} />
+                        <p
+                          role="status"
+                          className={`mt-2 min-h-5 text-sm ${notice ? "font-medium text-danger" : "text-muted"}`}
+                        >
+                          {notice ?? "Tap to add a point. Drag a marker to adjust it. Select a marker to delete it."}
+                        </p>
+                      </div>
+                    ),
+                  },
+                  {
+                    id: "points",
+                    label: "Collection points",
+                    icon: <ListChecks className="size-4" />,
+                    badge: <Badge>{stopCount}</Badge>,
+                    content: file ? (
+                      <StopsEditorTable
+                        data={file}
+                        rowKeys={draft.stops.map((s) => s.id)}
+                        onChange={(target, patch) =>
+                          onAction({
+                            type: "editStop",
+                            id: target === "garage" ? "garage" : draft.stops[target].id,
+                            patch,
+                          })
+                        }
+                        note="Drag a marker on the map to change its coordinates."
+                      />
+                    ) : (
+                      <EmptyState
+                        icon={<MapPin className="size-7" />}
+                        title="No points yet"
+                        description="Place the garage and your collection points on the map, then name them here."
+                      />
+                    ),
+                  },
+                  {
+                    id: "details",
+                    label: "Details",
+                    icon: <SlidersHorizontal className="size-4" />,
+                    content: (
+                      <div className="space-y-8">
+                        {file ? (
+                          <RouteDetailsForm
+                            data={file}
+                            onChange={(patch) => onAction({ type: "editDetails", patch })}
+                          />
+                        ) : (
+                          <p className="rounded-xl border border-dashed border-line-strong px-4 py-6 text-center text-sm text-muted">
+                            Place the garage on the map first, then set the route, driver and truck details here.
+                          </p>
+                        )}
+                        <ConfigPanel />
+                      </div>
+                    ),
+                  },
+                ]}
+              />
             </div>
-            <p role="status" className={`mt-2 min-h-5 text-sm ${notice ? "font-medium text-danger" : "text-muted"}`}>
-              {notice ?? "Tap to add a point. Drag a marker to adjust it. Select a marker to delete it."}
-            </p>
           </CardBody>
         </Card>
 
         <Card className="min-w-0 lg:sticky lg:top-6">
           <CardBody className="space-y-4">
             <div inert={running} className="space-y-4">
-              <div>
-                <label htmlFor="route-name" className="text-sm font-medium">
-                  Route name
-                </label>
-                <input
-                  id="route-name"
-                  type="text"
-                  value={draft.routeName}
-                  maxLength={80}
-                  onChange={(e) => onAction({ type: "rename", name: e.target.value })}
-                  className="mt-1.5 min-h-11 w-full rounded-xl border border-line-strong bg-surface px-3 text-sm"
-                />
-              </div>
-
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <h2 className="text-sm font-medium">
@@ -104,7 +158,7 @@ export function DrawScreen(props: DrawScreenProps) {
                     </Button>
                   </div>
                 </div>
-                <StopList draft={draft} onAction={onAction} />
+                <StopList draft={draft} file={file} onAction={onAction} />
                 <p className="mt-2 text-xs leading-5 text-muted">
                   The order here is the traditional route&apos;s visiting order. Use the arrows to change it.
                 </p>

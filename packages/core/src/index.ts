@@ -1,5 +1,6 @@
 export * from "./config";
 export * from "./draft";
+export * from "./edit";
 export * from "./schema";
 export * from "./types";
 export * from "./validation";
