@@ -2,11 +2,20 @@
 // Interactive route map (replaces the planned Folium visualization)
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Layer, Marker, Popup, Source, type MapRef } from "react-map-gl/mapbox";
-import type { LatLng, RegisteredStop, SimulationResult } from "@wcro/core";
+import type { LatLng, RegisteredStop, RouteKind, RouteResult, SimulationResult } from "@wcro/core";
 import { BaseMap, boundsOf, toLngLat } from "@/components/BaseMap";
 import { fmt } from "@/lib/format";
 
 const FIT = { padding: 36 };
+
+/** Position of each collection point in a route's visiting order */
+const orderOf = (route: RouteResult) => {
+  const m = new Map<string, number>();
+  route.visitSequence.forEach((s, i) => {
+    if (s.role !== "garage" && !m.has(s.id)) m.set(s.id, i);
+  });
+  return m;
+};
 
 const line = (path: LatLng[]) => ({
   type: "Feature" as const,
@@ -17,10 +26,13 @@ const line = (path: LatLng[]) => ({
 export default function RouteMap({
   result,
   activeId = null,
+  orderKind = "optimized",
   heightClass = "h-[420px] lg:h-[560px]",
 }: {
   result: SimulationResult;
   activeId?: string | null;
+  /** Which route's visiting order numbers the markers */
+  orderKind?: RouteKind;
   heightClass?: string;
 }) {
   const mapRef = useRef<MapRef>(null);
@@ -30,16 +42,19 @@ export default function RouteMap({
     () => [result.nodeRegistry.garage, ...result.nodeRegistry.collectionPoints],
     [result],
   );
-  // Number each point by its position in the optimized sequence
-  const order = useMemo(() => {
-    const m = new Map<string, number>();
-    result.optimized.visitSequence.forEach((s, i) => {
-      if (s.role !== "garage" && !m.has(s.id)) m.set(s.id, i);
-    });
-    return m;
-  }, [result]);
+  const orders = useMemo(
+    () => ({ optimized: orderOf(result.optimized), traditional: orderOf(result.traditional) }),
+    [result],
+  );
+  // Markers are numbered by the order picked in the side list
+  const order = orders[orderKind];
   const bounds = useMemo(
-    () => boundsOf([...stops.map((s) => [s.latitude, s.longitude] as LatLng), ...result.optimized.path]),
+    () =>
+      boundsOf([
+        ...stops.map((s) => [s.latitude, s.longitude] as LatLng),
+        ...result.optimized.path,
+        ...result.traditional.path,
+      ]),
     [stops, result],
   );
   const paths = useMemo(
@@ -115,7 +130,7 @@ export default function RouteMap({
               }}
             >
               <div
-                className={`stop-marker ${garage ? "stop-marker--garage" : "stop-marker--point"} ${active ? "stop-marker--active" : ""}`}
+                className={`stop-marker ${garage ? "stop-marker--garage" : orderKind === "optimized" ? "stop-marker--point" : "stop-marker--traditional"} ${active ? "stop-marker--active" : ""}`}
                 style={{ width: size, height: size }}
               >
                 {garage ? "G" : String(order.get(s.id) ?? "•")}
@@ -132,7 +147,12 @@ export default function RouteMap({
               {open.priority !== undefined && <p>Priority: {String(open.priority)}</p>}
               <p>OSM node: {open.node}</p>
               <p>Snap distance: {fmt(open.snapDistanceM)} m</p>
-              {open.role !== "garage" && <p>Optimized stop #{order.get(open.id)}</p>}
+              {open.role !== "garage" && (
+                <>
+                  <p>Optimized stop #{orders.optimized.get(open.id)}</p>
+                  <p>Traditional stop #{orders.traditional.get(open.id)}</p>
+                </>
+              )}
             </div>
           </Popup>
         )}
