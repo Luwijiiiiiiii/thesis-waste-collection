@@ -282,9 +282,60 @@ See `apps/web/public/samples/baguio-sample-route.json`. Required: `schema_versio
 
 To re-download the road network: `POST /api/v1/network {"refresh": true}` on the API.
 
-## Deployment note
+## Deployment
 
 Both apps are stateless; all data lives in PostgreSQL. Deploy the API as a long-running Node process
 (`pnpm build && pnpm --filter @wcro/api db:deploy && pnpm start:api`), because a simulation can run for several minutes
 while it streams progress. Serverless function time limits are usually too short. Then build the web app with
 `NEXT_PUBLIC_API_URL` set to the API's public URL, and set the API's `CORS_ORIGIN` to the web app's URL.
+
+The free setup below is Neon (database) + Render (API) + Vercel (web). Do the steps in order.
+
+### 1. Database: Neon
+
+1. Sign up at [neon.com](https://neon.com) and create a project (region: Asia Pacific / Singapore).
+2. Copy the **direct** connection string (turn off "Connection pooling"). `prisma migrate deploy` fails on the pooled one.
+
+### 2. API: Render
+
+1. Sign up at [render.com](https://render.com) with GitHub.
+2. **New → Blueprint**, pick this repository. Render reads [`render.yaml`](render.yaml) and asks for:
+   - `DATABASE_URL`: the Neon string from step 1
+   - `CORS_ORIGIN`: `*` for now (set the real value in step 4)
+3. Wait for the deploy. Every build runs the pending database migrations.
+4. Open `https://<your-service>.onrender.com/api/v1`. It should answer with a welcome message.
+
+### 3. Web: Vercel
+
+1. Sign up at [vercel.com](https://vercel.com) with GitHub. **Add New → Project**, import this repository.
+2. Set **Root Directory** to `apps/web`. Leave the build settings on their detected defaults.
+3. Add these environment variables **before** deploying (both are inlined at build time, so changing them later
+   needs a redeploy):
+   - `NEXT_PUBLIC_API_URL`: the Render URL, without a trailing `/`
+   - `NEXT_PUBLIC_MAPBOX_TOKEN`: your `pk.…` token
+4. Deploy.
+
+### 4. Connect them
+
+- On Render, set `CORS_ORIGIN` to the exact Vercel URL (e.g. `https://your-app.vercel.app`). It takes one origin, so
+  Vercel preview deployments cannot call the API.
+- If the Mapbox token has URL restrictions, add the Vercel domain.
+
+### Free-tier limits
+
+- The Render free API sleeps after 15 minutes without traffic, and the first request after that takes about a
+  minute. Open the site a minute before a demo, or have a free pinger (e.g. cron-job.org) call `/api/v1` every
+  10 minutes. Render has no health check configured, because checks would count against the API's rate limiter.
+- The hosted database starts empty. Runs saved in your local database do not move over unless you copy them
+  (`pg_dump` / `pg_restore`).
+
+### Sharing the hosted database during development
+
+Pointing your local `apps/api/.env` `DATABASE_URL` at the Neon database lets everyone on the team see the same
+simulation runs and road network cache. Rules for the shared database:
+
+- Never run `pnpm db:migrate` (`prisma migrate dev`) against it. On a schema mismatch it offers to **reset the
+  database**, which deletes all data.
+- Apply migrations to it only with `pnpm --filter @wcro/api db:deploy`, after they are merged into `main`. Render's
+  build already does this.
+- Work on schema changes against your local database or a separate Neon branch.

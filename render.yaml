@@ -1,0 +1,35 @@
+# Render Blueprint for the Express API (apps/api). The web app deploys to Vercel separately.
+# Render dashboard → New → Blueprint → pick this repo; it prompts for the `sync: false` values.
+services:
+  - type: web
+    name: wcro-api
+    runtime: node
+    plan: free
+    region: singapore
+    # pnpm comes from npx so the version matches "packageManager"; NODE_ENV=development on install
+    # keeps devDependencies (turbo, esbuild, prisma) that the build needs.
+    buildCommand: >-
+      NODE_ENV=development npx -y pnpm@10.28.0 install --frozen-lockfile &&
+      npx -y pnpm@10.28.0 turbo run build --filter=@wcro/api &&
+      npx -y pnpm@10.28.0 --filter @wcro/api db:deploy
+    startCommand: node apps/api/dist/server.js
+    # No healthCheckPath: health checks would count against the production rate limiter.
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/**
+        - pnpm-lock.yaml
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      # Neon *direct* (non-pooled) connection string; `prisma migrate deploy` needs it
+      - key: DATABASE_URL
+        sync: false
+      # The Vercel URL of the web app, e.g. https://your-app.vercel.app (no trailing slash)
+      - key: CORS_ORIGIN
+        sync: false
+      # Requests per IP per 15 min. A room of viewers on one Wi-Fi shares one IP, so the default 100 is too low.
+      - key: RATE_LIMIT
+        value: "1000"
