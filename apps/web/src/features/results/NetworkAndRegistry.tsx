@@ -28,22 +28,12 @@ export function NetworkAndRegistry({ network, registry }: { network: RoadNetwork
             "Boundary",
             network.boundarySource === "relation" ? `OSM relation ${network.osmRelationId}` : "Fallback bounding box",
           ],
-          ["Downloaded", fmtDateTime(network.fetchedAt)],
+          ["OSM data as of", fmtDateTime(network.fetchedAt)],
           [
             "Garage node",
             <span key="g" className="num">
               {registry.garage.node}
             </span>,
-          ],
-          [
-            "Source",
-            network.fromCache ? (
-              <Badge key="src">Cache</Badge>
-            ) : (
-              <Badge key="src" tone="brand">
-                Fresh download
-              </Badge>
-            ),
           ],
         ]}
       />

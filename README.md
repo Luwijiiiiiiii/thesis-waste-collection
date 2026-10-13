@@ -24,13 +24,13 @@ First time on this machine? Follow [Setup](#setup) below.
 ```
 Browser ──► Web app (Next.js, :3000) ──► API (Express + Prisma, :3001) ──► PostgreSQL (:5432)
                                                      │
-                                                     └──► OpenStreetMap (Overpass / Nominatim), first run only
+                                                     └──► apps/api/data/road-network.json.gz (OpenStreetMap snapshot)
 ```
 
 - **Web app** (`apps/web`): the UI only. It holds no data and calls the API.
-- **API** (`apps/api`): validates route files, downloads and caches the road network, runs the simulations and saves
+- **API** (`apps/api`): validates route files, runs the simulations on the committed road network snapshot and saves
   the simulation log.
-- **PostgreSQL**: stores the simulation log and the cached road network. The API will not start without it.
+- **PostgreSQL**: stores the simulation log. The API will not start without it.
 
 Nothing is built into a Docker image. Docker is only one convenient way to get a PostgreSQL server; the apps themselves
 run directly on your machine with Node.
@@ -113,7 +113,7 @@ Both `NEXT_PUBLIC_*` values are read when the web app starts, so restart `pnpm d
 pnpm db:migrate
 ```
 
-This applies the migrations in `apps/api/prisma/migrations` (`simulations`, `road_networks`, `logs`). It is
+This applies the migrations in `apps/api/prisma/migrations` (`simulations`, `logs`). It is
 needed once per new database, and again whenever someone adds a migration (after a `git pull` that changes
 `apps/api/prisma/`).
 
@@ -143,9 +143,8 @@ in the volume. `docker compose down -v` also deletes the data, so run `pnpm db:m
 
 1. Open http://localhost:3000 and click **Use sample Baguio route** (or upload your own JSON).
 2. Check the validation report (6/6).
-3. Press **Run simulation**. The first run downloads Baguio's drivable roads from OpenStreetMap, which takes about
-   30–60 s and needs internet access. The API then caches the graph in the database (`road_networks` table) and
-   reuses it, so later runs are much faster.
+3. Press **Run simulation**. It runs on Baguio's drivable roads from the committed OpenStreetMap snapshot
+   (see [Road network snapshot](#road-network-snapshot)), so no internet access is needed.
 4. Past runs are listed on the **Simulations** page (http://localhost:3000/simulations).
 
 ### Troubleshooting
@@ -157,7 +156,7 @@ in the volume. `docker compose down -v` also deletes the data, so run `pnpm db:m
 | `The table ... does not exist` errors | Run `pnpm db:migrate`. |
 | `Cannot find module '.../generated/prisma'` | Run `pnpm --filter @wcro/api db:generate` (normally done by `pnpm install`). |
 | Web app shows network or CORS errors | Make sure the API is running on port 3001. `CORS_ORIGIN` in `apps/api/.env` must match the web app's address (`http://localhost:3000`), and `NEXT_PUBLIC_API_URL` must point to the API. |
-| First simulation hangs or fails while loading the road network | OpenStreetMap's public servers are busy or unreachable. Try again, or set `OVERPASS_URL` to another Overpass mirror in `apps/api/.env`. |
+| `network:update` fails with `Overpass API error 504` or `fetch failed` | OpenStreetMap's public servers are busy. Try again, or set `OVERPASS_URL` to a mirror, e.g. `https://overpass.kumi.systems/api/interpreter`. |
 | Port 3000 or 3001 is already in use | Stop the other process, or change `PORT` in `apps/api/.env` and update `NEXT_PUBLIC_API_URL` to match. |
 
 ### Draw on map (no JSON needed)
@@ -183,16 +182,18 @@ pnpm start:api   # serve the API production build (apps/api/dist)
 ```
 apps/
   api/                         Express 5 + Prisma (PostgreSQL) backend – details in apps/api/README.md
-    prisma/schema.prisma       simulations, road_networks, logs
+    prisma/schema.prisma       simulations, logs
+    data/road-network.json.gz  OpenStreetMap road network snapshot of Baguio
+    scripts/                   update-road-network.ts re-downloads the snapshot
     src/routes/                /api/v1 endpoints
       POST /validate             run the validation engine
-      GET|POST /network          road network status · preload/refresh
+      GET /network               road network snapshot summary
       POST /simulate             run the pipeline, streams NDJSON progress events
       GET /simulations[/:id]     simulation log
     src/services/
-      road-network.service.ts  download + memory/database cache of the road graph
+      road-network.service.ts  loads the snapshot into memory
       simulation.service.ts    pipeline: validate → network → snap → traditional → optimized → metrics → archive
-    src/repositories/          Prisma queries (simulation log, road-network cache)
+    src/repositories/          Prisma queries (simulation log)
   web/                         Next.js 16 (App Router) – frontend only
     src/lib/api.ts             client for the API
     src/features/              UI modules (upload, validation, dataset, simulation, results)
@@ -215,7 +216,7 @@ packages/
 | Cell 7–8 Upload + read JSON | Route file | `features/upload/RouteFileInput.tsx` |
 | Cell 9 + 11 Validation engine | Validation | `packages/core/src/validation.ts` (shared by client and server) |
 | Cell 10 Dataset summary, points preview | Dataset | `features/dataset/DatasetSummary.tsx` |
-| Cell 12 Download OSM road network (cached) | Road network | `packages/road-network/src/overpass.ts`, `build-graph.ts`, `apps/api/src/services/road-network.service.ts` |
+| Cell 12 Download OSM road network (cached) | Road network | `packages/road-network/src/overpass.ts`, `build-graph.ts`, `apps/api/scripts/update-road-network.ts`, `apps/api/src/services/road-network.service.ts` |
 | Cell 13 Coordinates → nearest nodes | Snapping | `packages/routing/src/snap.ts`, `road-network/src/nearest.ts` |
 | Cell 14 Road network summary + exports | Road network | `features/results/NetworkAndRegistry.tsx`, `exports.nodeRegistryCsv` |
 | Cell 16–18 Simulated traditional route (A*) | Routing | `packages/routing/src/routes.ts → computeTraditionalRoute` |
@@ -228,9 +229,9 @@ packages/
 
 | Python | TypeScript |
 |---|---|
-| `ox.graph_from_place("City of Baguio", network_type="drive")` | Nominatim → boundary relation → Overpass query with the **same drive filter OSMnx uses** (falls back to a bounding box) |
+| `ox.graph_from_place("City of Baguio", network_type="drive")` | Overpass query inside the city's boundary relation with the **same drive filter OSMnx uses** |
 | OSMnx one-way handling | `oneway=yes/true/1`, `oneway=-1`, `junction=roundabout` |
-| `ox.settings.use_cache` / `if "road_graph" not in globals()` | disk JSON cache + in-memory singleton |
+| `ox.settings.use_cache` / `if "road_graph" not in globals()` | committed snapshot file + in-memory singleton |
 | `ox.distance.nearest_nodes` | `nearestNode()` (also returns snap distance) |
 | `nx.astar_path(..., weight="length")` | `astarPath()` with a great-circle heuristic (admissible, so results equal Dijkstra) |
 | `traveling_salesman_problem(..., method=christofides)` on `to_undirected()` | distance matrix (Dijkstra on the undirected graph) → `christofidesTour()` with **exact** min-weight perfect matching (≤ 20 odd-degree stops, greedy above that) |
@@ -272,19 +273,77 @@ See `apps/web/public/samples/baguio-sample-route.json`. Required: `schema_versio
 
 - `DATABASE_URL` – PostgreSQL connection (required)
 - `CORS_ORIGIN` – the web app's origin (default `*`)
-- `OVERPASS_URL`, `NOMINATIM_URL` – alternative OSM endpoints
-- `OSM_RELATION_ID` – skip Nominatim by giving the boundary relation id directly
+- `OVERPASS_URL`, `NOMINATIM_URL` – alternative OSM endpoints for `network:update`
 
 `apps/web/.env.example`:
 
 - `NEXT_PUBLIC_API_URL` – where the browser reaches the API (inlined at build time)
 - `API_URL` – optional different origin for server-side calls
 
-To re-download the road network: `POST /api/v1/network {"refresh": true}` on the API.
+## Road network snapshot
 
-## Deployment note
+Simulations run on `apps/api/data/road-network.json.gz`, a committed snapshot of Baguio's drivable roads from
+OpenStreetMap (inside [relation 13946201](https://www.openstreetmap.org/relation/13946201)). Because the map is fixed,
+the same route file always gives the same distances, and the API needs no internet access. The results page shows the
+snapshot's date as **OSM data as of**.
+
+To refresh the map data, run `pnpm --filter @wcro/api network:update` and commit the new file. Runs before and after a
+refresh are not directly comparable.
+
+## Deployment
 
 Both apps are stateless; all data lives in PostgreSQL. Deploy the API as a long-running Node process
 (`pnpm build && pnpm --filter @wcro/api db:deploy && pnpm start:api`), because a simulation can run for several minutes
 while it streams progress. Serverless function time limits are usually too short. Then build the web app with
 `NEXT_PUBLIC_API_URL` set to the API's public URL, and set the API's `CORS_ORIGIN` to the web app's URL.
+
+The free setup below is Neon (database) + Render (API) + Vercel (web). Do the steps in order.
+
+### 1. Database: Neon
+
+1. Sign up at [neon.com](https://neon.com) and create a project (region: Asia Pacific / Singapore).
+2. Copy the **direct** connection string (turn off "Connection pooling"). `prisma migrate deploy` fails on the pooled one.
+
+### 2. API: Render
+
+1. Sign up at [render.com](https://render.com) with GitHub.
+2. **New → Blueprint**, pick this repository. Render reads [`render.yaml`](render.yaml) and asks for:
+   - `DATABASE_URL`: the Neon string from step 1
+   - `CORS_ORIGIN`: `*` for now (set the real value in step 4)
+3. Wait for the deploy. Every build runs the pending database migrations.
+4. Open `https://<your-service>.onrender.com/api/v1`. It should answer with a welcome message.
+
+### 3. Web: Vercel
+
+1. Sign up at [vercel.com](https://vercel.com) with GitHub. **Add New → Project**, import this repository.
+2. Set **Root Directory** to `apps/web`. Leave the build settings on their detected defaults.
+3. Add these environment variables **before** deploying (both are inlined at build time, so changing them later
+   needs a redeploy):
+   - `NEXT_PUBLIC_API_URL`: the Render URL, without a trailing `/`
+   - `NEXT_PUBLIC_MAPBOX_TOKEN`: your `pk.…` token
+4. Deploy.
+
+### 4. Connect them
+
+- On Render, set `CORS_ORIGIN` to the exact Vercel URL (e.g. `https://your-app.vercel.app`). It takes one origin, so
+  Vercel preview deployments cannot call the API.
+- If the Mapbox token has URL restrictions, add the Vercel domain.
+
+### Free-tier limits
+
+- The Render free API sleeps after 15 minutes without traffic, and the first request after that takes about a
+  minute. Open the site a minute before a demo, or have a free pinger (e.g. cron-job.org) call `/api/v1` every
+  10 minutes. Render has no health check configured, because checks would count against the API's rate limiter.
+- The hosted database starts empty. Runs saved in your local database do not move over unless you copy them
+  (`pg_dump` / `pg_restore`).
+
+### Sharing the hosted database during development
+
+Pointing your local `apps/api/.env` `DATABASE_URL` at the Neon database lets everyone on the team see the same
+simulation runs. Rules for the shared database:
+
+- Never run `pnpm db:migrate` (`prisma migrate dev`) against it. On a schema mismatch it offers to **reset the
+  database**, which deletes all data.
+- Apply migrations to it only with `pnpm --filter @wcro/api db:deploy`, after they are merged into `main`. Render's
+  build already does this.
+- Work on schema changes against your local database or a separate Neon branch.

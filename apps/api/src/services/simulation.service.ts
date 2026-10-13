@@ -73,18 +73,13 @@ export default class SimulationSvc {
     };
 
     // ---- Module 3: road network ----
-    yield {
-      type: "stage",
-      stage: "network",
-      status: "running",
-      detail: "Loading road network (first run downloads from OpenStreetMap)...",
-    };
-    const network = await RoadNetworkSvc.load();
+    yield { type: "stage", stage: "network", status: "running", detail: "Loading road network..." };
+    const network = RoadNetworkSvc.load();
     yield {
       type: "stage",
       stage: "network",
       status: "done",
-      detail: `${network.graph.nodeCount.toLocaleString()} nodes · ${network.graph.edgeCount.toLocaleString()} edges${network.summary.fromCache ? " (cached)" : ""}`,
+      detail: `${network.graph.nodeCount.toLocaleString()} nodes · ${network.graph.edgeCount.toLocaleString()} edges`,
     };
 
     yield { type: "stage", stage: "snapping", status: "running" };
