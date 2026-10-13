@@ -33,25 +33,6 @@ model Simulation {
   @@map("simulations")
 }
 
-/// Cached OpenStreetMap road graph.
-model RoadNetwork {
-  /// e.g. road-network-city-of-baguio-drive
-  key            String   @id
-  studyArea      String   @map("study_area")
-  networkType    String   @map("network_type")
-  boundarySource String   @map("boundary_source")
-  osmRelationId  Int?     @map("osm_relation_id")
-  nodeCount      Int      @map("node_count")
-  edgeCount      Int      @map("edge_count")
-  fetchedAt      DateTime @map("fetched_at")
-  /// gzip of the SerializedRoadGraph JSON from @wcro/road-network
-  graph          Bytes
-  sizeBytes      Int      @map("size_bytes")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-
-  @@map("road_networks")
-}
-
 /// Was the capped `logs` collection written by winston-mongodb.
 model Log {
   id        BigInt   @id @default(autoincrement())

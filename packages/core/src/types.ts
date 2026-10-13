@@ -24,9 +24,8 @@ export interface RoadNetworkSummary {
   osmRelationId?: number;
   nodeCount: number;
   edgeCount: number;
+  /** When the committed snapshot was downloaded from OpenStreetMap */
   fetchedAt: string;
-  /** true when the graph came from the on-disk / in-memory cache */
-  fromCache: boolean;
 }
 
 /** A garage or collection point snapped to its nearest road-graph node (notebook CELL 13) */

@@ -10,7 +10,6 @@ export interface StudyAreaConfig {
   placeQuery: string;
   /**
    * Optional OSM relation id of the boundary. When set, Nominatim is skipped.
-   * Can also be overridden at runtime with the OSM_RELATION_ID env variable.
    */
   osmRelationId?: number;
   /** Fallback bounding box [south, west, north, east] used if the boundary lookup fails */
@@ -36,6 +35,8 @@ export interface VehicleDefaults {
 export const STUDY_AREA: StudyAreaConfig = {
   name: "City of Baguio",
   placeQuery: "City of Baguio, Benguet, Philippines",
+  // https://www.openstreetmap.org/relation/13946201 (the place query above no longer resolves to it)
+  osmRelationId: 13946201,
   fallbackBBox: [16.355, 120.545, 16.445, 120.64],
   mapCenter: [16.4123, 120.596],
 };

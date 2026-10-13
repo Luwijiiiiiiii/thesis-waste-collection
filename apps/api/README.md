@@ -25,13 +25,15 @@ apps/api/
     controllers/              HTTP in/out + Joi validation
     services/                 business logic
       simulation.service.ts   pipeline: validate → network → snap → traditional → optimized → metrics → archive
-      road-network.service.ts OSM download + in-memory / database cache of the road graph
-    repositories/             database access through Prisma (simulations, road_networks)
+      road-network.service.ts loads data/road-network.json.gz into memory
+    repositories/             database access through Prisma (simulations)
     utils/
       prisma.ts               PrismaClient singleton (replaces mongo.ts)
       prisma-log.transport.ts winston transport writing to the `logs` table (replaces winston-mongodb)
       logger.ts, http-error.ts, format.ts
     generated/prisma/         generated Prisma Client (gitignored)
+  data/road-network.json.gz   OpenStreetMap road network snapshot (committed)
+  scripts/                    update-road-network.ts: `pnpm network:update` re-downloads the snapshot
   build.mjs                   esbuild bundle → dist/server.js (bundles the @wcro/* TypeScript packages)
   test/                       vitest + supertest
 ```
@@ -77,13 +79,11 @@ Tests run from the repo root with `pnpm test`.
 | GET    | `/api/v1`                  | none                                 | welcome message                                  |
 | POST   | `/api/v1/validate`         | route file as JSON, or `text/plain`  | validation report; 200 passed, 422 failed        |
 | POST   | `/api/v1/simulate`         | `{ routeFile, solver? }`             | NDJSON stream of `SimulationEvent`, ends with `result` or `error` |
-| GET    | `/api/v1/network`          | none                                 | `{ inMemory, cachedInDatabase }`                 |
-| POST   | `/api/v1/network`          | `{ refresh?: true }`                 | loads (or re-downloads) the road network         |
+| GET    | `/api/v1/network`          | none                                 | `RoadNetworkSummary` of the snapshot             |
 | GET    | `/api/v1/simulations`      | `?limit=1..500`                      | `SimulationLogEntry[]`, newest first             |
 | GET    | `/api/v1/simulations/:id`  | none                                 | full `SimulationResult`, 404 if unknown          |
 
 Types (`SimulationEvent`, `SimulationResult`, …) come from `@wcro/core`, shared with the web app.
 
-`solver` is one of `TSP_SOLVERS` in `@wcro/core`; default `christofides`. The first simulation downloads Baguio's road
-network from OpenStreetMap (30–60 s) and caches it gzipped in `road_networks`; later runs load it from memory or the
-database.
+`solver` is one of `TSP_SOLVERS` in `@wcro/core`; default `christofides`. Simulations run on the committed road network
+snapshot `data/road-network.json.gz`, loaded into memory on the first run; the API never calls OpenStreetMap.

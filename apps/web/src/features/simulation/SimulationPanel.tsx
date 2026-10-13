@@ -128,13 +128,6 @@ export function SimulationPanel({
               );
             })}
           </ol>
-
-          {running && stages.network.status === "running" && (
-            <p className="mt-4 rounded-lg bg-brand-soft px-3 py-2 text-xs leading-5 text-brand-ink">
-              First run: downloading Baguio&apos;s road network from OpenStreetMap (up to a minute). It is cached for
-              next time.
-            </p>
-          )}
         </div>
       )}
 
