@@ -26,6 +26,8 @@ model Simulation {
   traditionalKm          Float    @map("traditional_km")
   optimizedKm            Float    @map("optimized_km")
   distanceSavingsPercent Float    @map("distance_savings_percent")
+  /// Runs started from the Tests page ("Test all"). Only these can be deleted from the history.
+  isTest                 Boolean  @default(false) @map("is_test")
   /// Full SimulationResult from @wcro/core
   result                 Json
 

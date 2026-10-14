@@ -128,6 +128,34 @@ export interface SimulationLogEntry {
   traditionalKm: number;
   optimizedKm: number;
   distanceSavingsPercent: number;
+  /** Started from the Tests page ("Test all") */
+  isTest: boolean;
+}
+
+/** One archived test run with the numbers the test dashboard needs (no map data) */
+export interface TestRunRecord {
+  id: string;
+  createdAt: string;
+  routeName: string;
+  collectionPoints: number;
+  solver?: TspSolver;
+  traditional: RouteMetrics;
+  optimized: RouteMetrics;
+  traditionalComputeMs: number;
+  optimizedComputeMs: number;
+}
+
+/** Test size groups: low = 10 or fewer collection points, mid = 11 to 19, many = 20 or more */
+export type TestGroup = "low" | "mid" | "many";
+
+export const TEST_GROUPS: { key: TestGroup; label: string; range: string }[] = [
+  { key: "low", label: "Low", range: "10 or fewer points" },
+  { key: "mid", label: "Mid", range: "11 to 19 points" },
+  { key: "many", label: "Many", range: "20 or more points" },
+];
+
+export function testGroupOf(collectionPoints: number): TestGroup {
+  return collectionPoints <= 10 ? "low" : collectionPoints < 20 ? "mid" : "many";
 }
 
 export type SimulationStage =

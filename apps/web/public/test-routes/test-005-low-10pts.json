@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Test 005 – low (10 stops) near Session Road",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-011",
+    "vehicle_name": "Garbage Truck",
+    "average_speed_kmh": 16,
+    "fuel_efficiency_kmpl": 2,
+    "fuel_price_per_liter": 61.5,
+    "co2_factor": 2.68
+  },
+  "driver": {
+    "name": "E. Balanag"
+  },
+  "created_date": "2026-10-14",
+  "garage": {
+    "id": "G-01",
+    "name": "Test Garage 005",
+    "latitude": 16.403715,
+    "longitude": 120.573911
+  },
+  "collection_points": [
+    {
+      "id": "CP-01",
+      "name": "Test 005 Stop 1",
+      "latitude": 16.413635,
+      "longitude": 120.562598,
+      "waste_type": "Recyclable",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-02",
+      "name": "Test 005 Stop 2",
+      "latitude": 16.415937,
+      "longitude": 120.582465,
+      "waste_type": "Biodegradable",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-03",
+      "name": "Test 005 Stop 3",
+      "latitude": 16.431685,
+      "longitude": 120.586705,
+      "waste_type": "Mixed",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-04",
+      "name": "Test 005 Stop 4",
+      "latitude": 16.390021,
+      "longitude": 120.585822,
+      "waste_type": "Recyclable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-05",
+      "name": "Test 005 Stop 5",
+      "latitude": 16.380408,
+      "longitude": 120.563358,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-06",
+      "name": "Test 005 Stop 6",
+      "latitude": 16.403586,
+      "longitude": 120.570739,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-07",
+      "name": "Test 005 Stop 7",
+      "latitude": 16.382898,
+      "longitude": 120.567697,
+      "waste_type": "Biodegradable",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-08",
+      "name": "Test 005 Stop 8",
+      "latitude": 16.412672,
+      "longitude": 120.562429,
+      "waste_type": "Residual",
+      "priority": "High"
+    },
+    {
+      "id": "CP-09",
+      "name": "Test 005 Stop 9",
+      "latitude": 16.408296,
+      "longitude": 120.591275,
+      "waste_type": "Residual",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-10",
+      "name": "Test 005 Stop 10",
+      "latitude": 16.42082,
+      "longitude": 120.577522,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    }
+  ]
+}

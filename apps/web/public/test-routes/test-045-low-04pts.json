@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Test 045 – low (4 stops) near Naguilian Rd",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-013",
+    "vehicle_name": "Garbage Truck",
+    "average_speed_kmh": 20,
+    "fuel_efficiency_kmpl": 1,
+    "fuel_price_per_liter": 56.3,
+    "co2_factor": 2.68
+  },
+  "driver": {
+    "name": "A. Cariño"
+  },
+  "created_date": "2026-10-14",
+  "garage": {
+    "id": "G-01",
+    "name": "Test Garage 045",
+    "latitude": 16.376112,
+    "longitude": 120.607385
+  },
+  "collection_points": [
+    {
+      "id": "CP-01",
+      "name": "Test 045 Stop 1",
+      "latitude": 16.408839,
+      "longitude": 120.58863,
+      "waste_type": "Biodegradable",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-02",
+      "name": "Test 045 Stop 2",
+      "latitude": 16.421074,
+      "longitude": 120.598173,
+      "waste_type": "Mixed",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-03",
+      "name": "Test 045 Stop 3",
+      "latitude": 16.412474,
+      "longitude": 120.625123,
+      "waste_type": "Mixed",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-04",
+      "name": "Test 045 Stop 4",
+      "latitude": 16.365706,
+      "longitude": 120.606323,
+      "waste_type": "Mixed",
+      "priority": "Medium"
+    }
+  ]
+}

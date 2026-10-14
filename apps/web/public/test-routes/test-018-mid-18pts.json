@@ -1,0 +1,165 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Test 018 – mid (18 stops) near Irisan",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-010",
+    "vehicle_name": "Garbage Truck"
+  },
+  "driver": {
+    "name": "E. Balanag"
+  },
+  "created_date": "2026-10-14",
+  "garage": {
+    "id": "G-01",
+    "name": "Test Garage 018",
+    "latitude": 16.395394,
+    "longitude": 120.604545
+  },
+  "collection_points": [
+    {
+      "id": "CP-01",
+      "name": "Test 018 Stop 1",
+      "latitude": 16.382452,
+      "longitude": 120.613923,
+      "waste_type": "Residual",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-02",
+      "name": "Test 018 Stop 2",
+      "latitude": 16.37969,
+      "longitude": 120.58917,
+      "waste_type": "Residual",
+      "priority": "High"
+    },
+    {
+      "id": "CP-03",
+      "name": "Test 018 Stop 3",
+      "latitude": 16.381805,
+      "longitude": 120.593662,
+      "waste_type": "Recyclable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-04",
+      "name": "Test 018 Stop 4",
+      "latitude": 16.380281,
+      "longitude": 120.595847,
+      "waste_type": "Recyclable",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-05",
+      "name": "Test 018 Stop 5",
+      "latitude": 16.390365,
+      "longitude": 120.592115,
+      "waste_type": "Mixed",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-06",
+      "name": "Test 018 Stop 6",
+      "latitude": 16.379492,
+      "longitude": 120.59257,
+      "waste_type": "Mixed",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-07",
+      "name": "Test 018 Stop 7",
+      "latitude": 16.39626,
+      "longitude": 120.596615,
+      "waste_type": "Hazardous",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-08",
+      "name": "Test 018 Stop 8",
+      "latitude": 16.381026,
+      "longitude": 120.595239,
+      "waste_type": "Biodegradable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-09",
+      "name": "Test 018 Stop 9",
+      "latitude": 16.399833,
+      "longitude": 120.608691,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-10",
+      "name": "Test 018 Stop 10",
+      "latitude": 16.399115,
+      "longitude": 120.617448,
+      "waste_type": "Mixed",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-11",
+      "name": "Test 018 Stop 11",
+      "latitude": 16.39599,
+      "longitude": 120.615439,
+      "waste_type": "Mixed",
+      "priority": "High"
+    },
+    {
+      "id": "CP-12",
+      "name": "Test 018 Stop 12",
+      "latitude": 16.381681,
+      "longitude": 120.604543,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-13",
+      "name": "Test 018 Stop 13",
+      "latitude": 16.36555,
+      "longitude": 120.607091,
+      "waste_type": "Hazardous",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-14",
+      "name": "Test 018 Stop 14",
+      "latitude": 16.394427,
+      "longitude": 120.60406,
+      "waste_type": "Mixed",
+      "priority": "High"
+    },
+    {
+      "id": "CP-15",
+      "name": "Test 018 Stop 15",
+      "latitude": 16.394852,
+      "longitude": 120.606222,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-16",
+      "name": "Test 018 Stop 16",
+      "latitude": 16.375176,
+      "longitude": 120.608997,
+      "waste_type": "Biodegradable",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-17",
+      "name": "Test 018 Stop 17",
+      "latitude": 16.398485,
+      "longitude": 120.600604,
+      "waste_type": "Recyclable",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-18",
+      "name": "Test 018 Stop 18",
+      "latitude": 16.379596,
+      "longitude": 120.603247,
+      "waste_type": "Mixed",
+      "priority": "High"
+    }
+  ]
+}

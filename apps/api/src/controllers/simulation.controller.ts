@@ -19,7 +19,7 @@ export default class SimulationCtrl {
    * progress for each module, ending with a "result" or "error" event.
    */
   static async run(req: Request, res: Response) {
-    const body = req.body as { routeFile?: unknown; solver?: string } | undefined;
+    const body = req.body as { routeFile?: unknown; solver?: string; test?: boolean } | undefined;
     if (!body || typeof body !== "object") {
       return res.status(400).json({ error: "Request body must be JSON: { routeFile, solver? }" });
     }
@@ -32,7 +32,7 @@ export default class SimulationCtrl {
     res.flushHeaders();
 
     const send = (event: SimulationEvent) => res.write(`${JSON.stringify(event)}\n`);
-    const events = SimulationSvc.run({ routeFile: body.routeFile, solver });
+    const events = SimulationSvc.run({ routeFile: body.routeFile, solver, isTest: body.test === true });
     // Stop the pipeline if the browser goes away (e.g. the user resets the run)
     res.on("close", () => {
       if (!res.writableFinished) void events.return(undefined);
@@ -59,6 +59,29 @@ export default class SimulationCtrl {
     }
     try {
       return res.json(await SimulationSvc.list(limit));
+    } catch (err) {
+      return sendError(res, err);
+    }
+  }
+
+  /** GET /api/v1/simulations/tests – the numbers of every test run, for the test dashboard. */
+  static async listTests(_req: Request, res: Response) {
+    try {
+      return res.json(await SimulationSvc.listTestRuns());
+    } catch (err) {
+      return sendError(res, err);
+    }
+  }
+
+  /** DELETE /api/v1/simulations/:id – removes a test run. Real runs are never deleted. */
+  static async deleteTest(req: Request<{ id: string }>, res: Response) {
+    const { error, value: id } = idSchema.validate(req.params.id);
+    if (error) return res.status(404).json({ error: "Simulation not found" });
+    try {
+      if (!(await SimulationSvc.deleteTest(id))) {
+        return res.status(404).json({ error: "Test run not found. Only test runs can be deleted." });
+      }
+      return res.status(204).end();
     } catch (err) {
       return sendError(res, err);
     }

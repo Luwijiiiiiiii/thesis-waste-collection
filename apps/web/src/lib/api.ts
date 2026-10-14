@@ -1,7 +1,7 @@
 // Client for the Express API in apps/api. Used by server components and the browser.
 //  - NEXT_PUBLIC_API_URL: API origin the browser calls (inlined at build time)
 //  - API_URL: optional origin for server-side calls, e.g. an internal hostname in Docker
-import type { SimulationLogEntry, SimulationResult } from "@wcro/core";
+import type { SimulationLogEntry, SimulationResult, TestRunRecord } from "@wcro/core";
 
 const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -49,5 +49,24 @@ export async function getSimulation(id: string) {
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) return null;
     throw err;
+  }
+}
+
+/** Numbers for every test run (the "Test all" results), newest first. */
+export function listTestRuns() {
+  return getJson<TestRunRecord[]>("/simulations/tests");
+}
+
+/** Deletes a test run. The API refuses to delete anything that is not a test run. */
+export async function deleteTestRun(id: string): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch(apiUrl(`/simulations/${encodeURIComponent(id)}`), { method: "DELETE" });
+  } catch {
+    throw new ApiError(0, `Could not reach the API at ${apiUrl("")}.`);
+  }
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
+    throw new ApiError(res.status, body.error ?? body.message ?? `API responded ${res.status}`);
   }
 }

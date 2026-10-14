@@ -1,0 +1,502 @@
+[
+  {
+    "file": "test-001-low-05pts.json",
+    "name": "Test 001 – low (5 stops) near Naguilian Rd",
+    "points": 5
+  },
+  {
+    "file": "test-002-low-05pts.json",
+    "name": "Test 002 – low (5 stops) near Engineers Hill",
+    "points": 5
+  },
+  {
+    "file": "test-003-low-05pts.json",
+    "name": "Test 003 – low (5 stops) near Marcos Hwy",
+    "points": 5
+  },
+  {
+    "file": "test-004-many-30pts.json",
+    "name": "Test 004 – many (30 stops) near Aurora Hill",
+    "points": 30
+  },
+  {
+    "file": "test-005-low-10pts.json",
+    "name": "Test 005 – low (10 stops) near Session Road",
+    "points": 10
+  },
+  {
+    "file": "test-006-mid-14pts.json",
+    "name": "Test 006 – mid (14 stops) near Session Road",
+    "points": 14
+  },
+  {
+    "file": "test-007-mid-16pts.json",
+    "name": "Test 007 – mid (16 stops) near Lower Rizal",
+    "points": 16
+  },
+  {
+    "file": "test-008-low-09pts.json",
+    "name": "Test 008 – low (9 stops) near Naguilian Rd",
+    "points": 9
+  },
+  {
+    "file": "test-009-many-38pts.json",
+    "name": "Test 009 – many (38 stops) near Aurora Hill",
+    "points": 38
+  },
+  {
+    "file": "test-010-mid-18pts.json",
+    "name": "Test 010 – mid (18 stops) near Loakan",
+    "points": 18
+  },
+  {
+    "file": "test-011-many-36pts.json",
+    "name": "Test 011 – many (36 stops) near Session Road",
+    "points": 36
+  },
+  {
+    "file": "test-012-low-04pts.json",
+    "name": "Test 012 – low (4 stops) near Session Road",
+    "points": 4
+  },
+  {
+    "file": "test-013-low-07pts.json",
+    "name": "Test 013 – low (7 stops) near Pacdal",
+    "points": 7
+  },
+  {
+    "file": "test-014-mid-14pts.json",
+    "name": "Test 014 – mid (14 stops) near Irisan",
+    "points": 14
+  },
+  {
+    "file": "test-015-many-22pts.json",
+    "name": "Test 015 – many (22 stops) near Aurora Hill",
+    "points": 22
+  },
+  {
+    "file": "test-016-many-21pts.json",
+    "name": "Test 016 – many (21 stops) near Magsaysay",
+    "points": 21
+  },
+  {
+    "file": "test-017-many-22pts.json",
+    "name": "Test 017 – many (22 stops) near Marcos Hwy",
+    "points": 22
+  },
+  {
+    "file": "test-018-mid-18pts.json",
+    "name": "Test 018 – mid (18 stops) near Irisan",
+    "points": 18
+  },
+  {
+    "file": "test-019-mid-14pts.json",
+    "name": "Test 019 – mid (14 stops) near Aurora Hill",
+    "points": 14
+  },
+  {
+    "file": "test-020-mid-19pts.json",
+    "name": "Test 020 – mid (19 stops) near Lower Rizal",
+    "points": 19
+  },
+  {
+    "file": "test-021-low-09pts.json",
+    "name": "Test 021 – low (9 stops) near Irisan",
+    "points": 9
+  },
+  {
+    "file": "test-022-mid-12pts.json",
+    "name": "Test 022 – mid (12 stops) near Magsaysay",
+    "points": 12
+  },
+  {
+    "file": "test-023-low-05pts.json",
+    "name": "Test 023 – low (5 stops) near Loakan",
+    "points": 5
+  },
+  {
+    "file": "test-024-mid-18pts.json",
+    "name": "Test 024 – mid (18 stops) near Pacdal",
+    "points": 18
+  },
+  {
+    "file": "test-025-many-32pts.json",
+    "name": "Test 025 – many (32 stops) near Session Road",
+    "points": 32
+  },
+  {
+    "file": "test-026-mid-15pts.json",
+    "name": "Test 026 – mid (15 stops) near Pacdal",
+    "points": 15
+  },
+  {
+    "file": "test-027-many-22pts.json",
+    "name": "Test 027 – many (22 stops) near Session Road",
+    "points": 22
+  },
+  {
+    "file": "test-028-many-26pts.json",
+    "name": "Test 028 – many (26 stops) near Marcos Hwy",
+    "points": 26
+  },
+  {
+    "file": "test-029-many-29pts.json",
+    "name": "Test 029 – many (29 stops) near Engineers Hill",
+    "points": 29
+  },
+  {
+    "file": "test-030-low-05pts.json",
+    "name": "Test 030 – low (5 stops) near Marcos Hwy",
+    "points": 5
+  },
+  {
+    "file": "test-031-low-03pts.json",
+    "name": "Test 031 – low (3 stops) near Naguilian Rd",
+    "points": 3
+  },
+  {
+    "file": "test-032-low-06pts.json",
+    "name": "Test 032 – low (6 stops) near Loakan",
+    "points": 6
+  },
+  {
+    "file": "test-033-low-05pts.json",
+    "name": "Test 033 – low (5 stops) near Pacdal",
+    "points": 5
+  },
+  {
+    "file": "test-034-many-23pts.json",
+    "name": "Test 034 – many (23 stops) near Loakan",
+    "points": 23
+  },
+  {
+    "file": "test-035-low-04pts.json",
+    "name": "Test 035 – low (4 stops) near Loakan",
+    "points": 4
+  },
+  {
+    "file": "test-036-mid-19pts.json",
+    "name": "Test 036 – mid (19 stops) near Engineers Hill",
+    "points": 19
+  },
+  {
+    "file": "test-037-low-03pts.json",
+    "name": "Test 037 – low (3 stops) near Lower Rizal",
+    "points": 3
+  },
+  {
+    "file": "test-038-low-09pts.json",
+    "name": "Test 038 – low (9 stops) near Irisan",
+    "points": 9
+  },
+  {
+    "file": "test-039-mid-18pts.json",
+    "name": "Test 039 – mid (18 stops) near Lower Rizal",
+    "points": 18
+  },
+  {
+    "file": "test-040-low-05pts.json",
+    "name": "Test 040 – low (5 stops) near Lower Rizal",
+    "points": 5
+  },
+  {
+    "file": "test-041-mid-17pts.json",
+    "name": "Test 041 – mid (17 stops) near Lower Rizal",
+    "points": 17
+  },
+  {
+    "file": "test-042-mid-19pts.json",
+    "name": "Test 042 – mid (19 stops) near Naguilian Rd",
+    "points": 19
+  },
+  {
+    "file": "test-043-many-32pts.json",
+    "name": "Test 043 – many (32 stops) near Engineers Hill",
+    "points": 32
+  },
+  {
+    "file": "test-044-many-31pts.json",
+    "name": "Test 044 – many (31 stops) near Lower Rizal",
+    "points": 31
+  },
+  {
+    "file": "test-045-low-04pts.json",
+    "name": "Test 045 – low (4 stops) near Naguilian Rd",
+    "points": 4
+  },
+  {
+    "file": "test-046-low-05pts.json",
+    "name": "Test 046 – low (5 stops) near Irisan",
+    "points": 5
+  },
+  {
+    "file": "test-047-low-08pts.json",
+    "name": "Test 047 – low (8 stops) near Marcos Hwy",
+    "points": 8
+  },
+  {
+    "file": "test-048-many-38pts.json",
+    "name": "Test 048 – many (38 stops) near Engineers Hill",
+    "points": 38
+  },
+  {
+    "file": "test-049-many-40pts.json",
+    "name": "Test 049 – many (40 stops) near Naguilian Rd",
+    "points": 40
+  },
+  {
+    "file": "test-050-many-35pts.json",
+    "name": "Test 050 – many (35 stops) near Session Road",
+    "points": 35
+  },
+  {
+    "file": "test-051-mid-16pts.json",
+    "name": "Test 051 – mid (16 stops) near Marcos Hwy",
+    "points": 16
+  },
+  {
+    "file": "test-052-low-04pts.json",
+    "name": "Test 052 – low (4 stops) near Aurora Hill",
+    "points": 4
+  },
+  {
+    "file": "test-053-mid-18pts.json",
+    "name": "Test 053 – mid (18 stops) near Aurora Hill",
+    "points": 18
+  },
+  {
+    "file": "test-054-low-10pts.json",
+    "name": "Test 054 – low (10 stops) near Engineers Hill",
+    "points": 10
+  },
+  {
+    "file": "test-055-mid-12pts.json",
+    "name": "Test 055 – mid (12 stops) near Magsaysay",
+    "points": 12
+  },
+  {
+    "file": "test-056-mid-14pts.json",
+    "name": "Test 056 – mid (14 stops) near Marcos Hwy",
+    "points": 14
+  },
+  {
+    "file": "test-057-many-25pts.json",
+    "name": "Test 057 – many (25 stops) near Session Road",
+    "points": 25
+  },
+  {
+    "file": "test-058-many-37pts.json",
+    "name": "Test 058 – many (37 stops) near Pacdal",
+    "points": 37
+  },
+  {
+    "file": "test-059-many-27pts.json",
+    "name": "Test 059 – many (27 stops) near Marcos Hwy",
+    "points": 27
+  },
+  {
+    "file": "test-060-many-21pts.json",
+    "name": "Test 060 – many (21 stops) near Naguilian Rd",
+    "points": 21
+  },
+  {
+    "file": "test-061-many-26pts.json",
+    "name": "Test 061 – many (26 stops) near Loakan",
+    "points": 26
+  },
+  {
+    "file": "test-062-many-33pts.json",
+    "name": "Test 062 – many (33 stops) near Marcos Hwy",
+    "points": 33
+  },
+  {
+    "file": "test-063-mid-16pts.json",
+    "name": "Test 063 – mid (16 stops) near Lower Rizal",
+    "points": 16
+  },
+  {
+    "file": "test-064-many-22pts.json",
+    "name": "Test 064 – many (22 stops) near Marcos Hwy",
+    "points": 22
+  },
+  {
+    "file": "test-065-low-09pts.json",
+    "name": "Test 065 – low (9 stops) near Lower Rizal",
+    "points": 9
+  },
+  {
+    "file": "test-066-low-06pts.json",
+    "name": "Test 066 – low (6 stops) near Pacdal",
+    "points": 6
+  },
+  {
+    "file": "test-067-low-03pts.json",
+    "name": "Test 067 – low (3 stops) near Session Road",
+    "points": 3
+  },
+  {
+    "file": "test-068-low-07pts.json",
+    "name": "Test 068 – low (7 stops) near Session Road",
+    "points": 7
+  },
+  {
+    "file": "test-069-low-05pts.json",
+    "name": "Test 069 – low (5 stops) near Loakan",
+    "points": 5
+  },
+  {
+    "file": "test-070-many-22pts.json",
+    "name": "Test 070 – many (22 stops) near Naguilian Rd",
+    "points": 22
+  },
+  {
+    "file": "test-071-many-23pts.json",
+    "name": "Test 071 – many (23 stops) near Magsaysay",
+    "points": 23
+  },
+  {
+    "file": "test-072-mid-12pts.json",
+    "name": "Test 072 – mid (12 stops) near Loakan",
+    "points": 12
+  },
+  {
+    "file": "test-073-low-09pts.json",
+    "name": "Test 073 – low (9 stops) near Loakan",
+    "points": 9
+  },
+  {
+    "file": "test-074-low-07pts.json",
+    "name": "Test 074 – low (7 stops) near Marcos Hwy",
+    "points": 7
+  },
+  {
+    "file": "test-075-mid-16pts.json",
+    "name": "Test 075 – mid (16 stops) near Loakan",
+    "points": 16
+  },
+  {
+    "file": "test-076-mid-18pts.json",
+    "name": "Test 076 – mid (18 stops) near Naguilian Rd",
+    "points": 18
+  },
+  {
+    "file": "test-077-many-23pts.json",
+    "name": "Test 077 – many (23 stops) near Engineers Hill",
+    "points": 23
+  },
+  {
+    "file": "test-078-many-32pts.json",
+    "name": "Test 078 – many (32 stops) near Magsaysay",
+    "points": 32
+  },
+  {
+    "file": "test-079-mid-13pts.json",
+    "name": "Test 079 – mid (13 stops) near Pacdal",
+    "points": 13
+  },
+  {
+    "file": "test-080-low-10pts.json",
+    "name": "Test 080 – low (10 stops) near Session Road",
+    "points": 10
+  },
+  {
+    "file": "test-081-mid-15pts.json",
+    "name": "Test 081 – mid (15 stops) near Magsaysay",
+    "points": 15
+  },
+  {
+    "file": "test-082-mid-18pts.json",
+    "name": "Test 082 – mid (18 stops) near Lower Rizal",
+    "points": 18
+  },
+  {
+    "file": "test-083-many-32pts.json",
+    "name": "Test 083 – many (32 stops) near Marcos Hwy",
+    "points": 32
+  },
+  {
+    "file": "test-084-mid-18pts.json",
+    "name": "Test 084 – mid (18 stops) near Loakan",
+    "points": 18
+  },
+  {
+    "file": "test-085-mid-13pts.json",
+    "name": "Test 085 – mid (13 stops) near Lower Rizal",
+    "points": 13
+  },
+  {
+    "file": "test-086-many-35pts.json",
+    "name": "Test 086 – many (35 stops) near Marcos Hwy",
+    "points": 35
+  },
+  {
+    "file": "test-087-mid-13pts.json",
+    "name": "Test 087 – mid (13 stops) near Lower Rizal",
+    "points": 13
+  },
+  {
+    "file": "test-088-mid-18pts.json",
+    "name": "Test 088 – mid (18 stops) near Marcos Hwy",
+    "points": 18
+  },
+  {
+    "file": "test-089-mid-15pts.json",
+    "name": "Test 089 – mid (15 stops) near Aurora Hill",
+    "points": 15
+  },
+  {
+    "file": "test-090-mid-12pts.json",
+    "name": "Test 090 – mid (12 stops) near Lower Rizal",
+    "points": 12
+  },
+  {
+    "file": "test-091-low-06pts.json",
+    "name": "Test 091 – low (6 stops) near Magsaysay",
+    "points": 6
+  },
+  {
+    "file": "test-092-mid-14pts.json",
+    "name": "Test 092 – mid (14 stops) near Pacdal",
+    "points": 14
+  },
+  {
+    "file": "test-093-low-07pts.json",
+    "name": "Test 093 – low (7 stops) near Naguilian Rd",
+    "points": 7
+  },
+  {
+    "file": "test-094-many-25pts.json",
+    "name": "Test 094 – many (25 stops) near Engineers Hill",
+    "points": 25
+  },
+  {
+    "file": "test-095-many-29pts.json",
+    "name": "Test 095 – many (29 stops) near Magsaysay",
+    "points": 29
+  },
+  {
+    "file": "test-096-many-36pts.json",
+    "name": "Test 096 – many (36 stops) near Lower Rizal",
+    "points": 36
+  },
+  {
+    "file": "test-097-low-04pts.json",
+    "name": "Test 097 – low (4 stops) near Session Road",
+    "points": 4
+  },
+  {
+    "file": "test-098-low-07pts.json",
+    "name": "Test 098 – low (7 stops) near Irisan",
+    "points": 7
+  },
+  {
+    "file": "test-099-many-36pts.json",
+    "name": "Test 099 – many (36 stops) near Pacdal",
+    "points": 36
+  },
+  {
+    "file": "test-100-mid-14pts.json",
+    "name": "Test 100 – mid (14 stops) near Magsaysay",
+    "points": 14
+  }
+]

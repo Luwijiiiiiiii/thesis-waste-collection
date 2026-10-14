@@ -1,0 +1,137 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Test 014 – mid (14 stops) near Irisan",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-009",
+    "vehicle_name": "Garbage Truck",
+    "average_speed_kmh": 12,
+    "fuel_efficiency_kmpl": 2,
+    "fuel_price_per_liter": 58.9,
+    "co2_factor": 2.68
+  },
+  "driver": {
+    "name": "L. Pablo"
+  },
+  "created_date": "2026-10-14",
+  "garage": {
+    "id": "G-01",
+    "name": "Test Garage 014",
+    "latitude": 16.410358,
+    "longitude": 120.603833
+  },
+  "collection_points": [
+    {
+      "id": "CP-01",
+      "name": "Test 014 Stop 1",
+      "latitude": 16.400361,
+      "longitude": 120.583145,
+      "waste_type": "Residual",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-02",
+      "name": "Test 014 Stop 2",
+      "latitude": 16.405755,
+      "longitude": 120.619961,
+      "waste_type": "Hazardous",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-03",
+      "name": "Test 014 Stop 3",
+      "latitude": 16.422671,
+      "longitude": 120.59487,
+      "waste_type": "Recyclable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-04",
+      "name": "Test 014 Stop 4",
+      "latitude": 16.404738,
+      "longitude": 120.597984,
+      "waste_type": "Residual",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-05",
+      "name": "Test 014 Stop 5",
+      "latitude": 16.399844,
+      "longitude": 120.60519,
+      "waste_type": "Biodegradable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-06",
+      "name": "Test 014 Stop 6",
+      "latitude": 16.411522,
+      "longitude": 120.611257,
+      "waste_type": "Mixed",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-07",
+      "name": "Test 014 Stop 7",
+      "latitude": 16.421464,
+      "longitude": 120.597316,
+      "waste_type": "Hazardous",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-08",
+      "name": "Test 014 Stop 8",
+      "latitude": 16.419608,
+      "longitude": 120.594233,
+      "waste_type": "Biodegradable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-09",
+      "name": "Test 014 Stop 9",
+      "latitude": 16.414262,
+      "longitude": 120.588715,
+      "waste_type": "Biodegradable",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-10",
+      "name": "Test 014 Stop 10",
+      "latitude": 16.416597,
+      "longitude": 120.596168,
+      "waste_type": "Residual",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-11",
+      "name": "Test 014 Stop 11",
+      "latitude": 16.400956,
+      "longitude": 120.591173,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-12",
+      "name": "Test 014 Stop 12",
+      "latitude": 16.410663,
+      "longitude": 120.599771,
+      "waste_type": "Biodegradable",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-13",
+      "name": "Test 014 Stop 13",
+      "latitude": 16.420764,
+      "longitude": 120.606116,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-14",
+      "name": "Test 014 Stop 14",
+      "latitude": 16.408779,
+      "longitude": 120.586115,
+      "waste_type": "Recyclable",
+      "priority": "High"
+    }
+  ]
+}

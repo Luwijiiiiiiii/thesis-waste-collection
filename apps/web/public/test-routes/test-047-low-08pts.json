@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Test 047 – low (8 stops) near Marcos Hwy",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-015",
+    "vehicle_name": "Garbage Truck"
+  },
+  "driver": {
+    "name": "R. Dela Cruz"
+  },
+  "created_date": "2026-10-14",
+  "garage": {
+    "id": "G-01",
+    "name": "Test Garage 047",
+    "latitude": 16.431042,
+    "longitude": 120.607401
+  },
+  "collection_points": [
+    {
+      "id": "CP-01",
+      "name": "Test 047 Stop 1",
+      "latitude": 16.384501,
+      "longitude": 120.612693,
+      "waste_type": "Recyclable",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-02",
+      "name": "Test 047 Stop 2",
+      "latitude": 16.413774,
+      "longitude": 120.562598,
+      "waste_type": "Mixed",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-03",
+      "name": "Test 047 Stop 3",
+      "latitude": 16.399343,
+      "longitude": 120.604697,
+      "waste_type": "Mixed",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-04",
+      "name": "Test 047 Stop 4",
+      "latitude": 16.387096,
+      "longitude": 120.598729,
+      "waste_type": "Residual",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-05",
+      "name": "Test 047 Stop 5",
+      "latitude": 16.410666,
+      "longitude": 120.611087,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-06",
+      "name": "Test 047 Stop 6",
+      "latitude": 16.420925,
+      "longitude": 120.604894,
+      "waste_type": "Recyclable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-07",
+      "name": "Test 047 Stop 7",
+      "latitude": 16.426053,
+      "longitude": 120.579285,
+      "waste_type": "Recyclable",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-08",
+      "name": "Test 047 Stop 8",
+      "latitude": 16.381112,
+      "longitude": 120.611592,
+      "waste_type": "Biodegradable",
+      "priority": "Low"
+    }
+  ]
+}
