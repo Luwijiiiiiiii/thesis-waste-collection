@@ -5,7 +5,8 @@ import { FlaskConical, Play, Square, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { Badge, Button, Card, CardBody, CardHeader, EmptyState, PageHeader, Table } from "@/components/ui";
-import { listTestRuns } from "@/lib/api";
+import { ConfirmDeleteButton } from "@/components/ConfirmDeleteButton";
+import { clearTestRuns, listTestRuns } from "@/lib/api";
 import { fmt, fmtInt } from "@/lib/format";
 import { DistanceScatter, GroupBars, SavingsScatter } from "./TestCharts";
 import { summarize, summarizeByGroup, savingPct } from "./stats";
@@ -24,7 +25,12 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
       .catch((err: Error) => setLoadError(err.message));
   }, []);
 
-  const { state, start, cancel } = useTestAll(reload);
+  const { state, start, cancel, reset } = useTestAll(reload);
+  const clear = async () => {
+    await clearTestRuns();
+    reset();
+    reload();
+  };
   const overall = useMemo(() => summarize(runs), [runs]);
   const groups = useMemo(() => summarizeByGroup(runs), [runs]);
   const percent = state.total ? Math.round((state.done / state.total) * 100) : 0;
@@ -34,19 +40,31 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
       <PageHeader
         eyebrow="Testing"
         title="Test dashboard"
-        description="Runs every bundled test route one by one and combines the results. Each run is saved to History as a test."
+        description="Runs every bundled test route one by one and combines the results. Each run is saved to History as a test. Clear the test data before testing again to start from a clean slate."
         actions={
-          state.running ? (
-            <Button onClick={cancel}>
-              <Square className="size-4" aria-hidden />
-              Stop
-            </Button>
-          ) : (
-            <Button variant="primary" onClick={start}>
-              <Play className="size-4" aria-hidden />
-              Test all
-            </Button>
-          )
+          <div className="flex flex-wrap items-start justify-end gap-2">
+            {runs.length > 0 && (
+              <ConfirmDeleteButton
+                warning={`Delete all ${fmtInt(runs.length)} test runs?`}
+                confirmLabel="Clear test data"
+                onConfirm={clear}
+                disabled={state.running}
+              >
+                Clear test data
+              </ConfirmDeleteButton>
+            )}
+            {state.running ? (
+              <Button onClick={cancel}>
+                <Square className="size-4" aria-hidden />
+                Stop
+              </Button>
+            ) : (
+              <Button variant="primary" onClick={start}>
+                <Play className="size-4" aria-hidden />
+                {runs.length > 0 ? "Test all again" : "Test all"}
+              </Button>
+            )}
+          </div>
         }
       />
 
@@ -233,11 +251,12 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
           </Card>
 
           <p className="text-sm text-muted">
-            {fmtInt(runs.length)} test runs are saved.{" "}
+            {fmtInt(runs.length)} test runs are saved. Testing again adds new runs next to these, so use Clear test data
+            first if you only want the latest results. Single runs can be deleted in{" "}
             <Link href="/simulations" className="font-medium text-brand-ink hover:underline">
-              Open History
-            </Link>{" "}
-            to delete duplicates.{" "}
+              History
+            </Link>
+            .{" "}
             {runs.some((r) => savingPct(r) < 0) &&
               "Some tests have a negative saving, which means the optimized route was longer."}
           </p>

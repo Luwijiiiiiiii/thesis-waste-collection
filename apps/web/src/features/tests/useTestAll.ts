@@ -39,6 +39,8 @@ export function useTestAll(onSaved: () => void) {
   onSavedRef.current = onSaved;
 
   const cancel = useCallback(() => abortRef.current?.abort(), []);
+  /** Hides the last run's progress and failures, e.g. after the test data was cleared */
+  const reset = useCallback(() => setState((s) => (s.running ? s : idle)), []);
 
   const start = useCallback(async () => {
     abortRef.current?.abort();
@@ -81,5 +83,5 @@ export function useTestAll(onSaved: () => void) {
     }
   }, []);
 
-  return { state, start, cancel };
+  return { state, start, cancel, reset };
 }

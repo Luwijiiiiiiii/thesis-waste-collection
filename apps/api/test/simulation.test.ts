@@ -63,3 +63,22 @@ describe("GET /api/v1/simulations", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("DELETE /api/v1/simulations", () => {
+  it.each([
+    ["no body", undefined],
+    ["an empty id list", { ids: [] }],
+    ["an unsafe id", { ids: ["../etc"] }],
+    ["all set to false", { all: false }],
+    ["both ids and all", { ids: ["a"], all: true }],
+  ])("rejects %s", async (_label, body) => {
+    const req = request(app).delete("/api/v1/simulations");
+    const res = body === undefined ? await req : await req.send(body);
+    expect(res.status).toBe(400);
+  });
+
+  it("404s on an id with unsafe characters", async () => {
+    const res = await request(app).delete("/api/v1/simulations/..%2Fetc");
+    expect(res.status).toBe(404);
+  });
+});

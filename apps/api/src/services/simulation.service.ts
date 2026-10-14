@@ -48,8 +48,12 @@ export default class SimulationSvc {
     return SimulationRepo.getById(id);
   }
 
-  static deleteTest(id: string) {
-    return SimulationRepo.deleteTest(id);
+  static deleteMany(ids: string[]) {
+    return SimulationRepo.deleteMany(ids);
+  }
+
+  static deleteAll(onlyTests = false) {
+    return SimulationRepo.deleteAll(onlyTests);
   }
 
   static listTestRuns() {
