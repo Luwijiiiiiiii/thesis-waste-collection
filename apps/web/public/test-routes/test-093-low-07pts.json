@@ -1,0 +1,81 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Test 093 – low (7 stops) near Naguilian Rd",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-018",
+    "vehicle_name": "Garbage Truck",
+    "average_speed_kmh": 20,
+    "fuel_efficiency_kmpl": 2.5,
+    "fuel_price_per_liter": 58.9,
+    "co2_factor": 2.68
+  },
+  "driver": {
+    "name": "J. Bautista"
+  },
+  "created_date": "2026-10-14",
+  "garage": {
+    "id": "G-01",
+    "name": "Test Garage 093",
+    "latitude": 16.416081,
+    "longitude": 120.552374
+  },
+  "collection_points": [
+    {
+      "id": "CP-01",
+      "name": "Test 093 Stop 1",
+      "latitude": 16.417059,
+      "longitude": 120.565558,
+      "waste_type": "Mixed",
+      "priority": "High"
+    },
+    {
+      "id": "CP-02",
+      "name": "Test 093 Stop 2",
+      "latitude": 16.430102,
+      "longitude": 120.54734,
+      "waste_type": "Biodegradable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-03",
+      "name": "Test 093 Stop 3",
+      "latitude": 16.426554,
+      "longitude": 120.599186,
+      "waste_type": "Residual",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-04",
+      "name": "Test 093 Stop 4",
+      "latitude": 16.417138,
+      "longitude": 120.561951,
+      "waste_type": "Recyclable",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-05",
+      "name": "Test 093 Stop 5",
+      "latitude": 16.426825,
+      "longitude": 120.585069,
+      "waste_type": "Hazardous",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-06",
+      "name": "Test 093 Stop 6",
+      "latitude": 16.426968,
+      "longitude": 120.58206,
+      "waste_type": "Recyclable",
+      "priority": "Medium"
+    },
+    {
+      "id": "CP-07",
+      "name": "Test 093 Stop 7",
+      "latitude": 16.426923,
+      "longitude": 120.574139,
+      "waste_type": "Residual",
+      "priority": "Low"
+    }
+  ]
+}

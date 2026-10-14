@@ -48,7 +48,19 @@ export default class SimulationSvc {
     return SimulationRepo.getById(id);
   }
 
-  static async *run(input: { routeFile: unknown; solver?: TspSolver }): AsyncGenerator<SimulationEvent> {
+  static deleteTest(id: string) {
+    return SimulationRepo.deleteTest(id);
+  }
+
+  static listTestRuns() {
+    return SimulationRepo.listTestRuns();
+  }
+
+  static async *run(input: {
+    routeFile: unknown;
+    solver?: TspSolver;
+    isTest?: boolean;
+  }): AsyncGenerator<SimulationEvent> {
     const solver = input.solver ?? DEFAULT_TSP_SOLVER;
 
     // ---- Module 2: validation (enforced server-side) ----
@@ -150,7 +162,7 @@ export default class SimulationSvc {
     // ---- Archive ----
     yield { type: "stage", stage: "archive", status: "running" };
     try {
-      await SimulationRepo.save(result);
+      await SimulationRepo.save(result, input.isTest);
       yield { type: "stage", stage: "archive", status: "done", detail: `Saved as ${result.id}` };
     } catch (err) {
       yield { type: "stage", stage: "archive", status: "done", detail: `Not archived: ${(err as Error).message}` };

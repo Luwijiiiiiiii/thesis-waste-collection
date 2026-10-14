@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { History, Sparkles } from "lucide-react";
+import { FlaskConical, History, Sparkles } from "lucide-react";
 
 const links = [
   { href: "/", label: "Workspace", icon: Sparkles, match: (p: string) => p === "/" },
   { href: "/simulations", label: "History", icon: History, match: (p: string) => p.startsWith("/simulations") },
+  { href: "/tests", label: "Tests", icon: FlaskConical, match: (p: string) => p.startsWith("/tests") },
 ];
 
 export function SidebarNav() {

@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Test 033 – low (5 stops) near Pacdal",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-016",
+    "vehicle_name": "Garbage Truck",
+    "average_speed_kmh": 16,
+    "fuel_efficiency_kmpl": 1.5,
+    "fuel_price_per_liter": 56.3,
+    "co2_factor": 2.68
+  },
+  "driver": {
+    "name": "E. Balanag"
+  },
+  "created_date": "2026-10-14",
+  "garage": {
+    "id": "G-01",
+    "name": "Test Garage 033",
+    "latitude": 16.425028,
+    "longitude": 120.596583
+  },
+  "collection_points": [
+    {
+      "id": "CP-01",
+      "name": "Test 033 Stop 1",
+      "latitude": 16.426062,
+      "longitude": 120.589724,
+      "waste_type": "Mixed",
+      "priority": "High"
+    },
+    {
+      "id": "CP-02",
+      "name": "Test 033 Stop 2",
+      "latitude": 16.409748,
+      "longitude": 120.589168,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    },
+    {
+      "id": "CP-03",
+      "name": "Test 033 Stop 3",
+      "latitude": 16.414952,
+      "longitude": 120.591225,
+      "waste_type": "Recyclable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-04",
+      "name": "Test 033 Stop 4",
+      "latitude": 16.412036,
+      "longitude": 120.5722,
+      "waste_type": "Recyclable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-05",
+      "name": "Test 033 Stop 5",
+      "latitude": 16.4226,
+      "longitude": 120.580516,
+      "waste_type": "Residual",
+      "priority": "High"
+    }
+  ]
+}

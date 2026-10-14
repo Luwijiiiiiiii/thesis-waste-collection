@@ -6,6 +6,7 @@ import { ScreenTour } from "@/components/Tour";
 import { Badge, buttonClasses, Card, CardBody, EmptyState, PageHeader, Table } from "@/components/ui";
 import { fmt, fmtDateTime } from "@/lib/format";
 import { historyTour } from "@/features/onboarding/tours";
+import { DeleteTestButton } from "@/features/tests/DeleteTestButton";
 import { listSimulations } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -84,6 +85,9 @@ export default async function SimulationsPage() {
                       <th className="text-right">Traditional</th>
                       <th className="text-right">Optimized</th>
                       <th className="text-right">Saved</th>
+                      <th className="text-right">
+                        <span className="sr-only">Actions</span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -97,7 +101,14 @@ export default async function SimulationsPage() {
                           >
                             {s.id}
                           </Link>
-                          <p className="text-xs text-muted">{fmtDateTime(s.createdAt)}</p>
+                          <p className="text-xs text-muted">
+                            {fmtDateTime(s.createdAt)}
+                            {s.isTest && (
+                              <span className="ml-2">
+                                <Badge tone="warn">Test</Badge>
+                              </span>
+                            )}
+                          </p>
                         </td>
                         <td className="font-medium">{s.routeName}</td>
                         <td className="num text-right">{s.collectionPoints}</td>
@@ -115,6 +126,7 @@ export default async function SimulationsPage() {
                             <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
                           </Badge>
                         </td>
+                        <td className="text-right">{s.isTest && <DeleteTestButton id={s.id} />}</td>
                       </tr>
                     ))}
                   </tbody>

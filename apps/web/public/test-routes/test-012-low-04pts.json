@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "route_name": "Test 012 – low (4 stops) near Session Road",
+  "study_area": "City of Baguio",
+  "vehicle": {
+    "vehicle_id": "GT-016",
+    "vehicle_name": "Garbage Truck"
+  },
+  "driver": {
+    "name": "A. Cariño"
+  },
+  "created_date": "2026-10-14",
+  "garage": {
+    "id": "G-01",
+    "name": "Test Garage 012",
+    "latitude": 16.427064,
+    "longitude": 120.582132
+  },
+  "collection_points": [
+    {
+      "id": "CP-01",
+      "name": "Test 012 Stop 1",
+      "latitude": 16.412397,
+      "longitude": 120.571821,
+      "waste_type": "Biodegradable",
+      "priority": "High"
+    },
+    {
+      "id": "CP-02",
+      "name": "Test 012 Stop 2",
+      "latitude": 16.400859,
+      "longitude": 120.593093,
+      "waste_type": "Recyclable",
+      "priority": "Low"
+    },
+    {
+      "id": "CP-03",
+      "name": "Test 012 Stop 3",
+      "latitude": 16.412264,
+      "longitude": 120.588832,
+      "waste_type": "Residual",
+      "priority": "High"
+    },
+    {
+      "id": "CP-04",
+      "name": "Test 012 Stop 4",
+      "latitude": 16.380581,
+      "longitude": 120.571235,
+      "waste_type": "Hazardous",
+      "priority": "High"
+    }
+  ]
+}
