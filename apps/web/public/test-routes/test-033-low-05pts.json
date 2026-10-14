@@ -6,7 +6,7 @@
     "vehicle_id": "GT-016",
     "vehicle_name": "Garbage Truck",
     "average_speed_kmh": 16,
-    "fuel_efficiency_kmpl": 1.5,
+    "fuel_efficiency_kmpl": 1,
     "fuel_price_per_liter": 56.3,
     "co2_factor": 2.68
   },
