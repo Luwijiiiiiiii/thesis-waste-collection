@@ -160,7 +160,7 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
                     <dt className="text-sm text-muted">{m.label}</dt>
                     <dd className="mt-1">
                       <span className="num text-2xl font-semibold text-optimized">{fmt(o)}</span>
-                      <span className="ml-1 text-xs text-muted">{m.unit} optimized</span>
+                      <span className="ml-1 text-xs text-muted">{m.unit} A* Pathfinding Routes</span>
                     </dd>
                     <p className="num mt-0.5 text-sm text-traditional">
                       {fmt(t)} <span className="text-xs text-muted">{m.unit} traditional</span>
@@ -178,7 +178,10 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
 
           <div className="grid gap-6 xl:grid-cols-2">
             <Card>
-              <CardHeader title="Distance by test size" description="Every test, traditional against optimized." />
+              <CardHeader
+                title="Distance by test size"
+                description="Every test, traditional against A* Pathfinding Routes."
+              />
               <CardBody>
                 <DistanceScatter records={runs} />
               </CardBody>
@@ -209,7 +212,7 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
                       <th className="text-right">Tests</th>
                       <th className="text-right">Avg points</th>
                       <th className="text-right">Avg traditional</th>
-                      <th className="text-right">Avg optimized</th>
+                      <th className="text-right">Avg A* Pathfinding Routes</th>
                       <th className="text-right">Avg saved</th>
                       <th className="text-right">Best / worst</th>
                       <th className="text-right">Avg solve time</th>
@@ -258,7 +261,7 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
             </Link>
             .{" "}
             {runs.some((r) => savingPct(r) < 0) &&
-              "Some tests have a negative saving, which means the optimized route was longer."}
+              "Some tests have a negative saving, which means the A* Pathfinding Routes were longer."}
           </p>
         </>
       )}
