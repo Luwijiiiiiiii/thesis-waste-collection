@@ -22,10 +22,13 @@ app.use(
 
 app.use(express.json({ limit: BODY_LIMIT }));
 
-// Set up rate limiting middleware
+// Set up rate limiting middleware. Only writes and simulation runs are limited: the web app's
+// server components read the API from Vercel's shared egress IPs, so counting those GETs would
+// exhaust one bucket for every visitor at once.
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: RATE_LIMIT, // limit each IP to RATE_LIMIT requests per windowMs
+  skip: (req) => req.method === "GET" || req.method === "HEAD" || req.method === "OPTIONS",
 });
 
 if (!isDev) app.use(limiter);
