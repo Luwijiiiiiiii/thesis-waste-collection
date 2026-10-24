@@ -55,13 +55,16 @@ export default class SimulationRepo {
     }));
   }
 
-  /**
-   * Deletes a run only if it is a test run. Returns false when nothing was deleted
-   * (unknown id, or a real run that must be kept).
-   */
-  static async deleteTest(id: string): Promise<boolean> {
-    const { count } = await SimulationRepo.table().deleteMany({ where: { id, isTest: true } });
-    return count > 0;
+  /** Deletes the given runs. Returns how many were removed (unknown ids are skipped). */
+  static async deleteMany(ids: string[]): Promise<number> {
+    const { count } = await SimulationRepo.table().deleteMany({ where: { id: { in: ids } } });
+    return count;
+  }
+
+  /** Clears the whole history, or only the test runs when `onlyTests` is set. Returns how many were removed. */
+  static async deleteAll(onlyTests = false): Promise<number> {
+    const { count } = await SimulationRepo.table().deleteMany({ where: onlyTests ? { isTest: true } : {} });
+    return count;
   }
 
   /**

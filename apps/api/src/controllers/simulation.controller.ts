@@ -11,6 +11,12 @@ const idSchema = Joi.string()
   .max(64)
   .required();
 const limitSchema = Joi.number().integer().min(1).max(500);
+const deleteManySchema = Joi.alternatives()
+  .try(
+    Joi.object({ ids: Joi.array().items(idSchema).min(1).max(1000).unique().required() }),
+    Joi.object({ all: Joi.boolean().valid(true).required() }),
+  )
+  .required();
 
 export default class SimulationCtrl {
   /**
@@ -73,15 +79,41 @@ export default class SimulationCtrl {
     }
   }
 
-  /** DELETE /api/v1/simulations/:id – removes a test run. Real runs are never deleted. */
-  static async deleteTest(req: Request<{ id: string }>, res: Response) {
+  /** DELETE /api/v1/simulations/:id – removes one run. */
+  static async deleteOne(req: Request<{ id: string }>, res: Response) {
     const { error, value: id } = idSchema.validate(req.params.id);
     if (error) return res.status(404).json({ error: "Simulation not found" });
     try {
-      if (!(await SimulationSvc.deleteTest(id))) {
-        return res.status(404).json({ error: "Test run not found. Only test runs can be deleted." });
+      if ((await SimulationSvc.deleteMany([id])) === 0) {
+        return res.status(404).json({ error: "Simulation not found" });
       }
       return res.status(204).end();
+    } catch (err) {
+      return sendError(res, err);
+    }
+  }
+
+  /**
+   * DELETE /api/v1/simulations  { ids: string[] } | { all: true }
+   * Removes the selected runs, or clears the whole history. Responds { deleted: n }.
+   */
+  static async deleteMany(req: Request, res: Response) {
+    const { error, value } = deleteManySchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: "Request body must be JSON: { ids: string[] } or { all: true }" });
+    }
+    try {
+      const deleted = value.all ? await SimulationSvc.deleteAll() : await SimulationSvc.deleteMany(value.ids);
+      return res.json({ deleted });
+    } catch (err) {
+      return sendError(res, err);
+    }
+  }
+
+  /** DELETE /api/v1/simulations/tests – clears every test run, keeping real runs. Responds { deleted: n }. */
+  static async deleteTests(_req: Request, res: Response) {
+    try {
+      return res.json({ deleted: await SimulationSvc.deleteAll(true) });
     } catch (err) {
       return sendError(res, err);
     }

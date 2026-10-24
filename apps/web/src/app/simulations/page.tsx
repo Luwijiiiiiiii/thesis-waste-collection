@@ -1,13 +1,11 @@
 // Simulation log – every archived run (notebook "Simulation logging")
 import Link from "next/link";
-import { TSP_SOLVERS } from "@wcro/core";
 import { ArrowRight, History, Plus, TriangleAlert } from "lucide-react";
 import { ScreenTour } from "@/components/Tour";
-import { Badge, buttonClasses, Card, CardBody, EmptyState, PageHeader, Table } from "@/components/ui";
-import { fmt, fmtDateTime } from "@/lib/format";
+import { buttonClasses, Card, CardBody, EmptyState, PageHeader } from "@/components/ui";
+import { fmt } from "@/lib/format";
 import { historyTour } from "@/features/onboarding/tours";
-import { groupHistory } from "@/features/tests/groupRuns";
-import { TestRunGroupRows } from "@/features/tests/TestRunGroupRows";
+import { HistoryTable } from "@/features/history/HistoryTable";
 import { listSimulations } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -31,9 +29,6 @@ export default async function SimulationsPage() {
     );
   }
   const avg = sims.length ? sims.reduce((n, s) => n + s.distanceSavingsPercent, 0) / sims.length : 0;
-  const items = groupHistory(sims);
-  // The guided tour points at the first row that opens a single result
-  const firstRunId = items.find((i) => i.kind === "run")?.run.id;
   const best = sims.reduce<(typeof sims)[number] | null>(
     (b, s) => (b === null || s.distanceSavingsPercent > b.distanceSavingsPercent ? s : b),
     null,
@@ -45,7 +40,7 @@ export default async function SimulationsPage() {
       <PageHeader
         eyebrow="History"
         title="Simulation log"
-        description="Every run is archived in the database, newest first. Open one to revisit its map and exports."
+        description="Every run is archived in the database, newest first. Open one to revisit its map and exports, or select runs to delete them."
         actions={
           <Link href="/#start" data-tour="new-simulation" className={buttonClasses("primary", "md")}>
             <Plus className="size-4" aria-hidden />
@@ -78,65 +73,7 @@ export default async function SimulationsPage() {
 
           <Card>
             <CardBody>
-              <div data-tour="history-table">
-                <Table>
-                  <thead>
-                    <tr>
-                      <th>Simulation</th>
-                      <th>Route</th>
-                      <th className="text-right">Points</th>
-                      <th>Algorithm</th>
-                      <th className="text-right">Traditional</th>
-                      <th className="text-right">Optimized</th>
-                      <th className="text-right">Saved</th>
-                      <th className="text-right">
-                        <span className="sr-only">Actions</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((item) => {
-                      if (item.kind === "tests") return <TestRunGroupRows key={item.id} runs={item.runs} />;
-                      const s = item.run;
-                      return (
-                        <tr key={s.id}>
-                          <td>
-                            <Link
-                              href={`/simulations/${s.id}`}
-                              data-tour={s.id === firstRunId ? "history-open" : undefined}
-                              className="num font-medium text-brand-ink hover:underline"
-                            >
-                              {s.id}
-                            </Link>
-                            <p className="text-xs text-muted">{fmtDateTime(s.createdAt)}</p>
-                          </td>
-                          <td className="font-medium">{s.routeName}</td>
-                          <td className="num text-right">{s.collectionPoints}</td>
-                          <td>
-                            <Badge>{TSP_SOLVERS.find((x) => x.value === s.solver)?.label ?? "—"}</Badge>
-                          </td>
-                          <td className="num text-right">{fmt(s.traditionalKm)} km</td>
-                          <td className="num text-right">{fmt(s.optimizedKm)} km</td>
-                          <td className="text-right">
-                            <Badge
-                              tone={
-                                s.distanceSavingsPercent > 0
-                                  ? "ok"
-                                  : s.distanceSavingsPercent < 0
-                                    ? "danger"
-                                    : "neutral"
-                              }
-                            >
-                              <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
-                            </Badge>
-                          </td>
-                          <td />
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              </div>
+              <HistoryTable sims={sims} />
             </CardBody>
           </Card>
         </>

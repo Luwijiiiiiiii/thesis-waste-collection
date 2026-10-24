@@ -57,16 +57,34 @@ export function listTestRuns() {
   return getJson<TestRunRecord[]>("/simulations/tests");
 }
 
-/** Deletes a test run. The API refuses to delete anything that is not a test run. */
-export async function deleteTestRun(id: string): Promise<void> {
+async function sendDelete<T>(path: string, body?: unknown): Promise<T | null> {
   let res: Response;
   try {
-    res = await fetch(apiUrl(`/simulations/${encodeURIComponent(id)}`), { method: "DELETE" });
+    res = await fetch(apiUrl(path), {
+      method: "DELETE",
+      ...(body === undefined ? {} : { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }),
+    });
   } catch {
     throw new ApiError(0, `Could not reach the API at ${apiUrl("")}.`);
   }
   if (!res.ok) {
-    const body = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
-    throw new ApiError(res.status, body.error ?? body.message ?? `API responded ${res.status}`);
+    const err = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
+    throw new ApiError(res.status, err.error ?? err.message ?? `API responded ${res.status}`);
   }
+  return res.status === 204 ? null : ((await res.json()) as T);
+}
+
+/** Deletes the given runs from History. Returns how many were removed. */
+export async function deleteSimulations(ids: string[]): Promise<number> {
+  return (await sendDelete<{ deleted: number }>("/simulations", { ids }))?.deleted ?? 0;
+}
+
+/** Clears the whole History, real and test runs alike. Returns how many were removed. */
+export async function clearSimulations(): Promise<number> {
+  return (await sendDelete<{ deleted: number }>("/simulations", { all: true }))?.deleted ?? 0;
+}
+
+/** Clears every test run, keeping real runs. Returns how many were removed. */
+export async function clearTestRuns(): Promise<number> {
+  return (await sendDelete<{ deleted: number }>("/simulations/tests"))?.deleted ?? 0;
 }
