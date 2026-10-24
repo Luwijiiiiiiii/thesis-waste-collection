@@ -135,7 +135,7 @@ function xScale(records: TestRunRecord[]) {
   return { xMax, x, xTicks };
 }
 
-/** Every test as two dots: its traditional and its optimized distance, by number of collection points */
+/** Every test as two dots: its traditional and its A* Pathfinding distance, by number of collection points */
 export function DistanceScatter({ records }: { records: TestRunRecord[] }) {
   const { xMax, x, xTicks } = xScale(records);
   const ticks = niceTicks(0, Math.max(...records.flatMap((r) => [r.traditional.distanceKm, r.optimized.distanceKm])));
@@ -147,14 +147,14 @@ export function DistanceScatter({ records }: { records: TestRunRecord[] }) {
       <Legend
         items={[
           { label: "Traditional route", className: "fill-traditional" },
-          { label: "Optimized route", className: "fill-optimized" },
+          { label: "A* Pathfinding Routes", className: "fill-optimized" },
         ]}
       />
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="h-auto w-full"
         role="img"
-        aria-label={`Distance of the traditional and optimized route for ${records.length} tests`}
+        aria-label={`Distance of the traditional and A* Pathfinding Routes for ${records.length} tests`}
       >
         <Frame
           yTicks={ticks}
@@ -211,7 +211,7 @@ export function SavingsScatter({ records }: { records: TestRunRecord[] }) {
         viewBox={`0 0 ${W} ${H}`}
         className="h-auto w-full"
         role="img"
-        aria-label={`Distance saved by the optimized route for ${records.length} tests`}
+        aria-label={`Distance saved by the A* Pathfinding Routes for ${records.length} tests`}
       >
         <Frame
           yTicks={ticks}
@@ -267,7 +267,7 @@ export function SavingsScatter({ records }: { records: TestRunRecord[] }) {
   );
 }
 
-/** Average traditional and optimized distance for each size group and for all tests */
+/** Average traditional and A* Pathfinding distance for each size group and for all tests */
 export function GroupBars({ records }: { records: TestRunRecord[] }) {
   const groups = [
     ...TEST_GROUPS.map((g) => ({
@@ -290,7 +290,7 @@ export function GroupBars({ records }: { records: TestRunRecord[] }) {
       <Legend
         items={[
           { label: "Traditional route", className: "fill-traditional" },
-          { label: "Optimized route", className: "fill-optimized" },
+          { label: "A* Pathfinding Routes", className: "fill-optimized" },
         ]}
       />
       <svg

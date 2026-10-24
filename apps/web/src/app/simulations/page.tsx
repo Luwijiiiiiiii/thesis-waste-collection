@@ -6,7 +6,8 @@ import { ScreenTour } from "@/components/Tour";
 import { Badge, buttonClasses, Card, CardBody, EmptyState, PageHeader, Table } from "@/components/ui";
 import { fmt, fmtDateTime } from "@/lib/format";
 import { historyTour } from "@/features/onboarding/tours";
-import { DeleteTestButton } from "@/features/tests/DeleteTestButton";
+import { groupHistory } from "@/features/tests/groupRuns";
+import { TestRunGroupRows } from "@/features/tests/TestRunGroupRows";
 import { listSimulations } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,9 @@ export default async function SimulationsPage() {
     );
   }
   const avg = sims.length ? sims.reduce((n, s) => n + s.distanceSavingsPercent, 0) / sims.length : 0;
+  const items = groupHistory(sims);
+  // The guided tour points at the first row that opens a single result
+  const firstRunId = items.find((i) => i.kind === "run")?.run.id;
   const best = sims.reduce<(typeof sims)[number] | null>(
     (b, s) => (b === null || s.distanceSavingsPercent > b.distanceSavingsPercent ? s : b),
     null,
@@ -91,44 +95,45 @@ export default async function SimulationsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {sims.map((s, i) => (
-                      <tr key={s.id}>
-                        <td>
-                          <Link
-                            href={`/simulations/${s.id}`}
-                            data-tour={i === 0 ? "history-open" : undefined}
-                            className="num font-medium text-brand-ink hover:underline"
-                          >
-                            {s.id}
-                          </Link>
-                          <p className="text-xs text-muted">
-                            {fmtDateTime(s.createdAt)}
-                            {s.isTest && (
-                              <span className="ml-2">
-                                <Badge tone="warn">Test</Badge>
-                              </span>
-                            )}
-                          </p>
-                        </td>
-                        <td className="font-medium">{s.routeName}</td>
-                        <td className="num text-right">{s.collectionPoints}</td>
-                        <td>
-                          <Badge>{TSP_SOLVERS.find((x) => x.value === s.solver)?.label ?? "—"}</Badge>
-                        </td>
-                        <td className="num text-right">{fmt(s.traditionalKm)} km</td>
-                        <td className="num text-right">{fmt(s.optimizedKm)} km</td>
-                        <td className="text-right">
-                          <Badge
-                            tone={
-                              s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "danger" : "neutral"
-                            }
-                          >
-                            <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
-                          </Badge>
-                        </td>
-                        <td className="text-right">{s.isTest && <DeleteTestButton id={s.id} />}</td>
-                      </tr>
-                    ))}
+                    {items.map((item) => {
+                      if (item.kind === "tests") return <TestRunGroupRows key={item.id} runs={item.runs} />;
+                      const s = item.run;
+                      return (
+                        <tr key={s.id}>
+                          <td>
+                            <Link
+                              href={`/simulations/${s.id}`}
+                              data-tour={s.id === firstRunId ? "history-open" : undefined}
+                              className="num font-medium text-brand-ink hover:underline"
+                            >
+                              {s.id}
+                            </Link>
+                            <p className="text-xs text-muted">{fmtDateTime(s.createdAt)}</p>
+                          </td>
+                          <td className="font-medium">{s.routeName}</td>
+                          <td className="num text-right">{s.collectionPoints}</td>
+                          <td>
+                            <Badge>{TSP_SOLVERS.find((x) => x.value === s.solver)?.label ?? "—"}</Badge>
+                          </td>
+                          <td className="num text-right">{fmt(s.traditionalKm)} km</td>
+                          <td className="num text-right">{fmt(s.optimizedKm)} km</td>
+                          <td className="text-right">
+                            <Badge
+                              tone={
+                                s.distanceSavingsPercent > 0
+                                  ? "ok"
+                                  : s.distanceSavingsPercent < 0
+                                    ? "danger"
+                                    : "neutral"
+                              }
+                            >
+                              <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
+                            </Badge>
+                          </td>
+                          <td />
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </Table>
               </div>
