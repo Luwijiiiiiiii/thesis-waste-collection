@@ -8,7 +8,8 @@ import type { SimulationLogEntry } from "@wcro/core";
 const BATCH_GAP_MS = 3 * 60 * 1000;
 
 export type HistoryItem =
-  { kind: "run"; run: SimulationLogEntry } | { kind: "tests"; id: string; runs: SimulationLogEntry[] };
+  | { kind: "run"; run: SimulationLogEntry }
+  | { kind: "tests"; id: string; runs: SimulationLogEntry[] };
 
 /**
  * Folds consecutive test runs of the History list (newest first) into one entry per "Test all" run.

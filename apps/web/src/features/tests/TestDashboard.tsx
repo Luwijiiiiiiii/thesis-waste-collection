@@ -178,7 +178,10 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
 
           <div className="grid gap-6 xl:grid-cols-2">
             <Card>
-              <CardHeader title="Distance by test size" description="Every test, traditional against A* Pathfinding Routes." />
+              <CardHeader
+                title="Distance by test size"
+                description="Every test, traditional against A* Pathfinding Routes."
+              />
               <CardBody>
                 <DistanceScatter records={runs} />
               </CardBody>
