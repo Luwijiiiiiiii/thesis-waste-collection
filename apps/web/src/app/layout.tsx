@@ -3,6 +3,7 @@ import { Fira_Code, Fira_Sans } from "next/font/google";
 import Link from "next/link";
 import { BottomNav, SidebarNav } from "@/components/AppNav";
 import { BrandLockup } from "@/components/BrandLogo";
+import { RateLimitDialog } from "@/components/RateLimitDialog";
 import { HelpButton, TourOverlay } from "@/components/Tour";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
@@ -92,6 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <BottomNav />
         <TourOverlay />
+        <RateLimitDialog />
       </body>
     </html>
   );

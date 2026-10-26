@@ -1,6 +1,7 @@
 // Runs one bundled test route through POST /api/v1/simulate with `test: true`, so the API archives it as a test run.
 import type { SimulationEvent, SimulationResult, TspSolver } from "@wcro/core";
 import { apiUrl } from "@/lib/api";
+import { RATE_LIMIT_MESSAGE, retryAfterSeconds } from "@/lib/rate-limit";
 
 export interface TestFileEntry {
   file: string;
@@ -21,7 +22,10 @@ export async function loadTestFile(file: string, signal?: AbortSignal): Promise<
   return res.json();
 }
 
-export type TestRunOutcome = { ok: true; result: SimulationResult } | { ok: false; message: string };
+/** `retryAfterSeconds` is set when the API rate limit was hit, so the same test can be sent again after waiting */
+export type TestRunOutcome =
+  | { ok: true; result: SimulationResult }
+  | { ok: false; message: string; retryAfterSeconds?: number };
 
 export async function runTestSimulation(
   routeFile: unknown,
@@ -42,6 +46,8 @@ export async function runTestSimulation(
   }
   if (!res.ok || !res.body) {
     const body = (await res.json().catch(() => ({}))) as { error?: string };
+    if (res.status === 429)
+      return { ok: false, message: RATE_LIMIT_MESSAGE, retryAfterSeconds: retryAfterSeconds(res) };
     return { ok: false, message: body.error ?? `Server responded ${res.status}` };
   }
 

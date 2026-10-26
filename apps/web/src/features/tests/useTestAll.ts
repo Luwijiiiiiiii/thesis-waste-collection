@@ -1,6 +1,7 @@
 "use client";
 import { DEFAULT_TSP_SOLVER } from "@wcro/core";
 import { useCallback, useRef, useState } from "react";
+import { dismissRateLimit, reportRateLimit } from "@/lib/rate-limit";
 import { loadManifest, loadTestFile, runTestSimulation } from "./runTest";
 
 export interface TestAllState {
@@ -13,6 +14,8 @@ export interface TestAllState {
   cancelled: boolean;
   /** Set when the file list itself could not be loaded */
   fatal: string | null;
+  /** When paused by the API rate limit: the time (ms since epoch) the current test is sent again */
+  resumeAt: number | null;
 }
 
 const idle: TestAllState = {
@@ -23,10 +26,29 @@ const idle: TestAllState = {
   failures: [],
   cancelled: false,
   fatal: null,
+  resumeAt: null,
 };
 
 /** How often (in finished tests) the dashboard reloads its numbers while "Test all" is running */
 const REFRESH_EVERY = 5;
+/** How many times one test waits out the API rate limit before it is counted as failed */
+const MAX_RATE_LIMIT_WAITS = 5;
+
+/** Resolves after `ms`, or rejects with an AbortError as soon as `signal` aborts */
+function wait(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const abort = () => {
+      clearTimeout(timer);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", abort);
+      resolve();
+    }, ms);
+    if (signal.aborted) abort();
+    else signal.addEventListener("abort", abort, { once: true });
+  });
+}
 
 /**
  * Runs every bundled test route one after another through the API. Each run is a normal simulation that is
@@ -57,7 +79,23 @@ export function useTestAll(onSaved: () => void) {
         setState((s) => ({ ...s, current: entry.name }));
         try {
           const routeFile = await loadTestFile(entry.file, controller.signal);
-          const outcome = await runTestSimulation(routeFile, DEFAULT_TSP_SOLVER, controller.signal);
+          let outcome = await runTestSimulation(routeFile, DEFAULT_TSP_SOLVER, controller.signal);
+          // Rate limited: pause until the API's window resets, then send the same test again
+          for (let waits = 0; !outcome.ok && outcome.retryAfterSeconds && waits < MAX_RATE_LIMIT_WAITS; waits++) {
+            const seconds = outcome.retryAfterSeconds + 1;
+            setState((s) => ({ ...s, resumeAt: Date.now() + seconds * 1000 }));
+            reportRateLimit(seconds, {
+              note: `Testing is paused at test ${i + 1} of ${manifest.length} and continues on its own when the wait is over.`,
+              action: { label: "Stop testing", run: () => controller.abort() },
+            });
+            try {
+              await wait(seconds * 1000, controller.signal);
+            } finally {
+              dismissRateLimit();
+            }
+            setState((s) => ({ ...s, resumeAt: null }));
+            outcome = await runTestSimulation(routeFile, DEFAULT_TSP_SOLVER, controller.signal);
+          }
           if (!outcome.ok) {
             setState((s) => ({ ...s, failures: [...s.failures, { file: entry.file, message: outcome.message }] }));
           }
@@ -78,7 +116,7 @@ export function useTestAll(onSaved: () => void) {
         setState((s) => ({ ...s, fatal: (err as Error).message }));
       }
     } finally {
-      setState((s) => ({ ...s, running: false, current: null }));
+      setState((s) => ({ ...s, running: false, current: null, resumeAt: null }));
       onSavedRef.current();
     }
   }, []);

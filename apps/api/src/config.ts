@@ -12,5 +12,8 @@ export const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
 export const ROAD_NETWORK_FILE = new URL("../data/road-network.json.gz", import.meta.url);
 /** Request body limit; route files with many collection points exceed express's 100kb default. */
 export const BODY_LIMIT = process.env.BODY_LIMIT || "5mb";
-/** Requests per IP per 15 minutes in production (the Next.js server's page loads count against one IP). */
-export const RATE_LIMIT = Number(process.env.RATE_LIMIT || 100);
+/**
+ * Write/simulate requests per IP per 15 minutes in production. "Test all" alone sends one simulate per bundled
+ * test route (100+), so the limit must leave room for a few full test batches.
+ */
+export const RATE_LIMIT = Number(process.env.RATE_LIMIT || 1000);

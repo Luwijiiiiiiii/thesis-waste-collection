@@ -2,6 +2,7 @@
 //  - NEXT_PUBLIC_API_URL: API origin the browser calls (inlined at build time)
 //  - API_URL: optional origin for server-side calls, e.g. an internal hostname in Docker
 import type { SimulationLogEntry, SimulationResult, TestRunRecord } from "@wcro/core";
+import { RATE_LIMIT_MESSAGE, reportRateLimit, retryAfterSeconds } from "./rate-limit";
 
 const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -66,6 +67,10 @@ async function sendDelete<T>(path: string, body?: unknown): Promise<T | null> {
     });
   } catch {
     throw new ApiError(0, `Could not reach the API at ${apiUrl("")}.`);
+  }
+  if (res.status === 429) {
+    reportRateLimit(retryAfterSeconds(res));
+    throw new ApiError(429, RATE_LIMIT_MESSAGE);
   }
   if (!res.ok) {
     const err = (await res.json().catch(() => ({}))) as { error?: string; message?: string };

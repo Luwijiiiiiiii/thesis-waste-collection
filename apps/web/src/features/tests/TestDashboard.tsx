@@ -78,7 +78,9 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
                 <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
                   <p className="font-medium" aria-live="polite">
                     {state.running
-                      ? `Running test ${Math.min(state.done + 1, state.total)} of ${state.total}`
+                      ? state.resumeAt
+                        ? `Paused at test ${state.done + 1} of ${state.total} while your API calls refresh. Resuming at ${new Date(state.resumeAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+                        : `Running test ${Math.min(state.done + 1, state.total)} of ${state.total}`
                       : state.cancelled
                         ? `Stopped after ${state.done} of ${state.total}`
                         : `Finished ${state.done} of ${state.total}`}

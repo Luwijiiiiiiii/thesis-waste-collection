@@ -17,6 +17,8 @@ app.use(
     origin: CORS_ORIGIN,
     // Browsers reject credentialed requests to a wildcard origin.
     credentials: CORS_ORIGIN !== "*",
+    // Lets the web app read how long to wait after a 429 (the test runner pauses and resumes on it)
+    exposedHeaders: ["Retry-After"],
   }),
 );
 
@@ -29,6 +31,10 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: RATE_LIMIT, // limit each IP to RATE_LIMIT requests per windowMs
   skip: (req) => req.method === "GET" || req.method === "HEAD" || req.method === "OPTIONS",
+  // JSON like every other error, so the web app shows this instead of "Server responded 429"
+  message: {
+    error: "Please wait for your API calls to be refreshed. You are currently experiencing rate limiting.",
+  },
 });
 
 if (!isDev) app.use(limiter);

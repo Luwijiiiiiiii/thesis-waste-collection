@@ -8,6 +8,7 @@ import {
   type TspSolver,
 } from "@wcro/core";
 import { apiUrl } from "@/lib/api";
+import { RATE_LIMIT_MESSAGE, reportRateLimit, retryAfterSeconds } from "@/lib/rate-limit";
 
 export type StageStatus = "pending" | "running" | "done" | "error";
 export type StageState = Record<SimulationStage, { status: StageStatus; detail?: string }>;
@@ -61,6 +62,10 @@ export function useSimulation() {
         body: JSON.stringify({ routeFile, solver }),
         signal: controller.signal,
       });
+      if (res.status === 429) {
+        reportRateLimit(retryAfterSeconds(res));
+        throw new Error(RATE_LIMIT_MESSAGE);
+      }
       if (!res.ok || !res.body) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? `Server responded ${res.status}`);
