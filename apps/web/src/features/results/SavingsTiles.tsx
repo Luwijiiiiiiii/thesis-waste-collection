@@ -1,5 +1,5 @@
 import type { ComparisonRow } from "@wcro/core";
-import { ArrowDown, ArrowUp, Banknote, Clock, Leaf, Route, type LucideIcon } from "lucide-react";
+import { Banknote, Clock, Leaf, Route, type LucideIcon } from "lucide-react";
 import { fmt, fmtMinutes, fmtPhp } from "@/lib/format";
 
 const icons: Partial<Record<ComparisonRow["metric"], LucideIcon>> = {
@@ -45,30 +45,42 @@ export function SavingsTiles({ comparison }: { comparison: ComparisonRow[] }) {
                   better
                     ? "bg-optimized-soft text-optimized"
                     : worse
-                      ? "bg-danger-soft text-danger"
+                      ? "bg-traditional-soft text-traditional"
                       : "bg-surface-2 text-muted"
                 }`}
               >
-                {better ? (
-                  <ArrowUp className="size-3" aria-hidden />
-                ) : worse ? (
-                  <ArrowDown className="size-3" aria-hidden />
-                ) : null}
-                {(better || worse) && <span aria-hidden>{better ? "A*" : "Traditional"}</span>}
-                <span className="num">{fmt(Math.abs(row.savingsPercent))}%</span>
-                <span className="sr-only">{worse ? "more than traditional" : "less than traditional"}</span>
+                {better || worse ? (
+                  <>
+                    {better ? "A* Pathfinding" : "Traditional"} wins by{" "}
+                    <span className="num">{fmt(Math.abs(row.savingsPercent))}%</span>
+                  </>
+                ) : (
+                  "Tied"
+                )}
               </span>
             </div>
 
             <p
-              className={`num mt-3 text-2xl font-semibold leading-8 sm:text-[28px] ${worse ? "text-danger" : "text-ink"}`}
+              className={`num mt-3 text-2xl font-semibold leading-8 sm:text-[28px] ${worse ? "text-traditional" : "text-ink"}`}
             >
               {formatValue(row, Math.abs(row.savings))}
             </p>
 
             <div className="mt-4 hidden space-y-1.5 sm:block" aria-hidden>
-              <Bar label="Traditional" value={row.traditional} max={max} className="bg-brand" />
-              <Bar label="Optimized" value={row.optimized} max={max} className="bg-optimized-solid" />
+              <Bar
+                label="Traditional"
+                value={row.traditional}
+                max={max}
+                className="bg-traditional-solid"
+                emphasis={worse ? "winner" : better ? "loser" : "even"}
+              />
+              <Bar
+                label="A* Pathfinding"
+                value={row.optimized}
+                max={max}
+                className="bg-optimized-solid"
+                emphasis={better ? "winner" : worse ? "loser" : "even"}
+              />
             </div>
           </li>
         );
@@ -77,12 +89,36 @@ export function SavingsTiles({ comparison }: { comparison: ComparisonRow[] }) {
   );
 }
 
-function Bar({ label, value, max, className }: { label: string; value: number; max: number; className: string }) {
+type Emphasis = "winner" | "loser" | "even";
+
+const barStyles: Record<Emphasis, { row: string; track: string; fill: string }> = {
+  winner: { row: "font-semibold text-ink", track: "h-2.5", fill: "" },
+  loser: { row: "text-muted", track: "h-1", fill: "opacity-60" },
+  even: { row: "text-muted", track: "h-1.5", fill: "" },
+};
+
+function Bar({
+  label,
+  value,
+  max,
+  className,
+  emphasis,
+}: {
+  label: string;
+  value: number;
+  max: number;
+  className: string;
+  emphasis: Emphasis;
+}) {
+  const s = barStyles[emphasis];
   return (
-    <div className="flex items-center gap-2 text-[11px] text-muted">
-      <span className="w-[68px] shrink-0">{label}</span>
-      <div className="h-1.5 flex-1 rounded-full bg-surface-2">
-        <div className={`h-full rounded-full ${className}`} style={{ width: `${Math.max((value / max) * 100, 2)}%` }} />
+    <div className={`flex h-4 items-center gap-2 text-[11px] ${s.row}`}>
+      <span className="w-[88px] shrink-0">{label}</span>
+      <div className={`flex-1 rounded-full bg-surface-2 transition-[height] duration-200 ${s.track}`}>
+        <div
+          className={`h-full rounded-full ${className} ${s.fill}`}
+          style={{ width: `${Math.max((value / max) * 100, 2)}%` }}
+        />
       </div>
       <span className="num w-14 shrink-0 text-right">{fmt(value)}</span>
     </div>

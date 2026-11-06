@@ -24,9 +24,9 @@ export function ResultsView({ result, actions }: { result: SimulationResult; act
     const km = fmt(Math.abs(distance.savings));
     headline =
       distance.savings > 0
-        ? `The optimized route is ${pct}% shorter`
+        ? `The A* Pathfinding route is ${pct}% shorter`
         : distance.savings < 0
-          ? `The optimized route is ${pct}% longer`
+          ? `The A* Pathfinding route is ${pct}% longer`
           : "Both routes cover the same distance";
     if (distance.savings !== 0) headline += ` (${km} km ${distance.savings > 0 ? "saved" : "extra"})`;
   }

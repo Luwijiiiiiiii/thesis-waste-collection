@@ -12,7 +12,7 @@ export function RouteSequence({ route }: { route: RouteResult }) {
         className={`flex flex-wrap items-center justify-between gap-2 px-4 py-3 ${isOpt ? "bg-optimized-soft" : "bg-traditional-soft"}`}
       >
         <h3 className={`text-sm font-semibold ${isOpt ? "text-optimized" : "text-traditional"}`}>
-          {isOpt ? "Optimized route" : "Simulated traditional route"}
+          {isOpt ? "A* Pathfinding route" : "Simulated traditional route"}
         </h3>
         <Badge tone={isOpt ? "ok" : "traditional"}>{isOpt ? (solver?.label ?? "A*") : "File order + A*"}</Badge>
       </div>

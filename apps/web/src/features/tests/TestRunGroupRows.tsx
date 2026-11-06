@@ -11,7 +11,7 @@ const mean = (values: number[]) => values.reduce((n, v) => n + v, 0) / values.le
 
 function SavedBadge({ percent }: { percent: number }) {
   return (
-    <Badge tone={percent > 0 ? "ok" : percent < 0 ? "danger" : "neutral"}>
+    <Badge tone={percent > 0 ? "ok" : percent < 0 ? "traditional" : "neutral"}>
       <span className="num">{fmt(percent)}%</span>
     </Badge>
   );

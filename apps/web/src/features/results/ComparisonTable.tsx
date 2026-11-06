@@ -10,7 +10,7 @@ export function ComparisonTable({ rows }: { rows: ComparisonRow[] }) {
         <tr>
           <th>Metric</th>
           <th className="text-right">Traditional</th>
-          <th className="text-right">Optimized</th>
+          <th className="text-right">A* Pathfinding</th>
           <th className="text-right">Savings</th>
           <th className="w-[26%]">Relative</th>
         </tr>
@@ -18,7 +18,7 @@ export function ComparisonTable({ rows }: { rows: ComparisonRow[] }) {
       <tbody>
         {rows.map((r) => {
           const max = Math.max(r.traditional, r.optimized) || 1;
-          const tone = r.savings > 0 ? "text-optimized" : r.savings < 0 ? "text-danger" : "text-muted";
+          const tone = r.savings > 0 ? "text-optimized" : r.savings < 0 ? "text-traditional" : "text-muted";
           return (
             <tr key={r.metric}>
               <td className="font-medium">
