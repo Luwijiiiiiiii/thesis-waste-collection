@@ -84,7 +84,7 @@ export default function RouteMap({
           checked={show.optimized}
           onChange={(v) => setShow((s) => ({ ...s, optimized: v }))}
           swatch={<span className="h-1 w-6 rounded bg-optimized-solid" />}
-          label="Optimized"
+          label="A* Pathfinding"
         />
         <LayerToggle
           checked={show.traditional}
@@ -149,7 +149,7 @@ export default function RouteMap({
               <p>Snap distance: {fmt(open.snapDistanceM)} m</p>
               {open.role !== "garage" && (
                 <>
-                  <p>Optimized stop #{orders.optimized.get(open.id)}</p>
+                  <p>A* Pathfinding stop #{orders.optimized.get(open.id)}</p>
                   <p>Traditional stop #{orders.traditional.get(open.id)}</p>
                 </>
               )}

@@ -111,7 +111,7 @@ export function HistoryTable({ sims }: { sims: SimulationLogEntry[] }) {
               <th className="text-right">Points</th>
               <th>Algorithm</th>
               <th className="text-right">Traditional</th>
-              <th className="text-right">Optimized</th>
+              <th className="text-right">A* Pathfinding</th>
               <th className="text-right">Saved</th>
             </tr>
           </thead>
@@ -159,7 +159,9 @@ export function HistoryTable({ sims }: { sims: SimulationLogEntry[] }) {
                   <td className="num text-right">{fmt(s.optimizedKm)} km</td>
                   <td className="text-right">
                     <Badge
-                      tone={s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "danger" : "neutral"}
+                      tone={
+                        s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "traditional" : "neutral"
+                      }
                     >
                       <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
                     </Badge>

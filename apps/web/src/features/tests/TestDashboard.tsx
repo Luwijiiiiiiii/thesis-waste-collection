@@ -168,7 +168,7 @@ export function TestDashboard({ initial, initialError }: { initial: TestRunRecor
                       {fmt(t)} <span className="text-xs text-muted">{m.unit} traditional</span>
                     </p>
                     <p className="mt-2">
-                      <Badge tone={saved > 0 ? "ok" : saved < 0 ? "danger" : "neutral"}>
+                      <Badge tone={saved > 0 ? "ok" : saved < 0 ? "traditional" : "neutral"}>
                         <span className="num">{fmt(saved)}% saved</span>
                       </Badge>
                     </p>

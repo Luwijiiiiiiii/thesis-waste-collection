@@ -39,7 +39,7 @@ export function nodeRegistryCsv(registry: NodeRegistry): string {
 /** Route comparison table */
 export function comparisonCsv(rows: ComparisonRow[]): string {
   return toCsv(
-    ["Metric", "Unit", "Simulated Traditional", "Optimized", "Savings", "Savings (%)"],
+    ["Metric", "Unit", "Simulated Traditional", "A* Pathfinding", "Savings", "Savings (%)"],
     rows.map((r) => [r.label, r.unit, r.traditional, r.optimized, r.savings, r.savingsPercent]),
   );
 }

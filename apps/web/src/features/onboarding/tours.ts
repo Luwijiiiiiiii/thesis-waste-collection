@@ -119,13 +119,13 @@ export const resultsTour: TourDef = {
     {
       target: "savings",
       title: "Step 4 · What you save",
-      text: "Each tile compares the traditional route with the optimized one. Green means the optimized route is better.",
+      text: "Each tile compares the traditional route with the A* Pathfinding one. Green means the A* Pathfinding route is better.",
     },
     {
       target: "tab-map",
       activate: true,
       title: "Route map",
-      text: "Switch between Optimized and Traditional. Pick a stop in the list to find it on the map.",
+      text: "Switch between A* Pathfinding and Traditional. Pick a stop in the list to find it on the map.",
     },
     {
       target: "tab-comparison",
@@ -186,7 +186,7 @@ export const historyTour: TourDef = {
     {
       target: "history-table",
       title: "Every run, newest first",
-      text: "Each row shows the route, its stops, and the Traditional vs Optimized distance. Saved is green when the optimized route is shorter.",
+      text: "Each row shows the route, its stops, and the Traditional vs A* Pathfinding distance. Saved is green when the A* Pathfinding route is shorter.",
     },
     {
       target: "history-open",

@@ -35,7 +35,7 @@ export function ExportPanel({ result }: { result: SimulationResult }) {
           run: () => downloadText(`${p}_traditional_segments.csv`, routeSegmentsCsv(result.traditional), "text/csv"),
         },
         {
-          label: "Optimized segments",
+          label: "A* Pathfinding segments",
           format: "CSV",
           run: () => downloadText(`${p}_optimized_segments.csv`, routeSegmentsCsv(result.optimized), "text/csv"),
         },
@@ -52,7 +52,7 @@ export function ExportPanel({ result }: { result: SimulationResult }) {
             downloadText(`${p}_simulated_traditional_route.json`, routeJson(result.traditional), "application/json"),
         },
         {
-          label: "Optimized route",
+          label: "A* Pathfinding route",
           format: "JSON",
           run: () => downloadText(`${p}_optimized_route.json`, routeJson(result.optimized), "application/json"),
         },

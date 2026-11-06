@@ -7,7 +7,7 @@ import { fmt } from "@/lib/format";
 import { RouteMapLoader } from "./RouteMapLoader";
 
 const ORDERS: { kind: RouteKind; label: string }[] = [
-  { kind: "optimized", label: "Optimized" },
+  { kind: "optimized", label: "A* Pathfinding" },
   { kind: "traditional", label: "Traditional" },
 ];
 
@@ -51,7 +51,7 @@ export function MapWithStops({ result }: { result: SimulationResult }) {
           </fieldset>
           <div>
             <h3 className="text-sm font-semibold">
-              {isOpt ? "Optimized visiting order" : "Traditional visiting order"}{" "}
+              {isOpt ? "A* Pathfinding visiting order" : "Traditional visiting order"}{" "}
               <span className="num font-normal text-muted">· {fmt(route.metrics.distanceKm)} km</span>
             </h3>
             <p className="text-xs text-muted">

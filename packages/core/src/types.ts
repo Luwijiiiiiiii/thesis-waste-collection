@@ -172,7 +172,7 @@ export const SIMULATION_STAGES: { key: SimulationStage; label: string }[] = [
   { key: "network", label: "Load OpenStreetMap road network" },
   { key: "snapping", label: "Snap stops & check truck access" },
   { key: "traditional", label: "Simulated traditional route (A*)" },
-  { key: "optimized", label: "Optimized route (TSP + A*)" },
+  { key: "optimized", label: "A* Pathfinding route (TSP + A*)" },
   { key: "metrics", label: "Performance evaluation" },
   { key: "archive", label: "Archive simulation" },
 ];
