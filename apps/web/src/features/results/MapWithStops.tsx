@@ -18,10 +18,7 @@ export function MapWithStops({ result }: { result: SimulationResult }) {
   const seq = route.visitSequence;
   const isOpt = kind === "optimized";
   // Badges show each node's own number, matching the map markers
-  const nodeNo = useMemo(
-    () => new Map(result.nodeRegistry.collectionPoints.map((s, i) => [s.id, i + 1])),
-    [result],
-  );
+  const nodeNo = useMemo(() => new Map(result.nodeRegistry.collectionPoints.map((s, i) => [s.id, i + 1])), [result]);
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -60,8 +57,8 @@ export function MapWithStops({ result }: { result: SimulationResult }) {
               <span className="num font-normal text-muted">· {fmt(route.metrics.distanceKm)} km</span>
             </h3>
             <p className="text-xs text-muted">
-              {isOpt ? "Order chosen by the TSP solver; badges show each node's number." : "Order from the route file."} Select a
-              stop to find it on the map.
+              {isOpt ? "Order chosen by the TSP solver; badges show each node's number." : "Order from the route file."}{" "}
+              Select a stop to find it on the map.
             </p>
           </div>
         </div>

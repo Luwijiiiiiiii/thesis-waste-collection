@@ -48,10 +48,7 @@ export default function RouteMap({
   );
   // Markers always show each node's own number (its position in the route file),
   // so a stop keeps the same label whichever route is selected
-  const nodeNo = useMemo(
-    () => new Map(result.nodeRegistry.collectionPoints.map((s, i) => [s.id, i + 1])),
-    [result],
-  );
+  const nodeNo = useMemo(() => new Map(result.nodeRegistry.collectionPoints.map((s, i) => [s.id, i + 1])), [result]);
   const bounds = useMemo(
     () =>
       boundsOf([
