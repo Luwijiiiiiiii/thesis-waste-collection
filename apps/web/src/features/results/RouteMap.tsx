@@ -46,8 +46,12 @@ export default function RouteMap({
     () => ({ optimized: orderOf(result.optimized), traditional: orderOf(result.traditional) }),
     [result],
   );
-  // Markers are numbered by the order picked in the side list
-  const order = orders[orderKind];
+  // Markers always show each node's own number (its position in the route file),
+  // so a stop keeps the same label whichever route is selected
+  const nodeNo = useMemo(
+    () => new Map(result.nodeRegistry.collectionPoints.map((s, i) => [s.id, i + 1])),
+    [result],
+  );
   const bounds = useMemo(
     () =>
       boundsOf([
@@ -133,7 +137,7 @@ export default function RouteMap({
                 className={`stop-marker ${garage ? "stop-marker--garage" : orderKind === "optimized" ? "stop-marker--point" : "stop-marker--traditional"} ${active ? "stop-marker--active" : ""}`}
                 style={{ width: size, height: size }}
               >
-                {garage ? "G" : String(order.get(s.id) ?? "•")}
+                {garage ? "G" : String(nodeNo.get(s.id) ?? "•")}
               </div>
             </Marker>
           );
@@ -149,6 +153,7 @@ export default function RouteMap({
               <p>Snap distance: {fmt(open.snapDistanceM)} m</p>
               {open.role !== "garage" && (
                 <>
+                  <p>Node #{nodeNo.get(open.id)}</p>
                   <p>A* Pathfinding stop #{orders.optimized.get(open.id)}</p>
                   <p>Traditional stop #{orders.traditional.get(open.id)}</p>
                 </>

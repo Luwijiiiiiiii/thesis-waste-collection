@@ -1,6 +1,6 @@
 "use client";
 // Map + visiting order for either route; picking a stop flies the map to it
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { RouteKind, SimulationResult } from "@wcro/core";
 import { Home, MapPin } from "lucide-react";
 import { fmt } from "@/lib/format";
@@ -17,6 +17,11 @@ export function MapWithStops({ result }: { result: SimulationResult }) {
   const route = result[kind];
   const seq = route.visitSequence;
   const isOpt = kind === "optimized";
+  // Badges show each node's own number, matching the map markers
+  const nodeNo = useMemo(
+    () => new Map(result.nodeRegistry.collectionPoints.map((s, i) => [s.id, i + 1])),
+    [result],
+  );
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -55,8 +60,8 @@ export function MapWithStops({ result }: { result: SimulationResult }) {
               <span className="num font-normal text-muted">· {fmt(route.metrics.distanceKm)} km</span>
             </h3>
             <p className="text-xs text-muted">
-              {isOpt ? "Order chosen by the TSP solver." : "Order from the route file."} Select a stop to find it on the
-              map.
+              {isOpt ? "Order chosen by the TSP solver; badges show each node's number." : "Order from the route file."} Select a
+              stop to find it on the map.
             </p>
           </div>
         </div>
@@ -85,7 +90,7 @@ export function MapWithStops({ result }: { result: SimulationResult }) {
                     }`}
                     aria-hidden
                   >
-                    {isGarage ? <Home className="size-3" /> : i}
+                    {isGarage ? <Home className="size-3" /> : (nodeNo.get(stop.id) ?? i)}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium">
