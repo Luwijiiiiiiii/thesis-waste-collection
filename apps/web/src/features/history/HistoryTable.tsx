@@ -159,7 +159,9 @@ export function HistoryTable({ sims }: { sims: SimulationLogEntry[] }) {
                   <td className="num text-right">{fmt(s.optimizedKm)} km</td>
                   <td className="text-right">
                     <Badge
-                      tone={s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "traditional" : "neutral"}
+                      tone={
+                        s.distanceSavingsPercent > 0 ? "ok" : s.distanceSavingsPercent < 0 ? "traditional" : "neutral"
+                      }
                     >
                       <span className="num">{fmt(s.distanceSavingsPercent)}%</span>
                     </Badge>
