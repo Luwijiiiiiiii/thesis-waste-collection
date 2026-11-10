@@ -1,7 +1,14 @@
 "use client";
 // CSV / JSON / GeoJSON export (replaces the WasteCollectionOutputs folders)
 import type { SimulationResult } from "@wcro/core";
-import { comparisonCsv, nodeRegistryCsv, routeJson, routeSegmentsCsv, simulationGeoJson } from "@wcro/exports";
+import {
+  comparisonCsv,
+  computationsCsv,
+  nodeRegistryCsv,
+  routeJson,
+  routeSegmentsCsv,
+  simulationGeoJson,
+} from "@wcro/exports";
 import { Download } from "lucide-react";
 import { Badge } from "@/components/ui";
 import { downloadText } from "@/lib/download";
@@ -23,6 +30,11 @@ export function ExportPanel({ result }: { result: SimulationResult }) {
           label: "Comparison table",
           format: "CSV",
           run: () => downloadText(`${p}_comparison.csv`, comparisonCsv(result.comparison), "text/csv"),
+        },
+        {
+          label: "Computations & formulas",
+          format: "CSV",
+          run: () => downloadText(`${p}_computations.csv`, computationsCsv(result), "text/csv"),
         },
         {
           label: "Node registry",

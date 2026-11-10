@@ -52,6 +52,134 @@ export function routeSegmentsCsv(route: RouteResult): string {
   );
 }
 
+/** Rounded for the "Substitution" column only; the "Result" column keeps full precision */
+function n(value: number): string {
+  return String(Number(value.toFixed(4)));
+}
+
+/**
+ * Every computation in the simulation (Module 6 formulas from @wcro/metrics),
+ * one row per step with its formula, the values plugged in, and the result.
+ * Starts with a UTF-8 BOM so Excel shows ×, Σ and ₂ correctly.
+ */
+export function computationsCsv(result: SimulationResult): string {
+  const v = result.vehicle;
+  const rows: Cell[][] = [
+    ["Input", "", "Average speed", "average_speed_kmh", "Vehicle parameter", "", v.averageSpeedKmh, "km/h"],
+    ["Input", "", "Fuel efficiency", "fuel_efficiency_kmpl", "Vehicle parameter", "", v.fuelEfficiencyKmpl, "km/L"],
+    ["Input", "", "Fuel price", "fuel_price_per_liter", "Vehicle parameter", "", v.fuelPricePerLiter, "PHP/L"],
+    ["Input", "", "CO₂ factor", "co2_factor", "Vehicle parameter", "", v.co2FactorKgPerLiter, "kg/L"],
+  ];
+
+  for (const route of [result.traditional, result.optimized]) {
+    const name = route.kind === "traditional" ? "Simulated Traditional" : "A* Pathfinding";
+    const m = route.metrics;
+    route.segments.forEach((s, i) => {
+      rows.push([
+        "Segment",
+        name,
+        `Segment ${i + 1}: ${s.fromName} → ${s.toName}`,
+        `d${i + 1}`,
+        "A* shortest path length on the road network",
+        "",
+        s.distanceM,
+        "m",
+      ]);
+    });
+    const distanceM = route.segments.reduce((sum, s) => sum + s.distanceM, 0);
+    const fuel = m.fuelLiters;
+    rows.push(
+      [
+        "Route",
+        name,
+        "Route length",
+        "distance_m",
+        "Σ segment distances",
+        route.segments.map((s) => n(s.distanceM)).join(" + "),
+        distanceM,
+        "m",
+      ],
+      [
+        "Route",
+        name,
+        "Total Distance",
+        "distance_km",
+        "distance_m / 1000",
+        `${n(distanceM)} / 1000`,
+        m.distanceKm,
+        "km",
+      ],
+      [
+        "Route",
+        name,
+        "Travel Time",
+        "time_min",
+        "distance_km / average_speed_kmh × 60",
+        `${n(m.distanceKm)} / ${v.averageSpeedKmh} × 60`,
+        m.travelTimeMin,
+        "min",
+      ],
+      [
+        "Route",
+        name,
+        "Fuel Consumption",
+        "fuel_L",
+        "distance_km / fuel_efficiency_kmpl",
+        `${n(m.distanceKm)} / ${v.fuelEfficiencyKmpl}`,
+        fuel,
+        "L",
+      ],
+      [
+        "Route",
+        name,
+        "Fuel Cost",
+        "cost_PHP",
+        "fuel_L × fuel_price_per_liter",
+        `${n(fuel)} × ${v.fuelPricePerLiter}`,
+        m.fuelCostPhp,
+        "PHP",
+      ],
+      [
+        "Route",
+        name,
+        "CO₂ Emissions",
+        "co2_kg",
+        "fuel_L × co2_factor",
+        `${n(fuel)} × ${v.co2FactorKgPerLiter}`,
+        m.co2Kg,
+        "kg",
+      ],
+    );
+  }
+
+  for (const r of result.comparison) {
+    rows.push(
+      [
+        "Comparison",
+        "",
+        `${r.label} savings`,
+        "savings",
+        "traditional − A* pathfinding",
+        `${n(r.traditional)} − ${n(r.optimized)}`,
+        r.savings,
+        r.unit,
+      ],
+      [
+        "Comparison",
+        "",
+        `${r.label} savings (%)`,
+        "savings_pct",
+        "savings / traditional × 100 (0 if traditional = 0)",
+        `${n(r.savings)} / ${n(r.traditional)} × 100`,
+        r.savingsPercent,
+        "%",
+      ],
+    );
+  }
+
+  return `﻿${toCsv(["Section", "Route", "Computation", "Variable", "Formula", "Substitution", "Result", "Unit"], rows)}`;
+}
+
 /** Route JSON (notebook CELL 18: simulated_traditional_route.json) */
 export function routeJson(route: RouteResult): string {
   return JSON.stringify(
